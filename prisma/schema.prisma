@@ -33,6 +33,7 @@ model Scrape {
   status          ScrapeStatus
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
+  urlCount        Int
 
   user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   threads         Thread[]

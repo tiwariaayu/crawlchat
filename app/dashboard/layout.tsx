@@ -10,8 +10,7 @@ import {
   DrawerContent,
   DrawerRoot,
 } from "~/components/ui/drawer";
-import { useRef, useState } from "react";
-import { TbMenu } from "react-icons/tb";
+import { useRef } from "react";
 import { prisma } from "~/prisma";
 
 export function meta() {
@@ -28,6 +27,9 @@ export async function loader({ request }: Route.LoaderArgs) {
   const threads = await prisma.thread.findMany({
     where: {
       userId: user!.id,
+    },
+    orderBy: {
+      createdAt: "desc",
     },
   });
 

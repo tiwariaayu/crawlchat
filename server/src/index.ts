@@ -73,7 +73,7 @@ app.post("/scrape", async function (req: Request, res: Response) {
 
   (async function () {
     const scrape = await prisma.scrape.create({
-      data: { url, status: "pending", userId },
+      data: { url, status: "pending", userId, urlCount: 0 },
     });
 
     const store: ScrapeStore = {
@@ -88,8 +88,16 @@ app.post("/scrape", async function (req: Request, res: Response) {
     });
 
     await scrapeLoop(store, req.body.url, {
-      onPreScrape: async (url) => {
-        broadcast(makeMessage("scrape-pre", { url }));
+      onPreScrape: async (url, store) => {
+        const scrapedUrlCount = Object.values(store.urls).length;
+        const remainingUrlCount = store.urlSet.size() - scrapedUrlCount;
+        broadcast(
+          makeMessage("scrape-pre", {
+            url,
+            scrapedUrlCount,
+            remainingUrlCount,
+          })
+        );
       },
       onComplete: async () => {
         broadcast(makeMessage("scrape-complete", { url }));
@@ -103,7 +111,7 @@ app.post("/scrape", async function (req: Request, res: Response) {
 
     await prisma.scrape.update({
       where: { id: scrape.id },
-      data: { status: "done" },
+      data: { status: "done", urlCount: store.urlSet.size() },
     });
 
     broadcast(makeMessage("saved", { url }));

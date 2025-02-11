@@ -50,11 +50,11 @@ export async function scrapeWithLinks(
   baseUrl: string,
   options?: {
     skipRegex?: RegExp[];
-    onPreScrape?: (url: string) => Promise<void>;
+    onPreScrape?: (url: string, store: ScrapeStore) => Promise<void>;
   }
 ) {
   if (options?.onPreScrape) {
-    options.onPreScrape(url);
+    options.onPreScrape(url, store);
   }
   const { markdown: linkMarkdown, links: linkLinks } = await scrape(url);
   store.urls[url] = {
@@ -89,7 +89,7 @@ export async function scrapeLoop(
   options?: {
     limit?: number;
     skipRegex?: RegExp[];
-    onPreScrape?: (url: string) => Promise<void>;
+    onPreScrape?: (url: string, store: ScrapeStore) => Promise<void>;
     onComplete?: () => Promise<void>;
   }
 ) {
@@ -108,4 +108,3 @@ export async function scrapeLoop(
     options.onComplete();
   }
 }
-

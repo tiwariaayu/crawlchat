@@ -40,7 +40,7 @@ export async function makeContext(
   index: faiss.IndexFlatL2,
   store: ScrapeStore
 ) {
-  const result = await searchInIndex(query, index, 2);
+  const result = await searchInIndex(query, index, 10);
   if (result) {
     const links = await getLinks(store, result);
     return links.map((link) => link.content).join("\n\n");

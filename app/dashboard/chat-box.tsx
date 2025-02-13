@@ -176,9 +176,18 @@ export default function ChatBox({
       }
     }
 
+    function handleScroll() {
+      if (selectionPopoverRef.current) {
+        selectionPopoverRef.current.style.display = "none";
+      }
+      setSelectedText("");
+    }
+
     document.addEventListener("mouseup", handleMouseUp);
+    document.addEventListener("scroll", handleScroll);
     return () => {
       document.removeEventListener("mouseup", handleMouseUp);
+      document.removeEventListener("scroll", handleScroll);
     };
   }, []);
 

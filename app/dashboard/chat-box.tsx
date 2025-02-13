@@ -10,12 +10,13 @@ import {
 } from "@chakra-ui/react";
 import { Stack, Text } from "@chakra-ui/react";
 import type { Message, ScrapeLink, Thread } from "@prisma/client";
-import { useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useMemo, useRef, useState } from "react";
 import { TbCheck, TbSend, TbTrash, TbWorld } from "react-icons/tb";
 import Markdown from "react-markdown";
 import { Prose } from "~/components/ui/prose";
 import { getLinkTitle, getThreadName } from "~/thread-util";
 import { sleep } from "~/util";
+import { AppContext } from "./context";
 
 function makeMessage(type: string, data: any) {
   return JSON.stringify({ type, data });
@@ -87,14 +88,16 @@ export default function ChatBox({
   deleting: boolean;
   onDelete: () => void;
 }) {
+  const { setThreadTitle } = useContext(AppContext);
   const socket = useRef<WebSocket>(null);
   const [content, setContent] = useState("");
-  const [links, setLinks] = useState<ScrapeLink[]>([]);
   const [query, setQuery] = useState("");
   const [messages, setMessages] = useState<Message[]>(thread.messages);
   const containerRef = useRef<HTMLDivElement>(null);
   const promptBoxRef = useRef<HTMLDivElement>(null);
   const [deleteActive, setDeleteActive] = useState(false);
+
+  const title = useMemo(() => getThreadName(messages), [messages]);
 
   useEffect(() => {
     positionPromptBox();
@@ -105,9 +108,6 @@ export default function ChatBox({
     socket.current = new WebSocket("ws://localhost:3000");
     socket.current.onmessage = (event) => {
       const message = JSON.parse(event.data);
-      if (message.type === "links") {
-        setLinks(message.data);
-      }
       if (message.type === "llm-chunk") {
         if (message.data.end) {
           setMessages((prev) => [
@@ -121,7 +121,6 @@ export default function ChatBox({
             },
           ]);
           setContent("");
-          setLinks([]);
           return;
         }
         setContent((prev) => prev + message.data.content);
@@ -137,6 +136,13 @@ export default function ChatBox({
       }, 3000);
     }
   }, [deleteActive]);
+
+  useEffect(() => {
+    setThreadTitle((titles) => ({
+      ...titles,
+      [thread.id]: title,
+    }));
+  }, [title]);
 
   async function handleAsk() {
     socket.current!.send(
@@ -198,7 +204,7 @@ export default function ChatBox({
   return (
     <Stack w={"full"} h="full" ref={containerRef}>
       <Stack>
-        <Heading>{getThreadName(thread, 100)}</Heading>
+        <Heading>{title}</Heading>
         <Group>
           <IconButton
             size={"xs"}
@@ -241,6 +247,11 @@ export default function ChatBox({
           placeholder="Ask your query"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              handleAsk();
+            }
+          }}
         />
         <IconButton onClick={handleAsk}>
           <TbSend />

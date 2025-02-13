@@ -1,13 +1,12 @@
-import type { ScrapeLink, Thread } from "@prisma/client";
+import type { Message, ScrapeLink } from "@prisma/client";
 
-export function getThreadName(thread: Thread, maxLength = 18) {
+export function getThreadName(messages: Message[], maxLength = 18) {
   const title =
-    (thread.messages[0]?.llmMessage as { content: string })?.content ??
-    "Untitled";
+    (messages[0]?.llmMessage as { content: string })?.content ?? "Untitled";
   if (title.length > maxLength) {
     return title.slice(0, maxLength) + "...";
   }
-  return title;
+  return title.charAt(0).toUpperCase() + title.slice(1);
 }
 
 export function getLinkTitle(link: ScrapeLink) {

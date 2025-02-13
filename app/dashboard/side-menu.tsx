@@ -26,6 +26,8 @@ import {
 } from "~/components/ui/menu";
 import type { Thread, User } from "@prisma/client";
 import { getThreadName } from "~/thread-util";
+import { useContext } from "react";
+import { AppContext } from "./context";
 
 const links = [
   { label: "Home", to: "/app", icon: <TbHome /> },
@@ -72,6 +74,8 @@ export function SideMenu({
   contentRef?: React.RefObject<HTMLDivElement | null>;
   threads: Thread[];
 }) {
+  const { threadTitle } = useContext(AppContext);
+  
   return (
     <Stack
       h="100dvh"
@@ -117,7 +121,7 @@ export function SideMenu({
             <SideMenuItem
               key={index}
               link={{
-                label: getThreadName(thread),
+                label: threadTitle[thread.id] ?? getThreadName(thread.messages),
                 to: `/threads/${thread.id}`,
                 icon: <TbMessage />,
               }}

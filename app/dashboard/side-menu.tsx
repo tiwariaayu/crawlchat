@@ -13,6 +13,7 @@ import {
   TbLogout,
   TbMessage,
   TbSettings,
+  TbWand,
   TbWorld,
 } from "react-icons/tb";
 import { Link, NavLink } from "react-router";
@@ -95,8 +96,8 @@ export function SideMenu({
             asChild
           >
             <Group>
-              <TbWorld />
-              <Link to="/app">Website Chat</Link>
+              <TbWand />
+              <Link to="/app">Kaho</Link>
             </Group>
           </Heading>
         </Stack>

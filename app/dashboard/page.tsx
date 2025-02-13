@@ -1,10 +1,14 @@
 import {
   Badge,
+  Center,
+  createListCollection,
   GridItem,
   Group,
   Heading,
   IconButton,
   Input,
+  Select,
+  Separator,
   SimpleGrid,
   Stack,
   Text,
@@ -14,6 +18,8 @@ import { useState } from "react";
 import type { Route } from "./+types/page";
 import {
   TbCheck,
+  TbChevronDown,
+  TbChevronUp,
   TbCircleCheckFilled,
   TbMessage,
   TbTrash,
@@ -25,6 +31,15 @@ import { getAuthUser } from "~/auth/middleware";
 import { prisma } from "~/prisma";
 import moment from "moment";
 import type { Scrape } from "@prisma/client";
+import { Field } from "~/components/ui/field";
+import {
+  SelectContent,
+  SelectItem,
+  SelectLabel,
+  SelectRoot,
+  SelectTrigger,
+  SelectValueText,
+} from "~/components/ui/select";
 
 export async function loader({ request }: Route.LoaderArgs) {
   const user = await getAuthUser(request);
@@ -64,9 +79,12 @@ export async function action({ request }: { request: Request }) {
 
   if (request.method === "POST") {
     const url = formData.get("url");
+    const maxLinks = formData.get("maxLinks");
+    const skipRegex = formData.get("skipRegex");
+
     const response = await fetch("http://localhost:3000/scrape", {
       method: "POST",
-      body: JSON.stringify({ url }),
+      body: JSON.stringify({ url, maxLinks, skipRegex }),
       headers: {
         "Content-Type": "application/json",
       },
@@ -142,6 +160,16 @@ function ScrapeCard({
   );
 }
 
+const maxLinks = createListCollection({
+  items: [
+    { label: "10 links", value: "10" },
+    { label: "50 links", value: "50" },
+    { label: "100 links", value: "100" },
+    { label: "500 links", value: "500" },
+    { label: "1000 links", value: "1000" },
+  ],
+});
+
 export default function LandingPage({
   loaderData,
   actionData,
@@ -157,6 +185,7 @@ export default function LandingPage({
   );
   const scrapeFetcher = useFetcher();
   const deleteFetcher = useFetcher();
+  const [advanced, setAdvanced] = useState(false);
 
   useEffect(() => {
     socket.current = new WebSocket("ws://localhost:3000");
@@ -207,6 +236,45 @@ export default function LandingPage({
                 <TbCheck />
               </Button>
             </Group>
+
+            {advanced && (
+              <>
+                <Separator my={4} />
+
+                <Stack gap={4}>
+                  <Field label="Skip">
+                    <Input
+                      name="skipRegex"
+                      placeholder="Ex: /blog or /docs/v1"
+                    />
+                  </Field>
+                  <SelectRoot name="maxLinks" collection={maxLinks}>
+                    <SelectLabel>Select max links</SelectLabel>
+                    <SelectTrigger>
+                      <SelectValueText placeholder="Select max links" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {maxLinks.items.map((maxLink) => (
+                        <SelectItem item={maxLink} key={maxLink.value}>
+                          {maxLink.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </SelectRoot>
+                </Stack>
+              </>
+            )}
+
+            <Center>
+              <Button
+                variant={"ghost"}
+                size={"xs"}
+                onClick={() => setAdvanced(!advanced)}
+              >
+                {advanced ? "Simple" : "Advanced"}
+                {advanced ? <TbChevronUp /> : <TbChevronDown />}
+              </Button>
+            </Center>
           </Stack>
         </scrapeFetcher.Form>
 

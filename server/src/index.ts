@@ -100,9 +100,23 @@ app.post("/scrape", async function (req: Request, res: Response) {
     });
 
     await scrapeLoop(store, req.body.url, {
-      onPreScrape: async (url, store) => {
+      limit: req.body.maxLinks ? parseInt(req.body.maxLinks) : undefined,
+      skipRegex: req.body.skipRegex
+        ? req.body.skipRegex
+            .split(",")
+            .map((regex: string) => new RegExp(regex))
+        : undefined,
+      onComplete: async () => {
+        broadcast(makeMessage("scrape-complete", { url }));
+      },
+      afterScrape: async (url, markdown) => {
         const scrapedUrlCount = Object.values(store.urls).length;
-        const remainingUrlCount = store.urlSet.size() - scrapedUrlCount;
+        const maxLinks = req.body.maxLinks
+          ? parseInt(req.body.maxLinks)
+          : undefined;
+        const remainingUrlCount = maxLinks
+          ? maxLinks - scrapedUrlCount
+          : store.urlSet.size() - scrapedUrlCount;
         broadcast(
           makeMessage("scrape-pre", {
             url,
@@ -110,17 +124,13 @@ app.post("/scrape", async function (req: Request, res: Response) {
             remainingUrlCount,
           })
         );
-      },
-      onComplete: async () => {
-        broadcast(makeMessage("scrape-complete", { url }));
-      },
-      afterScrape: async (url, markdown) => {
+
         const chunks = await chunkText(markdown);
 
         const batchSize = 20;
         for (let i = 0; i < chunks.length; i += batchSize) {
           const batch = chunks.slice(i, i + batchSize);
-          const embeddings = []
+          const embeddings = [];
           for (const chunk of batch) {
             const embedding = await makeEmbedding(chunk);
             embeddings.push({
@@ -129,13 +139,16 @@ app.post("/scrape", async function (req: Request, res: Response) {
             });
           }
           await saveEmbedding(userId, scrape.id, embeddings);
-        }        
+        }
       },
     });
 
     await prisma.scrape.update({
       where: { id: scrape.id },
-      data: { status: "done", urlCount: store.urlSet.size() },
+      data: {
+        status: "done",
+        urlCount: Object.values(store.urls).filter(Boolean).length,
+      },
     });
 
     broadcast(makeMessage("saved", { url }));

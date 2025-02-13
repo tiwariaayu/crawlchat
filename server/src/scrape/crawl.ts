@@ -127,7 +127,7 @@ export async function scrapeLoop(
       await options.afterScrape(url, markdown);
     }
 
-    if (Object.keys(store.urls).length > limit) {
+    if (Object.keys(store.urls).length >= limit) {
       console.log("Reached limit", limit);
       break;
     }

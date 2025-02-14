@@ -55,7 +55,7 @@ function SideMenuItem({
         >
           <Text>{link.icon}</Text>
           <Text truncate>{link.label}</Text>
-          {isPending && <Spinner size="xs" />}
+          <Text>{isPending && <Spinner size="xs" />}</Text>
         </Group>
       )}
     </NavLink>

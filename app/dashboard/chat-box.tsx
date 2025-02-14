@@ -48,7 +48,7 @@ function AssistantMessage({
       <Prose w="full">
         <Markdown>{content}</Markdown>
 
-        <SimpleGrid columns={3} gap={2}>
+        <SimpleGrid columns={[1, 2, 3]} gap={2}>
           {links.map((link, index) => (
             <GridItem key={index}>
               <LinkCard link={link} />

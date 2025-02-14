@@ -11,6 +11,7 @@ import {
   Stack,
   Text,
   Link as ChakraLink,
+  Flex,
 } from "@chakra-ui/react";
 import { useEffect, useRef } from "react";
 import { useState } from "react";
@@ -171,14 +172,13 @@ export default function LandingPage({
         height={"100%"}
         gap={8}
       >
-        <Stack w={"400px"}>
+        <Stack maxW={"400px"} w={"full"}>
           <scrapeFetcher.Form method="post">
             <Stack>
               <Heading>Chat with any website!</Heading>
-              <Group w="full">
+              <Flex w="full" flexDir={["column", "row", "row", "row"]} gap={2}>
                 <Input
                   placeholder="https://example.com"
-                  flex={1}
                   name="url"
                   disabled={loading}
                 />
@@ -186,7 +186,7 @@ export default function LandingPage({
                   Scrape
                   <TbCheck />
                 </Button>
-              </Group>
+              </Flex>
 
               {advanced && (
                 <>
@@ -258,7 +258,7 @@ export default function LandingPage({
           </Stack>
         </Stack>
 
-        <Stack w={"400px"}>
+        <Stack maxW={"400px"} w={"full"}>
           <SimpleGrid columns={2} gap={4}>
             {loaderData.scrapes.slice(0, cardsToShow).map((scrape) => (
               <GridItem key={scrape.id}>

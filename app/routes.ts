@@ -12,6 +12,8 @@ export default [
     route("verify", "auth/verify.ts"),
   ]),
 
+  index("landing/page.tsx"),
+
   route("/logout", "auth/logout.tsx"),
   layout("dashboard/layout.tsx", [
     route("app", "dashboard/page.tsx"),

@@ -1,0 +1,348 @@
+import {
+  TbArrowRight,
+  TbWorld,
+  TbMessageCircle,
+  TbShield,
+  TbSearch,
+  TbRobot,
+  TbBook,
+  TbFileText,
+  TbGitPullRequest,
+  TbShoppingCart,
+} from "react-icons/tb";
+import { Button } from "~/components/ui/button";
+import "./tailwind.css";
+import { Link } from "@chakra-ui/react";
+
+export function meta() {
+  return [
+    {
+      title: "CrawlChat",
+      description: "Chat with Any Website using AI",
+    },
+  ];
+}
+
+export default function Index() {
+  const scrollToSection = (id: string) => {
+    const element = document.getElementById(id);
+    if (element) {
+      element.scrollIntoView({ behavior: "smooth" });
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
+      {/* Navigation */}
+      <nav className="fixed w-full bg-white/80 backdrop-blur-md z-50 border-b border-gray-100">
+        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
+          <div className="flex items-center space-x-2">
+            <span className="text-xl font-semibold bg-gradient-to-r from-purple-600 to-purple-400 bg-clip-text text-transparent">
+              CrawlChat
+            </span>
+          </div>
+
+          <div className="flex items-center space-x-6">
+            <button
+              onClick={() => scrollToSection("use-cases")}
+              className="text-gray-600 hover:text-gray-900 transition-colors font-medium"
+            >
+              Use Cases
+            </button>
+            <button
+              onClick={() => scrollToSection("pricing")}
+              className="text-gray-600 hover:text-gray-900 transition-colors font-medium"
+            >
+              Pricing
+            </button>
+          </div>
+        </div>
+      </nav>
+
+      {/* Hero Section */}
+      <section className="pt-32 pb-20 px-4">
+        <div className="container mx-auto text-center">
+          <span className="inline-block px-4 py-1.5 bg-purple-100 rounded-full text-sm font-medium text-purple-900 mb-8">
+            Introducing CrawlChat
+          </span>
+          <h1 className="text-4xl md:text-6xl font-bold text-gray-900 mb-6 leading-tight">
+            Chat with Any Website
+            <br />
+            Using AI
+          </h1>
+          <p className="text-xl text-gray-600 mb-10 max-w-2xl mx-auto">
+            Tired of hitting token limits and context windows? CrawlChat lets
+            you have meaningful conversations about any website's content using
+            AI - without any restrictions or limitations.
+          </p>
+          <div className="space-x-4">
+            <Button
+              asChild
+              className="bg-purple-600 text-white hover:bg-purple-700 px-8 py-6 rounded-full text-lg"
+            >
+              <Link href="/login">
+                Try CrawlChat Now
+                <TbArrowRight className="ml-2 h-5 w-5" />
+              </Link>
+            </Button>
+          </div>
+        </div>
+      </section>
+
+      {/* Video Demo Section */}
+      <section className="py-20 px-4 bg-gray-50">
+        <div className="container mx-auto">
+          <div className="relative aspect-video max-w-4xl mx-auto rounded-2xl overflow-hidden bg-gray-900 shadow-xl">
+            <video
+              className="w-full h-full object-cover"
+              poster="https://images.unsplash.com/photo-1629654297299-c8506221ca97?q=80&w=1000"
+              src="https://storage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
+              controls
+            >
+              Your browser does not support the video tag.
+            </video>
+            <div className="absolute inset-0 bg-gradient-to-br from-purple-600/20 to-purple-900/20 pointer-events-none"></div>
+          </div>
+        </div>
+      </section>
+
+      {/* How It Works Section */}
+      <section className="py-20 px-4 bg-white">
+        <div className="container mx-auto">
+          <h2 className="text-3xl md:text-4xl font-bold text-center mb-16">
+            How CrawlChat Works
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+            <div className="p-8 rounded-2xl bg-gray-50 hover:bg-gray-100 transition-all duration-300">
+              <TbWorld className="h-12 w-12 text-purple-600 mb-6" />
+              <h3 className="text-xl font-semibold mb-4">1. Crawl & Process</h3>
+              <p className="text-gray-600">
+                Input your website URL and let CrawlChat crawl the content. We
+                convert pages to markdown, create embeddings, and store them in
+                a vector database.
+              </p>
+            </div>
+
+            <div className="p-8 rounded-2xl bg-gray-50 hover:bg-gray-100 transition-all duration-300">
+              <TbMessageCircle className="h-12 w-12 text-purple-600 mb-6" />
+              <h3 className="text-xl font-semibold mb-4">2. Start Chatting</h3>
+              <p className="text-gray-600">
+                Begin conversations about the website content. Our efficient
+                context management handles large amounts of data seamlessly.
+              </p>
+            </div>
+
+            <div className="p-8 rounded-2xl bg-gray-50 hover:bg-gray-100 transition-all duration-300">
+              <TbSearch className="h-12 w-12 text-purple-600 mb-6" />
+              <h3 className="text-xl font-semibold mb-4">3. API Access</h3>
+              <p className="text-gray-600">
+                Access processed markdowns or search embeddings directly through
+                our API for integration with your applications.
+              </p>
+            </div>
+
+            <div className="p-8 rounded-2xl bg-gray-50 hover:bg-gray-100 transition-all duration-300">
+              <TbRobot className="h-12 w-12 text-purple-600 mb-6" />
+              <h3 className="text-xl font-semibold mb-4">4. Choose Your LLM</h3>
+              <p className="text-gray-600">
+                Select your preferred Language Model for conversations. Full
+                flexibility to use the AI that works best for you.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Use Cases Section */}
+      <section id="use-cases" className="py-20 px-4 bg-gray-50">
+        <div className="container mx-auto">
+          <h2 className="text-3xl md:text-4xl font-bold text-center mb-6">
+            Perfect for Every Use Case
+          </h2>
+          <p className="text-xl text-gray-600 text-center mb-16 max-w-2xl mx-auto">
+            From developers to researchers, CrawlChat adapts to your specific
+            needs with powerful, context-aware conversations.
+          </p>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            <div className="bg-white p-8 rounded-2xl shadow-sm hover:shadow-md transition-shadow">
+              <div className="h-12 w-12 bg-purple-100 rounded-lg flex items-center justify-center mb-6">
+                <TbBook className="h-6 w-6 text-purple-600" />
+              </div>
+              <h3 className="text-xl font-semibold mb-4">
+                Documentation Search
+              </h3>
+              <p className="text-gray-600">
+                Search and understand library/framework documentation
+                effortlessly. Get contextual answers to your implementation
+                questions.
+              </p>
+            </div>
+
+            <div className="bg-white p-8 rounded-2xl shadow-sm hover:shadow-md transition-shadow">
+              <div className="h-12 w-12 bg-purple-100 rounded-lg flex items-center justify-center mb-6">
+                <TbFileText className="h-6 w-6 text-purple-600" />
+              </div>
+              <h3 className="text-xl font-semibold mb-4">Content Research</h3>
+              <p className="text-gray-600">
+                Analyze content across multiple pages and get comprehensive
+                insights for your research needs.
+              </p>
+            </div>
+
+            <div className="bg-white p-8 rounded-2xl shadow-sm hover:shadow-md transition-shadow">
+              <div className="h-12 w-12 bg-purple-100 rounded-lg flex items-center justify-center mb-6">
+                <TbGitPullRequest className="h-6 w-6 text-purple-600" />
+              </div>
+              <h3 className="text-xl font-semibold mb-4">
+                Code Review Assistant
+              </h3>
+              <p className="text-gray-600">
+                Drop in PR links and discuss changes with AI. Get insights and
+                suggestions for your code reviews.
+              </p>
+            </div>
+
+            <div className="bg-white p-8 rounded-2xl shadow-sm hover:shadow-md transition-shadow">
+              <div className="h-12 w-12 bg-purple-100 rounded-lg flex items-center justify-center mb-6">
+                <TbShoppingCart className="h-6 w-6 text-purple-600" />
+              </div>
+              <h3 className="text-xl font-semibold mb-4">
+                E-commerce Assistant
+              </h3>
+              <p className="text-gray-600">
+                Find the perfect products by chatting about e-commerce websites.
+                Get personalized recommendations.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Pricing Section */}
+      <section id="pricing" className="py-20 px-4 bg-white">
+        <div className="container mx-auto">
+          <h2 className="text-3xl md:text-4xl font-bold text-center mb-6">
+            Simple, Transparent Pricing
+          </h2>
+          <p className="text-xl text-gray-600 text-center mb-16 max-w-2xl mx-auto">
+            Choose the plan that works best for your needs. No hidden fees or
+            surprises.
+          </p>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+            {/* Free Plan */}
+            <div className="bg-gray-50 p-8 rounded-2xl border border-gray-100 hover:border-purple-200 transition-colors">
+              <div className="mb-6">
+                <h3 className="text-2xl font-bold mb-2">Free</h3>
+                <p className="text-gray-600">Perfect for getting started</p>
+              </div>
+
+              <div className="mb-6">
+                <span className="text-4xl font-bold">$0</span>
+                <span className="text-gray-600">/month</span>
+              </div>
+
+              <ul className="space-y-4 mb-8">
+                <li className="flex items-center text-gray-600">
+                  <TbShield className="h-5 w-5 text-purple-600 mr-3" />
+                  100 site scrapes per month
+                </li>
+                <li className="flex items-center text-gray-600">
+                  <TbShield className="h-5 w-5 text-purple-600 mr-3" />
+                  500,000 tokens included
+                </li>
+                <li className="flex items-center text-gray-600">
+                  <TbShield className="h-5 w-5 text-purple-600 mr-3" />
+                  Bring your own LLM key
+                </li>
+                <li className="flex items-center text-gray-600 opacity-50">
+                  <TbShield className="h-5 w-5 text-purple-600 mr-3" />
+                  API access not included
+                </li>
+              </ul>
+
+              <Button className="w-full bg-white hover:bg-gray-100 text-gray-900 border border-gray-200">
+                Get Started Free
+                <TbArrowRight className="ml-2 h-5 w-5" />
+              </Button>
+            </div>
+
+            {/* Pro Plan */}
+            <div className="bg-purple-50 p-8 rounded-2xl border-2 border-purple-200 relative">
+              <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
+                <span className="bg-purple-600 text-white px-4 py-1 rounded-full text-sm font-medium">
+                  Most Popular
+                </span>
+              </div>
+
+              <div className="mb-6">
+                <h3 className="text-2xl font-bold mb-2">Pro</h3>
+                <p className="text-gray-600">For power users and teams</p>
+              </div>
+
+              <div className="mb-6">
+                <span className="text-4xl font-bold">$19</span>
+                <span className="text-gray-600">/month</span>
+              </div>
+
+              <ul className="space-y-4 mb-8">
+                <li className="flex items-center text-gray-600">
+                  <TbShield className="h-5 w-5 text-purple-600 mr-3" />
+                  4,000 site scrapes per month
+                </li>
+                <li className="flex items-center text-gray-600">
+                  <TbShield className="h-5 w-5 text-purple-600 mr-3" />
+                  1,000,000 tokens included
+                </li>
+                <li className="flex items-center text-gray-600">
+                  <TbShield className="h-5 w-5 text-purple-600 mr-3" />
+                  Bring your own LLM key
+                </li>
+                <li className="flex items-center text-gray-600">
+                  <TbShield className="h-5 w-5 text-purple-600 mr-3" />
+                  Full API access
+                </li>
+              </ul>
+
+              <Button className="w-full bg-purple-600 hover:bg-purple-700 text-white">
+                Upgrade to Pro
+                <TbArrowRight className="ml-2 h-5 w-5" />
+              </Button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* CTA Section */}
+      <section className="py-20 px-4">
+        <div className="container mx-auto text-center">
+          <div className="max-w-3xl mx-auto">
+            <h2 className="text-3xl md:text-4xl font-bold mb-6">
+              Ready to Chat with Websites?
+            </h2>
+            <p className="text-xl text-gray-600 mb-10">
+              Join users who are already having meaningful conversations with
+              web content using CrawlChat.
+            </p>
+            <Button
+              asChild
+              className="bg-purple-600 text-white hover:bg-purple-700 px-8 py-6 rounded-full text-lg"
+            >
+              <Link href="/login">
+                Start Free Trial
+                <TbArrowRight className="ml-2 h-5 w-5" />
+              </Link>
+            </Button>
+          </div>
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer className="py-12 px-4 border-t border-gray-100">
+        <div className="container mx-auto text-center text-gray-600">
+          <p>&copy; 2024 CrawlChat. All rights reserved.</p>
+        </div>
+      </footer>
+    </div>
+  );
+}

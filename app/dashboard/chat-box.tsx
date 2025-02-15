@@ -22,13 +22,14 @@ import { toaster } from "~/components/ui/toaster";
 
 function LinkCard({ link }: { link: ScrapeLink }) {
   return (
-    <Stack bg="brand.gray.100" p={2} rounded={"md"} h="full">
+    <Stack bg="brand.gray.100" p={3} rounded={"md"} h="full">
       <Link
         href={link.url}
         key={link.url}
         fontSize={"xs"}
         lineClamp={2}
         target="_blank"
+        lineHeight={1.4}
       >
         {getLinkTitle(link)}
       </Link>
@@ -44,18 +45,17 @@ function AssistantMessage({
   links: ScrapeLink[];
 }) {
   return (
-    <Stack>
-      <Prose w="full">
+    <Stack maxW="75%">
+      <Prose size="lg">
         <Markdown>{content}</Markdown>
-
-        <SimpleGrid columns={[1, 2, 3]} gap={2}>
-          {links.map((link, index) => (
-            <GridItem key={index}>
-              <LinkCard link={link} />
-            </GridItem>
-          ))}
-        </SimpleGrid>
       </Prose>
+      <SimpleGrid columns={[1, 2, 3]} gap={2}>
+        {links.map((link, index) => (
+          <GridItem key={index}>
+            <LinkCard link={link} />
+          </GridItem>
+        ))}
+      </SimpleGrid>
     </Stack>
   );
 }

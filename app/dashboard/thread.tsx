@@ -81,7 +81,7 @@ export default function Thread({ loaderData }: Route.ComponentProps) {
         </IconButton>
       }
     >
-      <Stack maxW={"700px"}>
+      <Stack>
         <ChatBox
           token={loaderData.token}
           thread={loaderData.thread}

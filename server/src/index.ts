@@ -23,6 +23,7 @@ import {
 import { joinRoom, broadcast } from "./socket-room";
 import { getRoomIds } from "./socket-room";
 import { authenticate, verifyToken } from "./jwt";
+import fs from "fs/promises";
 
 const app: Express = express();
 const expressWs = ws(app);
@@ -66,8 +67,13 @@ app.get("/", function (req: Request, res: Response) {
 });
 
 app.get("/test", async function (req: Request, res: Response) {
-  const result = await scrape("https://react-icons.github.io/react-icons/icons/tb")
-  console.log(result.markdown);
+  const result = await scrape(
+    "https://docs.shipped.club"
+  );
+  // const result = await scrape("https://github.com/mendableai/firecrawl/tree/main/apps/ui/ingestion-ui/src/components/ui");
+
+  console.log(result.links);
+  await fs.writeFile("test.md", result.markdown);
   res.json({ message: "ok" });
 });
 
@@ -184,7 +190,9 @@ app.delete(
   async function (req: Request, res: Response) {
     const userId = req.user!.id;
     const scrapeId = req.body.scrapeId;
-    await deleteScrape(userId, scrapeId);
+    try {
+      await deleteScrape(userId, scrapeId);
+    } catch (error) {}
     res.json({ message: "ok" });
   }
 );

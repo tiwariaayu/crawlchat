@@ -20,7 +20,7 @@ export async function askLLM(
       {
         role: "system",
         content:
-          "You are a helpful assistant that can answer questions about the context provided. Keep your answers concise and to the point. Don't hallucinate. Keep your answers very short.",
+          "You are a helpful assistant that can answer questions about the context provided.",
       },
       {
         role: "user",

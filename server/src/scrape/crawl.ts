@@ -1,6 +1,5 @@
-import * as cheerio from "cheerio";
-import TurndownService from "turndown";
 import { OrderedSet } from "./ordered-set";
+import { parseHtml } from "./parse";
 
 export type ScrapeStore = {
   urls: Record<
@@ -14,50 +13,33 @@ export type ScrapeStore = {
 
 export async function scrape(url: string) {
   console.log("Scraping", url);
-  const response = await fetch(url);
-  const html = await response.text();
-
-  const $ = cheerio.load(html);
-
-  const links = $("a")
-    .map((_, link) => ({
-      text: $(link).text().trim(),
-      href: $(link).attr("href"),
-    }))
-    .toArray()
-    .filter((link) => link.href);
-
-  $("script").remove();
-  $("style").remove();
-  $("nav").remove();
-  $("footer").remove();
-
-  const metaTags: { key: string; value: string }[] = $("meta")
-    .map((_, meta) => ({
-      key: $(meta).attr("name") ?? $(meta).attr("property") ?? "",
-      value: $(meta).attr("content") ?? "",
-    }))
-    .toArray()
-    .filter((meta) => meta.key && meta.value);
-
-  $("meta").remove();
-
-  const turndownService = new TurndownService();
-  turndownService.addRule("headings", {
-    filter: ["h1", "h2", "h3", "h4", "h5", "h6"],
-    replacement: function (content, node) {
-      const level = Number(node.nodeName.charAt(1));
-      return "\n" + "#".repeat(level) + " " + content + "\n\n";
-    },
-  });
-
-  const markdown = turndownService.turndown($("body").html()!);
-
-  return {
-    markdown,
-    links,
-    metaTags,
+  const headers = {
+    "User-Agent":
+      "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36",
+    Accept:
+      "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8",
+    "Accept-Language": "en-US,en;q=0.9",
+    "Accept-Encoding": "gzip, deflate, br",
+    "Cache-Control": "no-cache",
+    Pragma: "no-cache",
+    "Sec-Ch-Ua":
+      '"Chromium";v="122", "Not(A:Brand";v="24", "Google Chrome";v="122"',
+    "Sec-Ch-Ua-Mobile": "?0",
+    "Sec-Ch-Ua-Platform": '"macOS"',
+    "Sec-Fetch-Dest": "document",
+    "Sec-Fetch-Mode": "navigate",
+    "Sec-Fetch-Site": "none",
+    "Sec-Fetch-User": "?1",
+    "Upgrade-Insecure-Requests": "1",
+    Connection: "keep-alive",
+    DNT: "1",
   };
+
+  const response = await fetch(url, {
+    headers,
+    credentials: "same-origin",
+  });
+  return parseHtml(await response.text());
 }
 
 export async function scrapeWithLinks(
@@ -86,13 +68,14 @@ export async function scrapeWithLinks(
 
     const linkUrl = new URL(link.href, url);
 
-    if (!linkUrl.href.startsWith(baseUrl)) continue;
+    if (!linkUrl.href.startsWith(baseUrl)) {
+      continue;
+    }
 
     let linkUrlStr = linkUrl.toString();
     linkUrlStr = linkUrlStr.split("#")[0];
 
     if (options?.skipRegex?.some((regex) => regex.test(linkUrlStr))) {
-      console.log("Skipping", linkUrlStr);
       continue;
     }
 

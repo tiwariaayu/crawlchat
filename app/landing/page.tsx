@@ -108,14 +108,16 @@ export default function Index() {
       {/* How It Works Section */}
       <section className="py-20 px-4 bg-white">
         <div className="container mx-auto">
-          <h2 className="text-3xl md:text-4xl font-bold text-center mb-16">
+          <h2 className="text-3xl md:text-4xl font-bold text-center mb-16 text-gray-900 dark:text-gray-900">
             How CrawlChat Works
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             <div className="p-8 rounded-2xl bg-gray-50 hover:bg-gray-100 transition-all duration-300">
               <TbWorld className="h-12 w-12 text-purple-600 mb-6" />
-              <h3 className="text-xl font-semibold mb-4">1. Crawl & Process</h3>
-              <p className="text-gray-600">
+              <h3 className="text-xl font-semibold mb-4 text-gray-900 dark:text-gray-900">
+                1. Crawl & Process
+              </h3>
+              <p className="text-gray-600 dark:text-gray-400">
                 Input your website URL and let CrawlChat crawl the content. We
                 convert pages to markdown, create embeddings, and store them in
                 a vector database.
@@ -124,8 +126,10 @@ export default function Index() {
 
             <div className="p-8 rounded-2xl bg-gray-50 hover:bg-gray-100 transition-all duration-300">
               <TbMessageCircle className="h-12 w-12 text-purple-600 mb-6" />
-              <h3 className="text-xl font-semibold mb-4">2. Start Chatting</h3>
-              <p className="text-gray-600">
+              <h3 className="text-xl font-semibold mb-4 text-gray-900 dark:text-gray-900">
+                2. Start Chatting
+              </h3>
+              <p className="text-gray-600 dark:text-gray-400">
                 Begin conversations about the website content. Our efficient
                 context management handles large amounts of data seamlessly.
               </p>
@@ -133,8 +137,10 @@ export default function Index() {
 
             <div className="p-8 rounded-2xl bg-gray-50 hover:bg-gray-100 transition-all duration-300">
               <TbSearch className="h-12 w-12 text-purple-600 mb-6" />
-              <h3 className="text-xl font-semibold mb-4">3. API Access</h3>
-              <p className="text-gray-600">
+              <h3 className="text-xl font-semibold mb-4 text-gray-900 dark:text-gray-900">
+                3. API Access
+              </h3>
+              <p className="text-gray-600 dark:text-gray-400">
                 Access processed markdowns or search embeddings directly through
                 our API for integration with your applications.
               </p>
@@ -142,8 +148,10 @@ export default function Index() {
 
             <div className="p-8 rounded-2xl bg-gray-50 hover:bg-gray-100 transition-all duration-300">
               <TbRobot className="h-12 w-12 text-purple-600 mb-6" />
-              <h3 className="text-xl font-semibold mb-4">4. Choose Your LLM</h3>
-              <p className="text-gray-600">
+              <h3 className="text-xl font-semibold mb-4 text-gray-900 dark:text-gray-900">
+                4. Choose Your LLM
+              </h3>
+              <p className="text-gray-600 dark:text-gray-400">
                 Select your preferred Language Model for conversations. Full
                 flexibility to use the AI that works best for you.
               </p>
@@ -155,7 +163,7 @@ export default function Index() {
       {/* Use Cases Section */}
       <section id="use-cases" className="py-20 px-4 bg-gray-50">
         <div className="container mx-auto">
-          <h2 className="text-3xl md:text-4xl font-bold text-center mb-6">
+          <h2 className="text-3xl md:text-4xl font-bold text-center mb-6 text-gray-900 dark:text-gray-900">
             Perfect for Every Use Case
           </h2>
           <p className="text-xl text-gray-600 text-center mb-16 max-w-2xl mx-auto">
@@ -167,7 +175,7 @@ export default function Index() {
               <div className="h-12 w-12 bg-purple-100 rounded-lg flex items-center justify-center mb-6">
                 <TbBook className="h-6 w-6 text-purple-600" />
               </div>
-              <h3 className="text-xl font-semibold mb-4">
+              <h3 className="text-xl font-semibold mb-4 text-gray-900 dark:text-gray-900">
                 Documentation Search
               </h3>
               <p className="text-gray-600">
@@ -181,8 +189,10 @@ export default function Index() {
               <div className="h-12 w-12 bg-purple-100 rounded-lg flex items-center justify-center mb-6">
                 <TbFileText className="h-6 w-6 text-purple-600" />
               </div>
-              <h3 className="text-xl font-semibold mb-4">Content Research</h3>
-              <p className="text-gray-600">
+              <h3 className="text-xl font-semibold mb-4 text-gray-900 dark:text-gray-900">
+                Content Research
+              </h3>
+              <p className="text-gray-600 dark:text-gray-400">
                 Analyze content across multiple pages and get comprehensive
                 insights for your research needs.
               </p>
@@ -192,7 +202,7 @@ export default function Index() {
               <div className="h-12 w-12 bg-purple-100 rounded-lg flex items-center justify-center mb-6">
                 <TbGitPullRequest className="h-6 w-6 text-purple-600" />
               </div>
-              <h3 className="text-xl font-semibold mb-4">
+              <h3 className="text-xl font-semibold mb-4 text-gray-900 dark:text-gray-900">
                 Code Review Assistant
               </h3>
               <p className="text-gray-600">
@@ -220,7 +230,7 @@ export default function Index() {
       {/* Pricing Section */}
       <section id="pricing" className="py-20 px-4 bg-white">
         <div className="container mx-auto">
-          <h2 className="text-3xl md:text-4xl font-bold text-center mb-6">
+          <h2 className="text-3xl md:text-4xl font-bold text-center mb-6 text-gray-900 dark:text-gray-900">
             Simple, Transparent Pricing
           </h2>
           <p className="text-xl text-gray-600 text-center mb-16 max-w-2xl mx-auto">
@@ -232,13 +242,19 @@ export default function Index() {
             {/* Free Plan */}
             <div className="bg-gray-50 p-8 rounded-2xl border border-gray-100 hover:border-purple-200 transition-colors">
               <div className="mb-6">
-                <h3 className="text-2xl font-bold mb-2">Free</h3>
-                <p className="text-gray-600">Perfect for getting started</p>
+                <h3 className="text-2xl font-bold mb-2 text-gray-900 dark:text-gray-900">
+                  Free
+                </h3>
+                <p className="text-gray-600 dark:text-gray-400">
+                  Perfect for getting started
+                </p>
               </div>
 
               <div className="mb-6">
-                <span className="text-4xl font-bold">$0</span>
-                <span className="text-gray-600">/month</span>
+                <span className="text-4xl font-bold text-gray-900 dark:text-gray-900">
+                  $0
+                </span>
+                <span className="text-gray-600 dark:text-gray-400">/month</span>
               </div>
 
               <ul className="space-y-4 mb-8">
@@ -280,13 +296,19 @@ export default function Index() {
               </div>
 
               <div className="mb-6">
-                <h3 className="text-2xl font-bold mb-2">Pro</h3>
-                <p className="text-gray-600">For power users and teams</p>
+                <h3 className="text-2xl font-bold mb-2 text-gray-900 dark:text-gray-900">
+                  Pro
+                </h3>
+                <p className="text-gray-600 dark:text-gray-400">
+                  For power users and teams
+                </p>
               </div>
 
               <div className="mb-6">
-                <span className="text-4xl font-bold">$19</span>
-                <span className="text-gray-600">/month</span>
+                <span className="text-4xl font-bold text-gray-900 dark:text-gray-900">
+                  $19
+                </span>
+                <span className="text-gray-600 dark:text-gray-400">/month</span>
               </div>
 
               <ul className="space-y-4 mb-8">
@@ -324,7 +346,7 @@ export default function Index() {
       <section className="py-20 px-4">
         <div className="container mx-auto text-center">
           <div className="max-w-3xl mx-auto">
-            <h2 className="text-3xl md:text-4xl font-bold mb-6">
+            <h2 className="text-3xl md:text-4xl font-bold mb-6 text-gray-900 dark:text-gray-900">
               Ready to Chat with Websites?
             </h2>
             <p className="text-xl text-gray-600 mb-10">

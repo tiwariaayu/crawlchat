@@ -69,6 +69,7 @@ export async function scrapeWithLinks(
 
     let linkUrlStr = linkUrl.toString();
     linkUrlStr = linkUrlStr.split("#")[0];
+    linkUrlStr = linkUrlStr.replace(/\/$/, "");
 
     if (options?.skipRegex?.some((regex) => regex.test(linkUrlStr))) {
       continue;

@@ -86,6 +86,11 @@ export function parseHtml(html: string) {
     .toArray()
     .filter((meta) => meta.key && meta.value);
 
+  metaTags.push({
+    key: "tag:title",
+    value: $("title").text().trim(),
+  });
+
   $("meta").remove();
 
   cleanHtml($);
@@ -121,5 +126,9 @@ export function parseHtml(html: string) {
 }
 
 export function getMetaTitle(metaTags: MetaTag[]) {
-  return metaTags.find((metaTag) => metaTag.key === "og:title")?.value;
+  const ogTitle = metaTags.find((metaTag) => metaTag.key === "og:title")?.value;
+  const tagTitle = metaTags.find(
+    (metaTag) => metaTag.key === "tag:title"
+  )?.value;
+  return ogTitle ?? tagTitle;
 }

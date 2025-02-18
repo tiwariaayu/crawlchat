@@ -13,7 +13,6 @@ import { Stream } from "openai/streaming";
 import { addMessage } from "./thread/store";
 import { prisma } from "./prisma";
 import {
-  chunkText,
   deleteScrape,
   makeEmbedding,
   saveEmbedding,
@@ -23,7 +22,6 @@ import { joinRoom, broadcast } from "./socket-room";
 import { getRoomIds } from "./socket-room";
 import { authenticate, verifyToken } from "./jwt";
 import fs from "fs/promises";
-import { Prisma } from "@prisma/client";
 import { getMetaTitle } from "./scrape/parse";
 
 const app: Express = express();
@@ -68,16 +66,11 @@ app.get("/", function (req: Request, res: Response) {
 });
 
 app.get("/test", async function (req: Request, res: Response) {
-  const openai = new OpenAI({
-    apiKey: process.env.OPENAI_API_KEY!,
-  });
-  const embedding = await openai.embeddings.create({
-    model: "text-embedding-3-small",
-    input: "Hello, world!",
-    encoding_format: "float",
-  });
-
-  res.json({ embedding });
+  const content = await scrape(
+    "https://docs.shipped.club/features/authentication"
+  );
+  await fs.writeFile("test.md", content.parseOutput.markdown);
+  res.json({ message: "ok" });
 });
 
 app.post("/scrape", authenticate, async function (req: Request, res: Response) {
@@ -96,7 +89,7 @@ app.post("/scrape", authenticate, async function (req: Request, res: Response) {
 
   (async function () {
     const scrape = await prisma.scrape.create({
-      data: { url, status: "pending", userId, urls: [] },
+      data: { url, status: "pending", userId },
     });
 
     const store: ScrapeStore = {
@@ -133,37 +126,30 @@ app.post("/scrape", authenticate, async function (req: Request, res: Response) {
           : store.urlSet.size() - scrapedUrlCount;
         const roomIds = getRoomIds({ userId });
 
-        const chunks = await chunkText(markdown);
+        const embedding = await makeEmbedding(markdown);
+        await saveEmbedding(userId, scrape.id, [
+          {
+            embedding,
+            metadata: { content: markdown, url },
+          },
+        ]);
 
-        const batchSize = 20;
-        for (let i = 0; i < chunks.length; i += batchSize) {
-          const batch = chunks.slice(i, i + batchSize);
-          const embeddings = [];
-          for (const chunk of batch) {
-            const embedding = await makeEmbedding(chunk);
-            embeddings.push({
-              embedding,
-              metadata: { content: chunk, url },
-            });
-          }
-          await saveEmbedding(userId, scrape.id, embeddings);
+        if (scrape.url === url) {
+          await prisma.scrape.update({
+            where: { id: scrape.id },
+            data: { title: getMetaTitle(store.urls[url]?.metaTags ?? []) },
+          });
         }
 
-        const update: Prisma.ScrapeUpdateInput = {
-          urls: Object.keys(store.urls)
-            .filter(Boolean)
-            .map((url) => ({
-              url,
-              title: getMetaTitle(store.urls[url]?.metaTags ?? []),
-            })),
-        };
-        if (url === scrape.url && store.urls[url]?.metaTags) {
-          update.metaTags = store.urls[url].metaTags;
-        }
-
-        await prisma.scrape.update({
-          where: { id: scrape.id },
-          data: update,
+        await prisma.scrapeItem.create({
+          data: {
+            userId,
+            scrapeId: scrape.id,
+            url,
+            markdown,
+            title: getMetaTitle(store.urls[url]?.metaTags ?? []),
+            metaTags: store.urls[url]?.metaTags,
+          },
         });
 
         roomIds.forEach((roomId) =>
@@ -295,7 +281,7 @@ expressWs.app.ws("/", (ws: any, req) => {
 
         const linksWithTitle = context?.links.map((link) => ({
           ...link,
-          title: scrape.urls.find((url) => url.url === link.url)?.title ?? null,
+          title: "",
         }));
         addMessage(threadId, {
           llmMessage: { role, content },

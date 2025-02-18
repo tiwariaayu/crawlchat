@@ -5,7 +5,7 @@ import { TbMessage } from "react-icons/tb";
 import { Group, Text } from "@chakra-ui/react";
 import { Stack } from "@chakra-ui/react";
 import type { Scrape } from "@prisma/client";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { TbWorld } from "react-icons/tb";
 import { Link } from "react-router";
 import moment from "moment";
@@ -15,10 +15,12 @@ export function ScrapeCard({
   scrape,
   onDelete,
   deleting,
+  itemsCount,
 }: {
   scrape: Scrape;
   onDelete?: () => void;
   deleting?: boolean;
+  itemsCount: number;
 }) {
   const [deleteActive, setDeleteActive] = useState(false);
   const [faviconUrl, setFaviconUrl] = useState<string>();
@@ -93,7 +95,7 @@ export function ScrapeCard({
         <Text opacity={0.5}>{moment(scrape.createdAt).fromNow()}</Text>
         <Badge size={"xs"} variant={"surface"} colorPalette={"brand"}>
           <TbWorld />
-          {scrape.urls.length}
+          {itemsCount}
         </Badge>
       </Group>
     </Stack>

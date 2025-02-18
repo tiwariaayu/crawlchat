@@ -19,9 +19,17 @@ export async function loader({ request }: Route.LoaderArgs) {
       createdAt: "desc",
     },
   });
+  const itemsCount: Record<string, number> = {};
+  for (const scrape of scrapes) {
+    const items = await prisma.scrapeItem.count({
+      where: { scrapeId: scrape.id },
+    });
+    itemsCount[scrape.id] = items;
+  }
   return {
     user,
     scrapes,
+    itemsCount,
   };
 }
 
@@ -63,6 +71,7 @@ export default function ScrapesPage({ loaderData }: Route.ComponentProps) {
                 scrape={scrape}
                 onDelete={() => handleDelete(scrape.id)}
                 deleting={deleteFetcher.state !== "idle"}
+                itemsCount={loaderData.itemsCount[scrape.id]}
               />
             </GridItem>
           ))}

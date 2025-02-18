@@ -70,7 +70,20 @@ function cleanHtml($: cheerio.CheerioAPI) {
   });
 }
 
-export function parseHtml(html: string) {
+export type ParseLink = {
+  text: string;
+  href?: string;
+};
+
+export type ParseOutput = {
+  markdown: string;
+  links: ParseLink[];
+  metaTags: MetaTag[];
+  text: string;
+  error?: string;
+};
+
+export function parseHtml(html: string): ParseOutput {
   const $ = cheerio.load(html);
 
   const links = $("a")

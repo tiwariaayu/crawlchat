@@ -52,10 +52,19 @@ export async function loader({ request }: Route.LoaderArgs) {
       createdAt: "desc",
     },
   });
+  const itemsCount: Record<string, number> = {};
+  for (const scrape of scrapes) {
+    itemsCount[scrape.id] = await prisma.scrapeItem.count({
+      where: {
+        scrapeId: scrape.id,
+      },
+    });
+  }
   return {
     user,
     scrapes,
     token: createToken(user!.id),
+    itemsCount,
   };
 }
 
@@ -269,7 +278,10 @@ export default function LandingPage({
           <SimpleGrid columns={2} gap={4}>
             {loaderData.scrapes.slice(0, cardsToShow).map((scrape) => (
               <GridItem key={scrape.id}>
-                <ScrapeCard scrape={scrape} />
+                <ScrapeCard
+                  scrape={scrape}
+                  itemsCount={loaderData.itemsCount[scrape.id]}
+                />
               </GridItem>
             ))}
           </SimpleGrid>

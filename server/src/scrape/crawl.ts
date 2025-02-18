@@ -1,6 +1,7 @@
 import { MetaTag } from "@prisma/client";
 import { OrderedSet } from "./ordered-set";
-import { parseHtml } from "./parse";
+import { parseHtml, ParseOutput } from "./parse";
+import { scrapePw } from "./playwright";
 
 export type ScrapeStore = {
   urls: Record<
@@ -10,7 +11,12 @@ export type ScrapeStore = {
   urlSet: OrderedSet<string>;
 };
 
-export async function scrape(url: string) {
+type ScrapeResult = {
+  error?: string;
+  parseOutput: ParseOutput;
+};
+
+export async function scrapeFetch(url: string): Promise<ScrapeResult> {
   console.log("Scraping", url);
   const headers = {
     "User-Agent":
@@ -38,7 +44,20 @@ export async function scrape(url: string) {
     headers,
     credentials: "same-origin",
   });
-  return parseHtml(await response.text());
+  const parseOutput = parseHtml(await response.text());
+  return { parseOutput };
+}
+
+export async function scrape(url: string): Promise<ScrapeResult> {
+  let output = await scrapeFetch(url);
+  if (output.parseOutput.text.length <= 100) {
+    try {
+      output.parseOutput = parseHtml(await scrapePw(url));
+    } catch (e: any) {
+      output.error = e.message;
+    }
+  }
+  return output;
 }
 
 export async function scrapeWithLinks(
@@ -53,7 +72,8 @@ export async function scrapeWithLinks(
   if (options?.onPreScrape) {
     options.onPreScrape(url, store);
   }
-  const { links: linkLinks, metaTags, text, markdown } = await scrape(url);
+  const { parseOutput } = await scrape(url);
+  const { links: linkLinks, metaTags, text, markdown } = parseOutput;
   store.urls[url] = {
     metaTags,
     text,

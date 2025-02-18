@@ -20,8 +20,6 @@ export async function action({ request }: Route.ActionArgs) {
   const openaiApiKey = formData.get("openaiApiKey");
   const systemPrompt = formData.get("systemPrompt");
 
-  console.log({ openaiApiKey, systemPrompt });
-
   const update: Partial<UserSettings> = {};
 
   if (openaiApiKey !== null) {

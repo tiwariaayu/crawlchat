@@ -38,7 +38,7 @@ export function Page({
         justify="center"
         position="sticky"
         top={0}
-        bg="white"
+        bg="brand.white"
         zIndex={1}
       >
         <Group justify="space-between">

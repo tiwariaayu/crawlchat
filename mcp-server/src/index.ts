@@ -5,8 +5,7 @@ import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js"
 import { z } from "zod";
 import commandLineArgs from "command-line-args";
 
-// const HOST = "https://shipshit.club";
-const HOST = "http://localhost:3000";
+const HOST = "https://shipshit.club";
 
 const options = commandLineArgs([
   { name: "id", alias: "i", type: String },

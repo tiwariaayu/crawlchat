@@ -4,7 +4,7 @@ import { z } from "zod";
 import { makeEmbedding, search } from "./scrape/pinecone";
 import { IncomingMessage, ServerResponse } from "http";
 import { prisma } from "./prisma";
-
+import { v4 as uuidv4 } from "uuid";
 let transports: Record<string, SSEServerTransport> = {};
 
 async function makeMcpServer(scrapeId: string) {
@@ -50,7 +50,7 @@ async function makeMcpServer(scrapeId: string) {
 }
 
 export const handleSse = async (res: ServerResponse, scrapeId: string) => {
-  const transportId = crypto.randomUUID();
+  const transportId = uuidv4();
   const transport = new SSEServerTransport(`/sse/message/${transportId}`, res);
   transports[transportId] = transport;
   const mcpServer = await makeMcpServer(scrapeId);

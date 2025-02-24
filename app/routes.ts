@@ -28,6 +28,7 @@ export default [
         route(":itemId", "scrapes/scrape-item.tsx"),
       ]),
       route("mcp", "scrapes/scrape-mcp.tsx"),
+      route("embed", "scrapes/scrape-embed.tsx"),
     ]),
   ]),
 

@@ -8,7 +8,6 @@ import {
   IconButton,
   Spinner,
   Stack,
-  Textarea,
 } from "@chakra-ui/react";
 import type { Route } from "./+types/scrape-page";
 import { prisma } from "~/prisma";
@@ -22,13 +21,11 @@ import {
   TbSettings,
   TbTrash,
   TbWorld,
-  TbBrain,
   TbRobotFace,
+  TbCode,
 } from "react-icons/tb";
 import moment from "moment";
-import { SettingsSection } from "~/dashboard/settings";
 import { Outlet, redirect, useFetcher, useNavigate } from "react-router";
-import type { Prisma } from "@prisma/client";
 import { SegmentedControl } from "~/components/ui/segmented-control";
 import { useEffect, useState } from "react";
 import { Button } from "~/components/ui/button";
@@ -261,6 +258,15 @@ export default function ScrapePage({
                   <HStack>
                     <TbRobotFace />
                     MCP
+                  </HStack>
+                ),
+              },
+              {
+                value: "embed",
+                label: (
+                  <HStack>
+                    <TbCode />
+                    Embed
                   </HStack>
                 ),
               },

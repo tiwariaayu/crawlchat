@@ -681,6 +681,7 @@ export function Footer() {
             <ChakraLink href={"/#pricing"}>Pricing</ChakraLink>
             <ChakraLink href={"/#use-cases"}>Use cases</ChakraLink>
             <ChakraLink href={"/llm-txt"}>LLM.txt Generator</ChakraLink>
+            <ChakraLink href={"/embed-demo"}>Demo embed</ChakraLink>
           </Stack>
           <Stack flex={1}>
             <ChakraLink href={"/terms"}>Terms</ChakraLink>

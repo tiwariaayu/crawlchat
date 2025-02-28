@@ -37,5 +37,6 @@ export default [
   ]),
 
   route("w/:id", "widget/scrape.tsx"),
+  route("w/not-found", "widget/not-found.tsx"),
   route("embed.js", "embed-script.ts"),
 ] satisfies RouteConfig;

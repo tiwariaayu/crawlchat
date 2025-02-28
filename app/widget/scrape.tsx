@@ -15,7 +15,7 @@ export async function loader({ params, request }: Route.LoaderArgs) {
   });
 
   if (!scrape) {
-    return redirect("/");
+    return redirect("/w/not-found");
   }
 
   const session = await getSession(request.headers.get("cookie"));

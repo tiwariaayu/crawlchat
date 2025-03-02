@@ -1,110 +1,93 @@
-import { Message } from "@prisma/client";
 import OpenAI from "openai";
-import { z } from "zod";
+import { z, ZodSchema } from "zod";
+import { Stream } from "openai/streaming";
+import { ChatCompletionMessageParam } from "openai/resources";
 import { zodResponseFormat } from "openai/helpers/zod";
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
+import { zodToJsonSchema } from "zod-to-json-schema";
 
-abstract class AgentInterface<T extends z.ZodTypeAny> {
-  abstract makePrompt(messages: Message[]): Promise<string>;
-  abstract getResponseSchema(): Promise<T>;
+export type LlmMessage = ChatCompletionMessageParam;
+export type LlmTool<T extends ZodSchema<any>, CustomMessage> = {
+  description: string;
+  schema: T;
+  execute: (
+    input: z.infer<T>
+  ) => Promise<{ content: string; customMessage?: CustomMessage }>;
+};
+export type LlmRole = "developer" | "system" | "user" | "assistant" | "tool";
+export type FlowMessage<CustomMessage> = {
+  llmMessage: LlmMessage;
+  agentId?: string;
+  custom?: CustomMessage;
+};
 
-  abstract run(messages: Message[]): Promise<z.infer<T>>;
+export type State<CustomState, CustomMessage> = CustomState & {
+  messages: FlowMessage<CustomMessage>[];
+};
+
+export function multiLinePrompt(prompt: string[]) {
+  return prompt.join("\n");
 }
 
-abstract class Agent<T extends z.ZodTypeAny> implements AgentInterface<T> {
-  abstract makePrompt(messages: Message[]): Promise<string>;
-  abstract getResponseSchema(): Promise<T>;
+export function logMessage(message: any) {
+  console.log(JSON.stringify(message, null, 2));
+}
 
-  async run(messages: Message[]): Promise<z.infer<T>> {
-    const completion = await openai.beta.chat.completions.parse({
-      model: "gpt-4o-mini",
-      messages: [
-        ...messages.map((message) => message.llmMessage as any),
-        {
-          role: "system",
-          content: await this.makePrompt(messages),
-        },
-      ],
-      response_format: zodResponseFormat(
-        await this.getResponseSchema(),
-        "json_schema"
-      ),
+export class Agent<CustomState = {}, CustomMessage = {}> {
+  private openai: OpenAI;
+  private model: string;
+  constructor() {
+    this.openai = new OpenAI({
+      apiKey: process.env.OPENAI_API_KEY,
     });
-    return completion.choices[0].message.parsed!;
+    this.model = "gpt-4o-mini";
+  }
+
+  async stream(
+    state: State<CustomState, CustomMessage>
+  ): Promise<Stream<OpenAI.Chat.Completions.ChatCompletionChunk>> {
+    const systemPromptMessage: ChatCompletionMessageParam = {
+      role: "system",
+      content: await this.getSystemPrompt(state),
+    };
+
+    const messages = [
+      ...state.messages.map((m) => m.llmMessage),
+      systemPromptMessage,
+    ];
+
+    const tools = this.getTools()
+      ? Object.entries(this.getTools()!).map(([name, tool]) => ({
+          type: "function" as const,
+          function: {
+            name,
+            description: tool.description,
+            parameters: zodToJsonSchema(tool.schema),
+          },
+        }))
+      : undefined;
+
+    return this.openai.chat.completions.create({
+      messages,
+      model: this.model,
+      stream: true,
+      response_format: this.getResponseSchema()
+        ? zodResponseFormat(this.getResponseSchema()!, "json_object")
+        : undefined,
+      tools,
+    });
+  }
+
+  getTools(): Record<string, LlmTool<any, CustomMessage>> | null {
+    return null;
+  }
+
+  async getSystemPrompt(
+    state: State<CustomState, CustomMessage>
+  ): Promise<string> {
+    return "You are a helpful assistant.";
+  }
+
+  getResponseSchema(): ZodSchema<any> | null {
+    return null;
   }
 }
-
-const QueryPlanSchema = z.object({
-  query: z.string({
-    description:
-      "The query to be run on the vector database to fetch the context. Keep it short with keywords.",
-  }),
-});
-
-export class QueryPlannerAgent extends Agent<typeof QueryPlanSchema> {
-  private query: string;
-
-  constructor(query: string) {
-    super();
-    this.query = query;
-  }
-
-  async getResponseSchema(): Promise<typeof QueryPlanSchema> {
-    return QueryPlanSchema;
-  }
-
-  async makePrompt(messages: Message[]): Promise<string> {
-    return `You are a helpful assistant that refines the query to be run on the vector database. Query to refine: "${this.query}".
-`;
-  }
-}
-
-const QuestionSplitSchema = z.object({
-  questions: z.array(
-    z.object({
-      question: z.string(),
-      hasAnswer: z.boolean({
-        description:
-          "Whether the conversation already has answer for the question",
-      }),
-      isContextualQuestion: z.boolean({
-        description:
-          "Whether the question is contextual to the conversation. Generic conversation questions should be false. Ex: How are you? What is your name? etc. should be false.",
-      }),
-    })
-  ),
-});
-
-export class QuestionSplitterAgent extends Agent<typeof QuestionSplitSchema> {
-  async getResponseSchema(): Promise<typeof QuestionSplitSchema> {
-    return QuestionSplitSchema;
-  }
-
-  async makePrompt(messages: Message[]): Promise<string> {
-    return `You are a helpful assistant that splits a complex query into multiple questions. 
-Each question should be independent and not related to the other questions.
-Fill the hasAnswer field with true if you think the question has already been answered in the conversation.
-Don't hallicunate. Don't ask new questions other than breaking down the query.
-
-Question to be split: ${
-      (messages[messages.length - 1].llmMessage as any)?.content
-    }`;
-  }
-}
-
-const AnswerSchema = z.object({
-  answer: z.string(),
-});
-
-export class AnswerAgent extends Agent<typeof AnswerSchema> {
-  async getResponseSchema(): Promise<typeof AnswerSchema> {
-    return AnswerSchema;
-  }
-
-  async makePrompt(messages: Message[]): Promise<string> {
-    return `You are a helpful assistant that answers the question based on the given above conversation.`;
-  }
-}
-

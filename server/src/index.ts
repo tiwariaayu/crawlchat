@@ -7,9 +7,6 @@ import ws from "express-ws";
 import { scrapeLoop, type ScrapeStore } from "./scrape/crawl";
 import { OrderedSet } from "./scrape/ordered-set";
 import cors from "cors";
-import OpenAI from "openai";
-import { askLLM } from "./llm";
-import { Stream } from "openai/streaming";
 import { addMessage } from "./thread/store";
 import { prisma } from "./prisma";
 import { deleteByIds, deleteScrape, makeRecordId } from "./scrape/pinecone";
@@ -18,19 +15,15 @@ import { getRoomIds } from "./socket-room";
 import { authenticate, verifyToken } from "./jwt";
 import { getMetaTitle } from "./scrape/parse";
 import { splitMarkdown } from "./scrape/markdown-splitter";
-import { QueryPlannerAgent } from "./llm/agentic";
 import { makeLLMTxt } from "./llm-txt";
 import { v4 as uuidv4 } from "uuid";
 import { Message, MessageSourceLink } from "@prisma/client";
-import {
-  RecordMetadata,
-  ScoredPineconeRecord,
-} from "@pinecone-database/pinecone";
-import { QueryResponse } from "@pinecone-database/pinecone";
 import { makeIndexer } from "./indexer/factory";
-import { MarsIndexer } from "./indexer/mars-indexer";
 
 const app: Express = express();
+import { Flow } from "./llm/flow";
+import { RAGAgent, RAGAgentCustomMessage } from "./llm/rag-agent";
+import { ChatCompletionAssistantMessageParam } from "openai/resources/chat/completions";
 const expressWs = ws(app);
 const port = process.env.PORT || 3000;
 
@@ -41,114 +34,12 @@ function makeMessage(type: string, data: any) {
   return JSON.stringify({ type, data });
 }
 
-async function streamLLMResponse(
-  ws: any,
-  response: Stream<OpenAI.Chat.Completions.ChatCompletionChunk>
-) {
-  let content = "";
-  let role: "developer" | "system" | "user" | "assistant" | "tool" = "user";
-  for await (const chunk of response) {
-    if (chunk.choices[0]?.delta?.content) {
-      content += chunk.choices[0].delta.content;
-      ws.send(
-        makeMessage("llm-chunk", { content: chunk.choices[0].delta.content })
-      );
-    }
-    if (chunk.choices[0]?.delta?.role) {
-      role = chunk.choices[0].delta.role;
-    }
-  }
-  return { content, role };
-}
-
-async function betterSearch(
-  query: string,
-  scrapeId: string,
-  messages: Message[],
-  indexerKey: string | null
-): Promise<{
-  result: QueryResponse<RecordMetadata>;
-  matches: ScoredPineconeRecord<RecordMetadata>[];
-}> {
-  const triedQueries: string[] = [query];
-  let bestResult: [number, QueryResponse<RecordMetadata> | null] = [0, null];
-  const bestMatches: ScoredPineconeRecord<RecordMetadata>[] = [];
-
-  const indexer = makeIndexer({ key: indexerKey });
-
-  for (let i = 0; i < 4; i++) {
-    const result = await indexer.search(scrapeId, query, {
-      excludeIds: bestMatches.map((match) => match.id),
-    });
-
-    const maxScore = result.matches.reduce((max, match) => {
-      return Math.max(max, match.score ?? 0);
-    }, 0);
-
-    const avgScore =
-      result.matches.reduce((sum, match) => {
-        return sum + (match.score ?? 0);
-      }, 0) / result.matches.length;
-
-    for (const match of result.matches) {
-      if (match.score && match.score >= indexer.getMinBestScore()) {
-        bestMatches.push(match);
-      }
-    }
-
-    if (maxScore > bestResult[0]) {
-      bestResult = [maxScore, result];
-    }
-
-    console.log("query round", {
-      i,
-      query,
-      maxScore,
-      avgScore,
-      bestMatches: bestMatches.length,
-    });
-
-    if (bestMatches.length >= 3) {
-      break;
-    }
-
-    const triedQueryMessages: Message[] = triedQueries.map((query) => ({
-      llmMessage: {
-        role: "user",
-        content: `Tried query: ${query} but got a low score. Please try again.`,
-      },
-      uuid: uuidv4(),
-      createdAt: new Date(),
-      pinnedAt: null,
-      links: [],
-    }));
-    const queryAgent = new QueryPlannerAgent(query);
-    const queryResult = await queryAgent.run([
-      ...messages,
-      ...triedQueryMessages,
-    ]);
-
-    query = queryResult.query;
-    triedQueries.push(query);
-  }
-
-  if (!bestResult[1]) {
-    throw new Error("bestResult is null. Should never happen.");
-  }
-
-  return { result: bestResult[1], matches: bestMatches };
-}
-
 app.get("/", function (req: Request, res: Response) {
   res.json({ message: "ok" });
 });
 
 app.get("/test", async function (req: Request, res: Response) {
-  const indexer = new MarsIndexer();
-  const result = await indexer.makeSparseEmbedding(
-    "The quick brown fox jumps over the lazy dog."
-  );
-  res.json({ message: result });
+  res.json({ ok: true });
 });
 
 app.post("/scrape", authenticate, async function (req: Request, res: Response) {
@@ -400,34 +291,64 @@ expressWs.app.ws("/", (ws: any, req) => {
         addMessage(threadId, newQueryMessage);
         ws.send(makeMessage("query-message", newQueryMessage));
 
-        const result = await betterSearch(
-          message.data.query,
-          scrape.id,
-          thread.messages,
-          scrape.indexer
+        const indexer = makeIndexer({ key: scrape.indexer });
+        const flow = new Flow<{}, RAGAgentCustomMessage>(
+          {
+            "rag-agent": new RAGAgent(indexer, scrape.id),
+          },
+          {
+            messages: [
+              ...thread.messages.map((message) => ({
+                llmMessage: message.llmMessage as any,
+              })),
+              {
+                llmMessage: {
+                  role: "user",
+                  content: message.data.query,
+                },
+              },
+            ],
+          }
         );
-        const matches = result.matches.map((match) => ({
-          content: match.metadata!.content as string,
-          url: match.metadata!.url as string,
-          score: match.score,
-        }));
-        const contextContent = matches
-          .map((match) => match.content)
-          .join("\n\n");
+        flow.addNextAgents(["rag-agent"]);
 
-        let content = "No context found";
-        let role = "assistant";
-        if (contextContent.length > 0) {
-          const response = await askLLM(message.data.query, thread.messages, {
-            url: scrape.url,
-            context: contextContent,
-            systemPrompt: scrape.chatPrompt ?? undefined,
-          });
-
-          const streamResponse = await streamLLMResponse(ws, response);
-          content = streamResponse.content;
-          role = streamResponse.role;
+        while (
+          await flow.stream({
+            onDelta: ({ delta }) => {
+              if (delta !== undefined && delta !== null) {
+                ws.send(makeMessage("llm-chunk", { content: delta }));
+              }
+            },
+          })
+        ) {
+          const message = flow.getLastMessage();
+          if (flow.isToolCall(message)) {
+            ws.send(
+              makeMessage("stage", {
+                stage: "tool-call",
+                queries: (
+                  message.llmMessage as ChatCompletionAssistantMessageParam
+                ).tool_calls?.map(
+                  (toolCall) => JSON.parse(toolCall.function.arguments).query
+                ),
+              })
+            );
+          }
         }
+
+        const content =
+          (flow.getLastMessage().llmMessage.content as string) ?? "";
+
+        const matches = flow.flowState.state.messages
+          .map((m) => m.custom?.result)
+          .filter((r) => r !== undefined)
+          .map((result) => result.matches)
+          .flat()
+          .map((match) => ({
+            content: match.metadata!.content as string,
+            url: match.metadata!.url as string,
+            score: match.score,
+          }));
 
         const links: MessageSourceLink[] = [];
         for (const match of matches) {
@@ -445,7 +366,7 @@ expressWs.app.ws("/", (ws: any, req) => {
 
         const newAnswerMessage: Message = {
           uuid: uuidv4(),
-          llmMessage: { role, content },
+          llmMessage: { role: "assistant", content },
           links,
           createdAt: new Date(),
           pinnedAt: null,

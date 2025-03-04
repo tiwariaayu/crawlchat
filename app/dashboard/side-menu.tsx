@@ -2,17 +2,16 @@ import {
   Group,
   Heading,
   IconButton,
-  Separator,
   Spinner,
   Stack,
   Text,
 } from "@chakra-ui/react";
 import {
   TbChevronRight,
+  TbFileX,
   TbFolder,
   TbHome,
   TbLogout,
-  TbMessage,
   TbScan,
 } from "react-icons/tb";
 import { Link, NavLink } from "react-router";
@@ -23,8 +22,7 @@ import {
   MenuRoot,
   MenuTrigger,
 } from "~/components/ui/menu";
-import type { Thread, User } from "@prisma/client";
-import { getThreadName } from "~/thread-util";
+import type { User } from "@prisma/client";
 import { useContext } from "react";
 import { AppContext } from "./context";
 import { LogoText } from "~/landing/page";
@@ -33,6 +31,7 @@ const links = [
   { label: "Home", to: "/app", icon: <TbHome /> },
   { label: "Scrape", to: "/scrape", icon: <TbScan /> },
   { label: "Collections", to: "/collections", icon: <TbFolder /> },
+  { label: "Data gaps", to: "/data-gaps", icon: <TbFileX /> },
   // { label: "Settings", to: "/settings", icon: <TbSettings /> },
 ];
 

@@ -113,7 +113,7 @@ function numberToKMB(num: number) {
   return `${(num / 1000000).toFixed(1)}M`;
 }
 
-function StatCard({
+export function StatCard({
   label,
   value,
   icon,

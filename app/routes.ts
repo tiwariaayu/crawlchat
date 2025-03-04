@@ -34,6 +34,8 @@ export default [
       route("mcp", "scrapes/scrape-mcp.tsx"),
       route("embed", "scrapes/scrape-embed.tsx"),
     ]),
+
+    route("data-gaps", "analyse/data-gaps.tsx"),
   ]),
 
   route("w/:id", "widget/scrape.tsx"),

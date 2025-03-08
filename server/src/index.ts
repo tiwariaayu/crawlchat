@@ -17,13 +17,14 @@ import { getMetaTitle } from "./scrape/parse";
 import { splitMarkdown } from "./scrape/markdown-splitter";
 import { makeLLMTxt } from "./llm-txt";
 import { v4 as uuidv4 } from "uuid";
-import { Message, MessageSourceLink } from "@prisma/client";
+import { Message, MessageSourceLink } from "libs/prisma";
 import { makeIndexer } from "./indexer/factory";
 
 const app: Express = express();
 import { Flow } from "./llm/flow";
 import { RAGAgent, RAGAgentCustomMessage } from "./llm/rag-agent";
 import { ChatCompletionAssistantMessageParam } from "openai/resources/chat/completions";
+import { name } from "libs";
 const expressWs = ws(app);
 const port = process.env.PORT || 3000;
 
@@ -39,7 +40,7 @@ app.get("/", function (req: Request, res: Response) {
 });
 
 app.get("/test", async function (req: Request, res: Response) {
-  res.json({ ok: true });
+  res.json({ ok: true, name: name() });
 });
 
 app.post("/scrape", authenticate, async function (req: Request, res: Response) {

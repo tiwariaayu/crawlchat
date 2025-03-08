@@ -1,0 +1,40 @@
+{
+  "name": "libs",
+  "version": "1.0.0",
+  "description": "",
+  "type": "commonjs",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "default": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./prisma": {
+      "default": "./dist/prisma.js",
+      "types": "./dist/prisma.d.ts"
+    }
+  },
+  "typesVersions": {
+    "*": {
+      "prisma": [
+        "./dist/prisma.d.ts"
+      ]
+    }
+  },
+  "scripts": {
+    "preinstall": "npm run build",
+    "build": "npx prisma generate && npx tsc"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/node": "^22.13.9",
+    "prisma": "^6.4.1",
+    "typescript": "^5.8.2"
+  },
+  "dependencies": {
+    "@faker-js/faker": "^9.6.0",
+    "@prisma/client": "^6.4.1"
+  }
+}

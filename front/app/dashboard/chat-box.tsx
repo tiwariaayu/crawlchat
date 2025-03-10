@@ -17,7 +17,9 @@ import type { Message, MessageSourceLink, Scrape, Thread } from "libs/prisma";
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
   TbArrowUp,
+  TbChevronDown,
   TbChevronRight,
+  TbChevronUp,
   TbEraser,
   TbMessage,
   TbPin,
@@ -30,6 +32,7 @@ import { Tooltip } from "~/components/ui/tooltip";
 import {
   MenuContent,
   MenuItem,
+  MenuItemGroup,
   MenuRoot,
   MenuTrigger,
 } from "~/components/ui/menu";
@@ -256,7 +259,8 @@ function AssistantMessage({
                 size={"xs"}
                 onClick={() => setMore(!more)}
               >
-                {more ? "Show less" : "+" + moreLinks.length + " more"}
+                {more ? <TbChevronUp /> : <TbChevronDown />}
+                {more ? "Show less" : moreLinks.length + " more"}
               </Button>
             </Flex>
           )}
@@ -374,13 +378,15 @@ function Toolbar({
               </IconButton>
             </MenuTrigger>
             <MenuContent>
-              {messages
-                .filter((m) => m.pinnedAt)
-                .map((message) => (
-                  <MenuItem value={message.uuid}>
-                    {(message.llmMessage as any)?.content}
-                  </MenuItem>
-                ))}
+              <MenuItemGroup title="Pinned messages">
+                {messages
+                  .filter((m) => m.pinnedAt)
+                  .map((message) => (
+                    <MenuItem value={message.uuid}>
+                      {(message.llmMessage as any)?.content}
+                    </MenuItem>
+                  ))}
+              </MenuItemGroup>
             </MenuContent>
           </MenuRoot>
         )}

@@ -532,6 +532,7 @@ function PriceBox({
   popular,
   href,
   disabled,
+  newTab = false,
 }: {
   price: number;
   title: string;
@@ -540,6 +541,7 @@ function PriceBox({
   href: string;
   popular?: boolean;
   disabled?: boolean;
+  newTab?: boolean;
 }) {
   return (
     <Stack
@@ -612,7 +614,7 @@ function PriceBox({
         asChild
         disabled={disabled}
       >
-        <a href={href}>
+        <a href={href} target={newTab ? "_blank" : "_self"}>
           {price === 0 ? "Get started" : "Purchase"}
           <TbArrowRight />
         </a>
@@ -654,6 +656,7 @@ export function Pricing() {
               ]}
               popular
               href="https://beestack.lemonsqueezy.com/buy/a13beb2a-f886-4a9a-a337-bd82e745396a"
+              newTab
             />
             <PriceBox
               price={79}
@@ -667,6 +670,7 @@ export function Pricing() {
                 { label: "Discord bot", new: true },
               ]}
               href="https://beestack.lemonsqueezy.com/buy/3a487266-72de-492d-8884-335c576f89c0"
+              newTab
             />
           </Stack>
         </Stack>

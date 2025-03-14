@@ -3,7 +3,7 @@ import { Group, Text } from "@chakra-ui/react";
 import { Stack } from "@chakra-ui/react";
 import type { Scrape } from "libs/prisma";
 import { useEffect, useState } from "react";
-import { TbWorld } from "react-icons/tb";
+import { TbBrandDiscord, TbWorld } from "react-icons/tb";
 import { Link } from "react-router";
 import moment from "moment";
 import { getScrapeTitle } from "./util";
@@ -20,6 +20,8 @@ export function ScrapeCard({
 
   useEffect(() => {
     const fetchFaviconUrl = async () => {
+      if (!scrape.url) return;
+
       try {
         const url = new URL(scrape.url);
         const faviconUrl = url.origin + "/favicon.ico";
@@ -67,6 +69,11 @@ export function ScrapeCard({
           <TbWorld />
           {itemsCount}
         </Badge>
+        {scrape.discordServerId && (
+          <Badge size={"xs"} variant={"solid"}>
+            <TbBrandDiscord />
+          </Badge>
+        )}
       </Group>
     </Stack>
   );

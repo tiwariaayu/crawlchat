@@ -20,10 +20,12 @@ import type { PropsWithChildren } from "react";
 import {
   TbArrowRight,
   TbBrandDiscord,
+  TbBrandX,
   TbCheck,
   TbCircleCheck,
   TbCode,
   TbCrown,
+  TbMail,
   TbMarkdown,
   TbMessage,
   TbRobotFace,
@@ -734,6 +736,14 @@ export function Footer() {
           <Stack flex={1}>
             <ChakraLink href={"/terms"}>Terms</ChakraLink>
             <ChakraLink href={"/policy"}>Privacy policy</ChakraLink>
+            <Group gap={4} fontSize={"xl"}>
+              <ChakraLink href={"mailto:pramodkumar.damam73@gmail.com"}>
+                <TbMail />
+              </ChakraLink>
+              <ChakraLink href={"https://x.com/pramodk73"} target="_blank">
+                <TbBrandX />
+              </ChakraLink>
+            </Group>
           </Stack>
         </Group>
       </Container>

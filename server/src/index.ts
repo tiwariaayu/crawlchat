@@ -7,7 +7,6 @@ import ws from "express-ws";
 import { scrapeLoop, type ScrapeStore } from "./scrape/crawl";
 import { OrderedSet } from "./scrape/ordered-set";
 import cors from "cors";
-import { addMessage } from "./thread/store";
 import { prisma } from "./prisma";
 import { deleteByIds, deleteScrape, makeRecordId } from "./scrape/pinecone";
 import { joinRoom, broadcast } from "./socket-room";
@@ -291,6 +290,9 @@ expressWs.app.ws("/", (ws: any, req) => {
         const threadId = message.data.threadId;
         const thread = await prisma.thread.findFirstOrThrow({
           where: { id: threadId },
+          include: {
+            messages: true,
+          },
         });
 
         const scrape = await prisma.scrape.findFirstOrThrow({
@@ -307,14 +309,13 @@ expressWs.app.ws("/", (ws: any, req) => {
           return;
         }
 
-        const newQueryMessage: Message = {
-          uuid: uuidv4(),
-          llmMessage: { role: "user", content: message.data.query },
-          links: [],
-          createdAt: new Date(),
-          pinnedAt: null,
-        };
-        addMessage(threadId, newQueryMessage);
+        const newQueryMessage = await prisma.message.create({
+          data: {
+            threadId,
+            llmMessage: { role: "user", content: message.data.query },
+          },
+        });
+
         ws.send(makeMessage("query-message", newQueryMessage));
 
         const indexer = makeIndexer({ key: scrape.indexer });
@@ -387,15 +388,14 @@ expressWs.app.ws("/", (ws: any, req) => {
           }
         }
 
-        const newAnswerMessage: Message = {
-          uuid: uuidv4(),
-          llmMessage: { role: "assistant", content },
-          links,
-          createdAt: new Date(),
-          pinnedAt: null,
-        };
         await consumeCredits(scrape.userId, "messages", 1);
-        addMessage(threadId, newAnswerMessage);
+        const newAnswerMessage = await prisma.message.create({
+          data: {
+            threadId,
+            llmMessage: { role: "assistant", content },
+            links,
+          },
+        });
         ws.send(
           makeMessage("llm-chunk", {
             end: true,
@@ -446,16 +446,17 @@ app.get("/mcp/:scrapeId", async (req, res) => {
   const processed = await indexer.process(query, result);
 
   await consumeCredits(scrape.userId, "messages", 1);
-  await addMessage(thread.id, {
-    uuid: uuidv4(),
-    llmMessage: { role: "user", content: query },
-    links: processed.map((p) => ({
-      url: p.url,
-      title: null,
-      score: p.score,
-    })),
-    createdAt: new Date(),
-    pinnedAt: null,
+
+  await prisma.message.create({
+    data: {
+      threadId: thread.id,
+      llmMessage: { role: "user", content: query },
+      links: processed.map((p) => ({
+        url: p.url,
+        title: null,
+        score: p.score,
+      })),
+    },
   });
 
   res.json(processed);
@@ -538,12 +539,11 @@ app.post("/answer/:scrapeId", async (req, res) => {
 
   const indexer = makeIndexer({ key: scrape.indexer });
 
-  await addMessage(thread.id, {
-    uuid: uuidv4(),
-    llmMessage: { role: "user", content: query },
-    links: [],
-    createdAt: new Date(),
-    pinnedAt: null,
+  await prisma.message.create({
+    data: {
+      threadId: thread.id,
+      llmMessage: { role: "user", content: query },
+    },
   });
 
   const flow = new Flow<{}, RAGAgentCustomMessage>(
@@ -595,23 +595,22 @@ app.post("/answer/:scrapeId", async (req, res) => {
     }
   }
 
-  await addMessage(thread.id, {
-    uuid: uuidv4(),
-    llmMessage: { role: "user", content: query },
-    links,
-    createdAt: new Date(),
-    pinnedAt: null,
+  await prisma.message.create({
+    data: {
+      threadId: thread.id,
+      llmMessage: { role: "user", content: query },
+      links,
+    },
   });
 
-  const newAnswerMessage: Message = {
-    uuid: uuidv4(),
-    llmMessage: { role: "assistant", content },
-    links,
-    createdAt: new Date(),
-    pinnedAt: null,
-  };
   await consumeCredits(scrape.userId, "messages", 1);
-  addMessage(thread.id, newAnswerMessage);
+  const newAnswerMessage = await prisma.message.create({
+    data: {
+      threadId: thread.id,
+      llmMessage: { role: "assistant", content },
+      links,
+    },
+  });
 
   res.json({ message: newAnswerMessage });
 });

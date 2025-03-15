@@ -38,9 +38,9 @@ export async function loader({ request }: Route.LoaderArgs) {
       scrapeId: {
         in: scrapes.map((s) => s.id),
       },
-      createdAt: {
-        gte: ONE_WEEK_AGO,
-      },
+    },
+    include: {
+      messages: true,
     },
   });
 
@@ -75,7 +75,7 @@ export async function loader({ request }: Route.LoaderArgs) {
           minScore,
           uniqueLinks: links
             .filter((l) => l.score !== null)
-            .map((l) => l.url)
+            .map((l) => l.url as string)
             .filter((u, i, a) => i === a.findIndex((u2) => u2 === u)),
         });
       }

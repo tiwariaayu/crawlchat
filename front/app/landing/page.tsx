@@ -205,18 +205,6 @@ function TryItOut() {
         </Box>
         <Box flex={1}>
           <Button
-            w={"full"}
-            variant={"subtle"}
-            disabled={stage !== "saved"}
-            size={"2xl"}
-            onClick={downloadLlmTxt}
-          >
-            <TbMarkdown />
-            LLM.txt
-          </Button>
-        </Box>
-        <Box flex={1}>
-          <Button
             w="full"
             variant={"subtle"}
             disabled={stage !== "saved"}

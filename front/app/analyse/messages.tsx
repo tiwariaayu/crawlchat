@@ -87,12 +87,17 @@ function makeMessagePairs(messages: MessagePairWithThread[]) {
     if ((message.llmMessage as any).role === "user") {
       continue;
     }
-    const maxScore = Math.max(
-      ...links.filter((l) => l.score !== null).map((l) => l.score!)
-    );
-    const minScore = Math.min(
-      ...links.filter((l) => l.score !== null).map((l) => l.score!)
-    );
+    let minScore = 0;
+    let maxScore = 0;
+
+    if (links.length > 0) {
+      maxScore = Math.max(
+        ...links.filter((l) => l.score !== null).map((l) => l.score!)
+      );
+      minScore = Math.min(
+        ...links.filter((l) => l.score !== null).map((l) => l.score!)
+      );
+    }
 
     messagePairs.push({
       scrapeId: message.thread.scrapeId,
@@ -170,13 +175,9 @@ export default function Messages({ loaderData }: Route.ComponentProps) {
 
     if (filter && score !== undefined) {
       if (filter === "gt") {
-        pairs = pairs
-          .filter((p) => p.uniqueLinks.length > 0)
-          .filter((p) => p.minScore > score);
+        pairs = pairs.filter((p) => p.minScore > score);
       } else {
-        pairs = pairs
-          .filter((p) => p.uniqueLinks.length > 0)
-          .filter((p) => p.maxScore < score);
+        pairs = pairs.filter((p) => p.maxScore < score);
       }
     }
 
@@ -318,15 +319,13 @@ export default function Messages({ loaderData }: Route.ComponentProps) {
                           </Text>
                         </Group>
                         <Group>
-                          {pair.uniqueLinks.length > 0 && (
-                            <Badge
-                              colorPalette={getScoreColor(pair.maxScore)}
-                              variant={"surface"}
-                            >
-                              {pair.minScore.toFixed(2)} -{" "}
-                              {pair.maxScore.toFixed(2)}
-                            </Badge>
-                          )}
+                          <Badge
+                            colorPalette={getScoreColor(pair.maxScore)}
+                            variant={"surface"}
+                          >
+                            {pair.minScore.toFixed(2)} -{" "}
+                            {pair.maxScore.toFixed(2)}
+                          </Badge>
                         </Group>
                       </Group>
                     </AccordionItemTrigger>

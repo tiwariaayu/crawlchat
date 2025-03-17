@@ -65,7 +65,7 @@ export class RAGAgent extends Agent<RAGState, RAGAgentCustomMessage> {
             content:
               processed.length > 0
                 ? processed.map((r) => r.content).join("\n\n")
-                : "No relevant information found and don't answer the query.",
+                : "No relevant information found. Don't answer the query. Inform that you don't know the answer.",
             customMessage: {
               result: processed,
             },
@@ -85,7 +85,6 @@ export class Answerer extends Agent<{}, RAGAgentCustomMessage> {
   }
 
   async getSystemPrompt() {
-    console.log("Answering", this.query);
     return multiLinePrompt([
       `Given above context, answer the query "${this.query}".`,
     ]);

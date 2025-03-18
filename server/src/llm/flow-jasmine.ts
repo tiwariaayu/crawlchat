@@ -17,17 +17,10 @@ type RAGAgentCustomMessage = {
   }[];
 };
 
-export function makeFlow(
-  scrapeId: string,
-  systemPrompt: string,
-  query: string,
-  messages: FlowMessage<RAGAgentCustomMessage>[]
-) {
-  const indexerKey = "mars";
-
+export function makeRagTool(scrapeId: string, indexerKey: string) {
   const indexer = makeIndexer({ key: indexerKey });
 
-  const ragTool = new SimpleTool({
+  return new SimpleTool({
     id: "search_data",
     description: multiLinePrompt([
       "Search the vector database for the most relevant documents.",
@@ -57,6 +50,15 @@ export function makeFlow(
       };
     },
   });
+}
+
+export function makeFlow(
+  scrapeId: string,
+  systemPrompt: string,
+  query: string,
+  messages: FlowMessage<RAGAgentCustomMessage>[]
+) {
+  const ragTool = makeRagTool(scrapeId, "mars");
 
   const ragAgent = new SimpleAgent<RAGAgentCustomMessage>({
     id: "rag-agent",
@@ -85,15 +87,23 @@ export function makeFlow(
     ]),
   });
 
-  return new Flow([ragAgent, answerAgent], {
-    messages: [
-      ...messages,
-      {
-        llmMessage: {
-          role: "user",
-          content: query,
+  const flow = new Flow(
+    [ragAgent, answerAgent],
+    {
+      messages: [
+        ...messages,
+        {
+          llmMessage: {
+            role: "user",
+            content: query,
+          },
         },
-      },
-    ],
-  });
+      ],
+    },
+    { repeatToolAgent: false }
+  );
+
+  flow.addNextAgents(["rag-agent", "answerer"]);
+
+  return flow;
 }

@@ -326,7 +326,6 @@ expressWs.app.ws("/", (ws: any, req) => {
             llmMessage: message.llmMessage as any,
           }))
         );
-        flow.addNextAgents(["rag-agent", "answerer"]);
 
         while (
           await flow.stream({
@@ -547,8 +546,6 @@ app.post("/answer/:scrapeId", async (req, res) => {
       },
     }))
   );
-
-  flow.addNextAgents(["rag-agent", "answerer"]);
 
   while (await flow.stream()) {}
 

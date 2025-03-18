@@ -59,16 +59,14 @@ export class Agent<CustomState = {}, CustomMessage = {}> {
       systemPromptMessage,
     ];
 
-    const tools = this.getTools()
-      ? Object.entries(this.getTools()!).map(([name, tool]) => ({
-          type: "function" as const,
-          function: {
-            name,
-            description: tool.description,
-            parameters: zodToJsonSchema(tool.schema),
-          },
-        }))
-      : undefined;
+    const tools = this.getTools()?.map((tool) => ({
+      type: "function" as const,
+      function: {
+        name: tool.id,
+        description: tool.description,
+        parameters: zodToJsonSchema(tool.schema),
+      },
+    }));
 
     return this.openai.chat.completions.create({
       messages,

@@ -16,16 +16,19 @@ type FlowState<CustomState, CustomMessage> = {
 export class Flow<CustomState, CustomMessage> {
   private agents: Agent<CustomState, CustomMessage>[];
   public flowState: FlowState<CustomState, CustomMessage>;
+  private repeatToolAgent: boolean;
 
   constructor(
     agents: Agent<CustomState, CustomMessage>[],
-    state: State<CustomState, CustomMessage>
+    state: State<CustomState, CustomMessage>,
+    options?: { repeatToolAgent?: boolean }
   ) {
     this.agents = agents;
     this.flowState = {
       state,
       nextAgentIds: [],
     };
+    this.repeatToolAgent = options?.repeatToolAgent ?? true;
   }
 
   getAgent(id: string) {
@@ -38,14 +41,14 @@ export class Flow<CustomState, CustomMessage> {
     ];
   }
 
-  async runTool(id: string, toolName: string, args: Record<string, any>) {
+  async runTool(id: string, toolId: string, args: Record<string, any>) {
     for (const [agentId, agent] of Object.entries(this.agents)) {
       const tools = agent.getTools();
       if (!tools) {
         continue;
       }
       for (const tool of tools) {
-        if (tool.id === toolName) {
+        if (tool.id === toolId) {
           const { content, customMessage } = await tool.execute(args);
           const message: FlowMessage<CustomMessage> = {
             llmMessage: {
@@ -61,7 +64,7 @@ export class Flow<CustomState, CustomMessage> {
         }
       }
     }
-    throw new Error(`Tool ${toolName} not found`);
+    throw new Error(`Tool ${toolId} not found`);
   }
 
   isToolPending() {
@@ -124,7 +127,14 @@ export class Flow<CustomState, CustomMessage> {
     ];
 
     if (this.isToolCall(this.getLastMessage())) {
-      this.flowState.nextAgentIds = [agentId, ...this.flowState.nextAgentIds];
+      const newNextAgentIds = [agentId];
+      if (this.repeatToolAgent) {
+        newNextAgentIds.push(agentId);
+      }
+      this.flowState.nextAgentIds = [
+        ...newNextAgentIds,
+        ...this.flowState.nextAgentIds,
+      ];
     }
 
     return { messages: newMessages };

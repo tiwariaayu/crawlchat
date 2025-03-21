@@ -75,12 +75,33 @@ function BandColumn({
   );
 }
 
-export default function Email() {
+export default function Email(props: {
+  messages: number;
+  MCPHits: number;
+  performance: {
+    0.2: number;
+    0.4: number;
+    0.6: number;
+    0.8: number;
+    1.0: number;
+  };
+}) {
+  const messages = props.messages ?? "1.2k";
+  const MCPHits = props.MCPHits ?? 532;
+  const performance = props.performance ?? {
+    0.2: 200,
+    0.4: 200,
+    0.6: 200,
+    0.8: 200,
+    1.0: 200,
+  };
   return (
     <Html lang="en">
       <Head>
-        <title>Your Email Title</title>
-        <Preview>Your preview text that shows in the inbox</Preview>
+        <title>CrawlChat Weekly</title>
+        <Preview>
+          Your weekly update on your conversations and performance!
+        </Preview>
       </Head>
       <Body
         style={{
@@ -158,10 +179,10 @@ export default function Email() {
             </Row>
             <Row>
               <Column style={{ paddingRight: "10px" }}>
-                <MetricCard title="Messages" value={"1.2k"} />
+                <MetricCard title="Messages" value={messages} />
               </Column>
               <Column>
-                <MetricCard title="MCP Hits" value={532} />
+                <MetricCard title="MCP Hits" value={MCPHits} />
               </Column>
             </Row>
 
@@ -172,11 +193,11 @@ export default function Email() {
               </Column>
             </Row>
             <Row>
-              <BandColumn tag="0.2" value={200} color="#f2eaf9" />
-              <BandColumn tag="0.4" value={200} color="#e5d5f2" />
-              <BandColumn tag="0.6" value={200} color="#d7c0ec" />
-              <BandColumn tag="0.8" value={200} color="#caabe5" />
-              <BandColumn tag="1.0" value={200} color="#bd96df" />
+              <BandColumn tag="0.2" value={performance[0.2]} color="#f2eaf9" />
+              <BandColumn tag="0.4" value={performance[0.4]} color="#e5d5f2" />
+              <BandColumn tag="0.6" value={performance[0.6]} color="#d7c0ec" />
+              <BandColumn tag="0.8" value={performance[0.8]} color="#caabe5" />
+              <BandColumn tag="1.0" value={performance[1.0]} color="#bd96df" />
             </Row>
           </Section>
 
@@ -190,7 +211,7 @@ export default function Email() {
                     background: emailConfig.colors.primary,
                     borderRadius: "6px",
                   }}
-                  href="#"
+                  href={`${emailConfig.baseUrl}/app`}
                 >
                   Go to app →
                 </Button>
@@ -215,7 +236,7 @@ export default function Email() {
                   opacity: 0.4,
                   color: "#000000",
                 }}
-                href="#"
+                href={`${emailConfig.baseUrl}/settings/email`}
               >
                 Update email preferences
               </Link>

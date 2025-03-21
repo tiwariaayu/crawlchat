@@ -1,0 +1,228 @@
+import {
+  Html,
+  Head,
+  Preview,
+  Body,
+  Container,
+  Section,
+  Text,
+  Button,
+  Img,
+  Row,
+  Column,
+  Heading,
+  Link,
+} from "@react-email/components";
+import * as React from "react";
+import { emailConfig } from "./config";
+import { TbHome } from "react-icons/tb";
+
+function MetricCard({
+  title,
+  value,
+}: {
+  title: string;
+  value: string | number;
+}) {
+  return (
+    <Section
+      style={{
+        background: "#f3f3f5",
+        padding: "20px",
+        borderRadius: "10px",
+      }}
+    >
+      <Text style={{ margin: "0px", fontSize: "16px", opacity: 0.5 }}>
+        {title}
+      </Text>
+      <Text
+        style={{
+          margin: "0px",
+          paddingTop: "4px",
+          fontSize: "42px",
+          fontWeight: "bold",
+        }}
+      >
+        {value}
+      </Text>
+    </Section>
+  );
+}
+
+function BandColumn({
+  tag,
+  value,
+  color,
+}: {
+  tag: string;
+  value: string | number;
+  color: string;
+}) {
+  return (
+    <Column style={{ backgroundColor: color, padding: "20px" }} align="center">
+      <Text
+        style={{
+          margin: 0,
+          fontSize: "22px",
+          fontWeight: "bold",
+          opacity: 0.6,
+        }}
+      >
+        {value}
+      </Text>
+      <Text style={{ opacity: 0.5, margin: 0 }}>&lt; {tag}</Text>
+    </Column>
+  );
+}
+
+export default function Email() {
+  return (
+    <Html lang="en">
+      <Head>
+        <title>Your Email Title</title>
+        <Preview>Your preview text that shows in the inbox</Preview>
+      </Head>
+      <Body
+        style={{
+          margin: "0",
+          padding: "30px 10px",
+          fontFamily: "Arial, sans-serif",
+          backgroundColor: "#f3f3f5",
+        }}
+      >
+        <Container
+          style={{
+            width: "100%",
+            maxWidth: "600px",
+            margin: "0 auto",
+            padding: "20px 20px",
+          }}
+        >
+          <Img width={60} src={`${emailConfig.baseUrl}/logo.png`} />
+        </Container>
+
+        <Container
+          style={{
+            width: "100%",
+            maxWidth: "600px",
+            margin: "0 auto",
+            backgroundColor: "#ffffff",
+            borderRadius: "10px",
+            overflow: "hidden",
+          }}
+        >
+          <Section
+            style={{ background: emailConfig.colors.primary, padding: "30px" }}
+          >
+            <Row>
+              <Column>
+                <Text
+                  style={{
+                    color: "#ffffff",
+                    margin: "0px",
+                    fontSize: "24px",
+                    fontWeight: "medium",
+                  }}
+                >
+                  <span style={{ fontWeight: "bold" }}>CrawlChat</span>{" "}
+                  <span style={{ fontWeight: "lighter", opacity: 0.7 }}>
+                    Weekly
+                  </span>
+                </Text>
+              </Column>
+              <Column align="right">
+                <Text
+                  style={{
+                    color: "#ffffff",
+                    margin: "0px",
+                    fontSize: "24px",
+                    fontWeight: "medium",
+                  }}
+                >
+                  🗓️
+                </Text>
+              </Column>
+            </Row>
+          </Section>
+
+          <Section style={{ padding: "20px 30px" }}>
+            <Text style={{ fontSize: "16px" }}>
+              Thank you for being a part of our community! Here is the weekly
+              updates with the stats for your collection. Keeping up to date
+              with this information will let you make your documentation or
+              content relavent to your customers or community.
+            </Text>
+
+            <Row style={{ marginTop: "20px" }}>
+              <Column style={{ opacity: 0.2 }}>This week</Column>
+            </Row>
+            <Row>
+              <Column style={{ paddingRight: "10px" }}>
+                <MetricCard title="Messages" value={"1.2k"} />
+              </Column>
+              <Column>
+                <MetricCard title="MCP Hits" value={532} />
+              </Column>
+            </Row>
+
+            <Row style={{ marginTop: "20px" }}>
+              <Column style={{ opacity: 0.2 }}>Poor</Column>
+              <Column align="right" style={{ opacity: 0.2 }}>
+                Best
+              </Column>
+            </Row>
+            <Row>
+              <BandColumn tag="0.2" value={200} color="#f2eaf9" />
+              <BandColumn tag="0.4" value={200} color="#e5d5f2" />
+              <BandColumn tag="0.6" value={200} color="#d7c0ec" />
+              <BandColumn tag="0.8" value={200} color="#caabe5" />
+              <BandColumn tag="1.0" value={200} color="#bd96df" />
+            </Row>
+          </Section>
+
+          <Section style={{ padding: "0px 20px", paddingBottom: "30px" }}>
+            <Row>
+              <Column align="center">
+                <Button
+                  style={{
+                    color: "#fff",
+                    padding: "10px 20px",
+                    background: emailConfig.colors.primary,
+                    borderRadius: "6px",
+                  }}
+                  href="#"
+                >
+                  Go to app →
+                </Button>
+              </Column>
+            </Row>
+          </Section>
+        </Container>
+
+        <Container
+          style={{
+            width: "100%",
+            maxWidth: "600px",
+            margin: "0 auto",
+            padding: "20px 20px",
+          }}
+        >
+          <Row>
+            <Column align="center">
+              <Link
+                style={{
+                  textAlign: "center",
+                  opacity: 0.4,
+                  color: "#000000",
+                }}
+                href="#"
+              >
+                Update email preferences
+              </Link>
+            </Column>
+          </Row>
+        </Container>
+      </Body>
+    </Html>
+  );
+}

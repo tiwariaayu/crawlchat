@@ -3,14 +3,12 @@ import Markdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import hljs from "highlight.js";
 import "highlight.js/styles/vs.css";
-import { Box, Image, Link, Popover, Portal, Text } from "@chakra-ui/react";
+import { Box, Image, Link, Text } from "@chakra-ui/react";
 import { ClipboardIconButton, ClipboardRoot } from "~/components/ui/clipboard";
 import type { PropsWithChildren } from "react";
 import { Tooltip } from "~/components/ui/tooltip";
-// Using require instead of import to avoid TypeScript errors
 const linkifyRegex = require("remark-linkify-regex");
 
-// No need for the declare module since we're using require
 export function MarkdownProse({
   children,
   noMarginCode,

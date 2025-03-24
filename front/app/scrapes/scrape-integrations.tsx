@@ -63,16 +63,34 @@ export default function ScrapeIntegrations({
 }: Route.ComponentProps) {
   const discordServerIdFetcher = useFetcher();
   return (
-    <Stack>
-      <Box>
+    <Stack gap={6}>
+      <Text maxW={"900px"}>
+        You have two Discord bots that you can install on your server with
+        different bot names. Pick your favorite one from the following options
+        and install. You need to enter the server id below to make it work!
+      </Text>
+      <Group>
         <Button asChild variant={"outline"}>
-          <a href="https://discord.com/oauth2/authorize?client_id=1346845279692918804" target="_blank">
+          <a
+            href="https://discord.com/oauth2/authorize?client_id=1346845279692918804"
+            target="_blank"
+          >
             <TbBrandDiscord />
-            Install Discord App
+            @CrawlChat
             <TbArrowRight />
           </a>
         </Button>
-      </Box>
+        <Button asChild variant={"outline"}>
+          <a
+            href="https://discord.com/oauth2/authorize?client_id=1353765834321039502"
+            target="_blank"
+          >
+            <TbBrandDiscord />
+            @AiBot-CrawlChat
+            <TbArrowRight />
+          </a>
+        </Button>
+      </Group>
       <SettingsSection
         title={
           <Group>

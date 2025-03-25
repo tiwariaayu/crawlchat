@@ -5,6 +5,7 @@ import {
   Stack,
   Table,
   Text,
+  Center,
 } from "@chakra-ui/react";
 import type { Route } from "./+types/links";
 import { getAuthUser } from "~/auth/middleware";
@@ -16,6 +17,7 @@ import { Link, Outlet } from "react-router";
 import { getSessionScrapeId } from "~/scrapes/util";
 import { Page } from "~/components/page";
 import { Button } from "~/components/ui/button";
+import { EmptyState } from "~/components/ui/empty-state";
 
 export async function loader({ request }: Route.LoaderArgs) {
   const user = await getAuthUser(request);
@@ -75,74 +77,91 @@ export default function ScrapeLinks({ loaderData }: Route.ComponentProps) {
         </Group>
       }
     >
-      <Stack>
-        <Table.Root size="sm">
-          <Table.Header>
-            <Table.Row>
-              <Table.ColumnHeader>Url</Table.ColumnHeader>
-              <Table.ColumnHeader>Title</Table.ColumnHeader>
-              <Table.ColumnHeader>Status</Table.ColumnHeader>
-              <Table.ColumnHeader>Updated</Table.ColumnHeader>
-            </Table.Row>
-          </Table.Header>
-          <Table.Body>
-            {loaderData.items.map((item) => (
-              <Table.Row key={item.id}>
-                <Table.Cell className="group">
-                  <Group>
-                    <Text>
-                      {item.url ? (
-                        <ChakraLink href={item.url} target="_blank">
-                          {new URL(item.url).pathname}
-                        </ChakraLink>
-                      ) : (
-                        item.id
-                      )}
-                    </Text>
-                    {item.url && (
-                      <LinkRefresh
-                        scrapeId={loaderData.scrape.id}
-                        url={item.url}
-                      />
-                    )}
-                  </Group>
-                </Table.Cell>
-                <Table.Cell>
-                  <ChakraLink asChild>
-                    <Link to={`/knowledge/item/${item.id}`}>
-                      {item.title ?? "-"}
-                    </Link>
-                  </ChakraLink>
-                </Table.Cell>
-                <Table.Cell>
-                  <Badge
-                    variant={"surface"}
-                    colorPalette={
-                      item.status === "completed"
-                        ? "brand"
-                        : item.status === "failed"
-                        ? "red"
-                        : "gray"
-                    }
-                  >
-                    {item.status === "completed" ? (
-                      <TbCheck />
-                    ) : item.status === "failed" ? (
-                      <TbX />
-                    ) : (
-                      <TbRefresh />
-                    )}
-                    {item.status === "completed" ? "Success" : "Failed"}
-                  </Badge>
-                </Table.Cell>
-                <Table.Cell>{moment(item.updatedAt).fromNow()}</Table.Cell>
+      {loaderData.items.length === 0 && (
+        <Center w="full" h="full">
+          <EmptyState
+            title="No knowledge"
+            description="Scrape your documents to get started."
+          >
+            <Button asChild colorPalette={"brand"}>
+              <Link to="/knowledge/scrape">
+                <TbPlus />
+                Add
+              </Link>
+            </Button>
+          </EmptyState>
+        </Center>
+      )}
+      {loaderData.items.length > 0 && (
+        <Stack>
+          <Table.Root size="sm">
+            <Table.Header>
+              <Table.Row>
+                <Table.ColumnHeader>Url</Table.ColumnHeader>
+                <Table.ColumnHeader>Title</Table.ColumnHeader>
+                <Table.ColumnHeader>Status</Table.ColumnHeader>
+                <Table.ColumnHeader>Updated</Table.ColumnHeader>
               </Table.Row>
-            ))}
-          </Table.Body>
-        </Table.Root>
+            </Table.Header>
+            <Table.Body>
+              {loaderData.items.map((item) => (
+                <Table.Row key={item.id}>
+                  <Table.Cell className="group">
+                    <Group>
+                      <Text>
+                        {item.url ? (
+                          <ChakraLink href={item.url} target="_blank">
+                            {new URL(item.url).pathname}
+                          </ChakraLink>
+                        ) : (
+                          item.id
+                        )}
+                      </Text>
+                      {item.url && (
+                        <LinkRefresh
+                          scrapeId={loaderData.scrape.id}
+                          url={item.url}
+                        />
+                      )}
+                    </Group>
+                  </Table.Cell>
+                  <Table.Cell>
+                    <ChakraLink asChild>
+                      <Link to={`/knowledge/item/${item.id}`}>
+                        {item.title ?? "-"}
+                      </Link>
+                    </ChakraLink>
+                  </Table.Cell>
+                  <Table.Cell>
+                    <Badge
+                      variant={"surface"}
+                      colorPalette={
+                        item.status === "completed"
+                          ? "brand"
+                          : item.status === "failed"
+                          ? "red"
+                          : "gray"
+                      }
+                    >
+                      {item.status === "completed" ? (
+                        <TbCheck />
+                      ) : item.status === "failed" ? (
+                        <TbX />
+                      ) : (
+                        <TbRefresh />
+                      )}
+                      {item.status === "completed" ? "Success" : "Failed"}
+                    </Badge>
+                  </Table.Cell>
+                  <Table.Cell>{moment(item.updatedAt).fromNow()}</Table.Cell>
+                </Table.Row>
+              ))}
+            </Table.Body>
+          </Table.Root>
 
-        <Outlet />
-      </Stack>
+          <Outlet />
+        </Stack>
+      )}
     </Page>
   );
 }

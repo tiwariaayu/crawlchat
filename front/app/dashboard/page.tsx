@@ -23,7 +23,15 @@ import {
 import { getAuthUser } from "~/auth/middleware";
 import { prisma } from "~/prisma";
 import { Page } from "~/components/page";
-import { XAxis, CartesianGrid, Tooltip, AreaChart, Area } from "recharts";
+import {
+  XAxis,
+  CartesianGrid,
+  Tooltip,
+  AreaChart,
+  Area,
+  Bar,
+  BarChart,
+} from "recharts";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { numberToKMB } from "~/number-util";
 import { commitSession } from "~/session";
@@ -37,11 +45,10 @@ import {
   DialogFooter,
   DialogRoot,
   DialogTitle,
-  DialogTrigger,
 } from "~/components/ui/dialog";
 import { Field } from "~/components/ui/field";
-import { getSessionScrapeId } from "~/scrapes/util";
 import { EmptyState } from "~/components/ui/empty-state";
+import { Tooltip as ChakraTooltip } from "~/components/ui/tooltip";
 
 export async function loader({ request }: Route.LoaderArgs) {
   const user = await getAuthUser(request);
@@ -117,6 +124,24 @@ export async function loader({ request }: Route.LoaderArgs) {
     });
   }
 
+  const scoreDestribution: Record<number, { count: number }> = {};
+  const points = 50;
+  for (let i = 0; i < points; i++) {
+    scoreDestribution[i] = { count: 0 };
+  }
+
+  for (const message of messages) {
+    const sum = message.links
+      .map((l) => l.score ?? 0)
+      .reduce((acc, curr) => acc + curr, 0);
+    const averageScore =
+      message.links.length > 0 ? sum / message.links.length : 0;
+    const index = Math.floor(averageScore * points);
+    scoreDestribution[index] = {
+      count: (scoreDestribution[index]?.count ?? 0) + 1,
+    };
+  }
+
   return {
     user,
     scrapes,
@@ -124,6 +149,7 @@ export async function loader({ request }: Route.LoaderArgs) {
     dailyMessages,
     messagesToday,
     scrapeId,
+    scoreDestribution,
   };
 }
 
@@ -214,6 +240,19 @@ export default function DashboardPage({ loaderData }: Route.ComponentProps) {
     return data.reverse();
   }, [loaderData.dailyMessages]);
 
+  const scoreDistributionData = useMemo(() => {
+    const data = [];
+    const points = Object.keys(loaderData.scoreDestribution).length;
+    for (let i = 0; i < points; i++) {
+      data.push({
+        name: i,
+        Messages: loaderData.scoreDestribution[i]?.count ?? 0,
+        score: i / points,
+      });
+    }
+    return data;
+  }, [loaderData.scoreDestribution]);
+
   useEffect(() => {
     if (containerRef.current) {
       setWidth(containerRef.current.clientWidth);
@@ -289,6 +328,16 @@ export default function DashboardPage({ loaderData }: Route.ComponentProps) {
               <Group>
                 <TbMessage />
                 <Text>Messages</Text>
+                <ChakraTooltip
+                  showArrow
+                  content={
+                    "Shows the number of messages in conversations in the last 7 days across all the channels"
+                  }
+                >
+                  <Icon opacity={0.5}>
+                    <TbHelp />
+                  </Icon>
+                </ChakraTooltip>
               </Group>
             </Heading>
             <AreaChart width={width - 10} height={200} data={chartData}>
@@ -302,6 +351,39 @@ export default function DashboardPage({ loaderData }: Route.ComponentProps) {
                 fill={"var(--chakra-colors-brand-muted)"}
               />
             </AreaChart>
+          </Stack>
+
+          <Stack>
+            <Heading>
+              <Group>
+                <TbMessage />
+                <Text>Score distribution</Text>
+                <ChakraTooltip
+                  showArrow
+                  content={
+                    "Shows how the score of each message from AI is distributed from 0 to 1. 0 is worst and 1 is best."
+                  }
+                >
+                  <Icon opacity={0.5}>
+                    <TbHelp />
+                  </Icon>
+                </ChakraTooltip>
+              </Group>
+            </Heading>
+            <BarChart
+              width={width - 10}
+              height={200}
+              data={scoreDistributionData}
+            >
+              <XAxis dataKey="score" />
+              <Tooltip />
+              <CartesianGrid strokeDasharray="3 3" />
+              <Bar
+                type="monotone"
+                dataKey="Messages"
+                fill={"var(--chakra-colors-brand-emphasized)"}
+              />
+            </BarChart>
           </Stack>
         </Stack>
       )}

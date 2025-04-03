@@ -337,7 +337,7 @@ function Hero() {
             opacity={0.8}
           >
             Add your existing documentation as knowledge base and deliver it
-            thourh multiple channels{" "}
+            through multiple channels{" "}
             <ChannelIcon
               icon={TbMessage}
               rotate={"10deg"}

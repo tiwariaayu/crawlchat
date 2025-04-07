@@ -81,9 +81,10 @@ client.on(Events.MessageCreate, async (message) => {
 
       const { scrapeId, userId } = await getDiscordDetails(message.guildId!);
 
+      console.log("Learning", { content, scrapeId, userId });
+
       await learn(scrapeId, content, createToken(userId));
 
-      // message.reply("Added to collection!");
       message.react("✅");
       return;
     }
@@ -91,6 +92,7 @@ client.on(Events.MessageCreate, async (message) => {
     const { scrapeId, userId } = await getDiscordDetails(message.guildId!);
 
     if (!scrapeId || !userId) {
+      console.log("Not integrated!");
       message.reply("‼️ Integrate it on CrawlChat.app to use this bot!");
       return;
     }
@@ -146,6 +148,13 @@ It should be under 1000 charecters.`,
   } else {
     const { userId, scrapeId, autoAnswerChannelIds, answerEmoji } =
       await getDiscordDetails(message.guildId!);
+    console.log("Checking reactive answer", {
+      userId,
+      scrapeId,
+      autoAnswerChannelIds,
+      answerEmoji,
+      channelId: message.channelId,
+    });
     if (
       autoAnswerChannelIds.includes(message.channelId) &&
       (await testQuery(
@@ -155,6 +164,7 @@ It should be under 1000 charecters.`,
         message.channelId
       ))
     ) {
+      console.log("Reacting");
       message.react(answerEmoji);
     }
   }

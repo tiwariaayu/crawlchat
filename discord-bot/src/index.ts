@@ -2,6 +2,7 @@ import dotenv from "dotenv";
 dotenv.config();
 
 import {
+  ChannelType,
   Client,
   Events,
   GatewayIntentBits,
@@ -148,21 +149,26 @@ It should be under 1000 charecters.`,
   } else {
     const { userId, scrapeId, autoAnswerChannelIds, answerEmoji } =
       await getDiscordDetails(message.guildId!);
+    let channelId = message.channelId;
+
+    if (
+      message.channel.type === ChannelType.PublicThread &&
+      message.channel.parent?.id
+    ) {
+      channelId = message.channel.parent.id;
+    }
+
     console.log("Checking reactive answer", {
       userId,
       scrapeId,
       autoAnswerChannelIds,
       answerEmoji,
-      channelId: message.channelId,
+      channelId,
     });
+
     if (
-      autoAnswerChannelIds.includes(message.channelId) &&
-      (await testQuery(
-        message.content,
-        createToken(userId),
-        scrapeId,
-        message.channelId
-      ))
+      autoAnswerChannelIds.includes(channelId) &&
+      (await testQuery(message.content, createToken(userId), scrapeId))
     ) {
       console.log("Reacting");
       message.react(answerEmoji);

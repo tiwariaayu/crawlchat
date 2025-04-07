@@ -67,17 +67,12 @@ export async function getDiscordDetails(channelId: string) {
   };
 }
 
-export async function testQuery(
-  text: string,
-  token: string,
-  scrapeId: string,
-  channelId: string
-) {
+export async function testQuery(text: string, token: string, scrapeId: string) {
   const result = await fetch(
     `${process.env.SERVER_HOST}/test-query/${scrapeId}`,
     {
       method: "POST",
-      body: JSON.stringify({ text, channelId }),
+      body: JSON.stringify({ text }),
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,

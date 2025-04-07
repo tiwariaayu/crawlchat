@@ -607,9 +607,10 @@ app.get("/discord/:channelId", async (req, res) => {
   res.json({
     scrapeId: scrape.id,
     userId: scrape.userId,
-    autoAnswerChannelIds: scrape.discordAnswerConfig?.channels.map(
-      (c) => c.channelId
-    ),
+    autoAnswerChannelIds: scrape.discordAnswerConfig?.channels
+      .map((c) => c.channelId)
+      .flatMap((c) => c.split(","))
+      .map((c) => c.trim()),
     answerEmoji: scrape.discordAnswerConfig?.emoji ?? "✋🏻",
   });
 });
@@ -627,9 +628,6 @@ app.post("/test-query/:scrapeId", authenticate, async (req, res) => {
 
   if (
     scrape.discordAnswerConfig &&
-    scrape.discordAnswerConfig.channels.some(
-      (c) => c.channelId === req.body.channelId
-    ) &&
     message.isQuestion &&
     message.confidence > 0.6
   ) {

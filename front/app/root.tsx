@@ -5,6 +5,7 @@ import {
   Outlet,
   Scripts,
   ScrollRestoration,
+  useLocation,
   useMatches,
 } from "react-router";
 
@@ -12,6 +13,7 @@ import type { Route } from "./+types/root";
 import stylesheet from "./app.css?url";
 import { Provider } from "./components/ui/provider";
 import { PiArrowBendRightDown } from "react-icons/pi";
+import { useMemo } from "react";
 
 declare global {
   interface Window {
@@ -80,19 +82,33 @@ function WidgetHighligter() {
 }
 
 export function Layout({ children }: { children: React.ReactNode }) {
+  const location = useLocation();
   const matches = useMatches();
+  const shouldTrack = useMemo(() => {
+    const trackingExcludedScrapeIds = [
+      "67d221efb4b9de65095a2579",
+      "67c0a28c5b075f0bb35e5366",
+      "67bca5b7b57f15a3a6f8eac6",
+    ];
+  
+    const shouldTrack = trackingExcludedScrapeIds.every(
+      (id) => !location.pathname.includes(`/w/${id}`)
+    );
+
+    return shouldTrack;
+  }, [location]);
+
   const isEmbedDemo = matches.some(
     (match) => match.id === "landing/embed-demo"
   );
   const isLandingPage = matches.some((match) => match.id === "landing/page");
-  const isWidget = matches.some((match) => match.id === "widget/scrape");
 
   return (
     <html lang="en">
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        {!isWidget && (
+        {shouldTrack && (
           <script
             defer
             src="https://api.pirsch.io/pa.js"

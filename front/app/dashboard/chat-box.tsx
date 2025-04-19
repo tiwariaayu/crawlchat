@@ -695,7 +695,7 @@ export default function ScrapeWidget({
     const scores = chat.allMessages.map((m) => {
       return Math.max(...Object.values(m.links).map((l) => l?.score ?? 0), 0);
     });
-    return scores.reduce((a, b) => a + b, 0) / scores.length;
+    return scores.reduce((a, b) => a + b, 0) / (scores.length / 2);
   }, [chat.allMessages]);
 
   useEffect(

@@ -34,6 +34,15 @@ export async function sendWeeklyForUser(userId: string, email: string) {
 export async function sendWeeklyForAllUsers() {
   const users = await prisma.user.findMany();
   for (const user of users) {
+    const scrapes = await prisma.scrape.count({
+      where: {
+        userId: user.id,
+      },
+    });
+    if (scrapes === 0) {
+      console.log(`Skipping ${user.email} because they have no scrapes`);
+      continue;
+    }
     if (user.settings?.weeklyUpdates === false) {
       console.log(
         `Skipping ${user.email} because they have weekly updates disabled`

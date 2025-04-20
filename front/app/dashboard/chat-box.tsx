@@ -645,6 +645,50 @@ function Toolbar({
   );
 }
 
+function useChatBoxDimensions(
+  size: WidgetSize | null,
+  ref: React.RefObject<HTMLDivElement | null>
+) {
+  const [width, setWidth] = useState<number>(0);
+  const [height, setHeight] = useState<number>(0);
+
+  function getDimensionsForSize(width: number, height: number) {
+    const padding = 16;
+    width -= padding * 2;
+    height -= padding * 2;
+
+    switch (size) {
+      case "large":
+        width = Math.min(width, 800);
+        height = Math.min(height, 800);
+        return { width: width, height: height };
+      case "full_screen":
+        return { width: width, height: height };
+      default:
+        width = Math.min(width, 500);
+        height = Math.min(height, 500);
+        return { width: width, height: height };
+    }
+  }
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (ref.current) {
+        const rect = ref.current.getBoundingClientRect();
+        const dims = getDimensionsForSize(rect.width, rect.height);
+        setWidth(dims.width);
+        setHeight(dims.height);
+      }
+    };
+    window.addEventListener("resize", handleResize);
+
+    handleResize();
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  return { width, height };
+}
+
 export default function ScrapeWidget({
   thread,
   messages,
@@ -677,6 +721,11 @@ export default function ScrapeWidget({
   const [screen, setScreen] = useState<"chat" | "mcp">("chat");
   const readOnly = useMemo(() => userToken === "NA", [userToken]);
   const overallScore = useMemo(() => getMessagesScore(messages), [messages]);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const boxDimensions = useChatBoxDimensions(
+    scrape.widgetConfig?.size ?? null,
+    containerRef
+  );
 
   useEffect(
     function () {
@@ -733,17 +782,6 @@ export default function ScrapeWidget({
     }
   }
 
-  function getSize() {
-    switch (scrape.widgetConfig?.size) {
-      case "large":
-        return { width: "800px", height: "800px" };
-      case "full_screen":
-        return { width: "100%", height: "100%" };
-      default:
-        return { width: "500px", height: "500px" };
-    }
-  }
-
   function handlePin(id: string) {
     onPin(id);
     chat.pinMessage(id);
@@ -778,20 +816,16 @@ export default function ScrapeWidget({
     await scroll();
   }
 
-  const { width, height } = getSize();
-
   return (
-    <Center h="full" onClick={handleBgClick} p={4}>
+    <Center w="full" h="full" onClick={handleBgClick} ref={containerRef}>
       <Stack
         border="1px solid"
         borderColor={"brand.outline"}
         rounded={"xl"}
         boxShadow={"rgba(100, 100, 111, 0.2) 0px 7px 29px 0px"}
         bg="brand.white"
-        w={"full"}
-        maxW={width}
-        h="full"
-        maxH={height}
+        w={boxDimensions.width}
+        h={boxDimensions.height}
         overflow={"hidden"}
         gap={0}
       >

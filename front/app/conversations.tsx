@@ -20,6 +20,7 @@ import { useState } from "react";
 import ChatBox from "./dashboard/chat-box";
 import { getMessagesScore, getScoreColor } from "./score";
 import { Tooltip } from "./components/ui/tooltip";
+import { chunk } from "libs/chunk";
 
 type ThreadWithMessages = Prisma.ThreadGetPayload<{
   include: {
@@ -41,20 +42,27 @@ export async function loader({ request }: Route.LoaderArgs) {
         gte: ONE_WEEK_AGO,
       },
     },
-    include: {
-      thread: {
-        include: {
-          messages: true,
-        },
-      },
+    select: {
+      threadId: true,
     },
   });
 
   const threads: Record<string, ThreadWithMessages> = {};
 
-  for (const message of messages) {
-    if (!threads[message.threadId]) {
-      threads[message.threadId] = message.thread;
+  const chunks = chunk(messages, 1);
+
+  for (const chunk of chunks) {
+    const _threads = await prisma.thread.findMany({
+      where: {
+        id: { in: chunk.map((m) => m.threadId).filter((id) => !threads[id]) },
+      },
+      include: {
+        messages: true,
+      },
+    });
+
+    for (const thread of _threads) {
+      threads[thread.id] = thread;
     }
   }
 

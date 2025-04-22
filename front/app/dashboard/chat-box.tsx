@@ -787,6 +787,9 @@ export default function ScrapeWidget({
   function handleClose() {
     onBgClick?.();
     inputRef.current?.blur();
+    if (window.parent) {
+      window.parent.document.body.focus();
+    }
   }
 
   function handlePin(id: string) {

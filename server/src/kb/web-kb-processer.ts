@@ -78,7 +78,7 @@ export class WebKbProcesser extends BaseKbProcesser {
       allowOnlyRegex: this.options.allowOnlyRegex,
       onComplete: () => this.onComplete(),
       shouldScrape: async () => {
-        if (!this.options.hasCredits()) {
+        if (!(await this.options.hasCredits())) {
           return false;
         }
         const group = await prisma.knowledgeGroup.findFirstOrThrow({

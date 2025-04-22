@@ -82,6 +82,7 @@ class CrawlChatEmbed {
   handleOnMessage(event) {
     if (event.data === "close") {
       window.crawlchatEmbed.hide();
+      document.body.focus();
     }
   }
 

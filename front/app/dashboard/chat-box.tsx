@@ -70,10 +70,6 @@ function ChatInput({
   const [query, setQuery] = useState("");
 
   useEffect(function () {
-    // if (inputRef.current) {
-    //   inputRef.current.focus();
-    // }
-
     const handleOnMessage = (event: MessageEvent) => {
       if (event.data === "focus") {
         inputRef.current?.focus();
@@ -787,9 +783,6 @@ export default function ScrapeWidget({
   function handleClose() {
     onBgClick?.();
     inputRef.current?.blur();
-    if (window.parent) {
-      window.parent.document.body.focus();
-    }
   }
 
   function handlePin(id: string) {

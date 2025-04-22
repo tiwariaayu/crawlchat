@@ -58,14 +58,15 @@ function ChatInput({
   searchQuery,
   disabled,
   scrape,
+  inputRef,
 }: {
   onAsk: (query: string) => void;
   stage: AskStage;
   searchQuery?: string;
   disabled?: boolean;
   scrape: Scrape;
+  inputRef: React.RefObject<HTMLInputElement | null>;
 }) {
-  const inputRef = useRef<HTMLInputElement>(null);
   const [query, setQuery] = useState("");
 
   useEffect(function () {
@@ -726,6 +727,7 @@ export default function ScrapeWidget({
     scrape.widgetConfig?.size ?? null,
     containerRef
   );
+  const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(
     function () {
@@ -744,7 +746,7 @@ export default function ScrapeWidget({
   useEffect(() => {
     function handleKeyDown(event: KeyboardEvent) {
       if (event.key === "Escape") {
-        onBgClick?.();
+        handleClose();
       }
     }
 
@@ -778,8 +780,13 @@ export default function ScrapeWidget({
 
   function handleBgClick(event: React.MouseEvent<HTMLDivElement>) {
     if (event.target === event.currentTarget) {
-      onBgClick?.();
+      handleClose();
     }
+  }
+
+  function handleClose() {
+    onBgClick?.();
+    inputRef.current?.blur();
   }
 
   function handlePin(id: string) {
@@ -889,6 +896,7 @@ export default function ScrapeWidget({
           {screen === "mcp" && <MCPSetup scrape={scrape} />}
         </Stack>
         <ChatInput
+          inputRef={inputRef}
           onAsk={handleAsk}
           stage={chat.askStage}
           searchQuery={chat.searchQuery}

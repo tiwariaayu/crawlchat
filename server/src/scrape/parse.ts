@@ -76,12 +76,6 @@ function cleanA($: cheerio.CheerioAPI) {
     if ($(a).text().trim().length === 0) {
       $(a).remove();
     }
-    if ($(a).attr("href")?.startsWith("#")) {
-      $(a).remove();
-    }
-    if (!$(a).attr("href")) {
-      $(a).remove();
-    }
   });
 }
 
@@ -151,10 +145,10 @@ export function parseHtml(
   cleanScriptStyles($);
   safeClean($);
 
-  $('table tr:first-child td').each((_, cell) => {
+  $("table tr:first-child td").each((_, cell) => {
     const $cell = $(cell);
     const content = $cell.html();
-    const $th = $('<th></th>').html(content ?? '');
+    const $th = $("<th></th>").html(content ?? "");
     $cell.replaceWith($th);
   });
 

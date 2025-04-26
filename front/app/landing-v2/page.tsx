@@ -39,8 +39,8 @@ function Button({
     <a
       className={cn(
         "font-medium border text-brand border-brand rounded-xl px-6 py-1 flex items-center justify-center gap-2",
-        "cursor-pointer hover:bg-brand hover:text-white transition-all",
-        variant === "solid" && "bg-brand text-white",
+        "cursor-pointer hover:bg-brand hover:text-canvas transition-all",
+        variant === "solid" && "bg-brand text-canvas",
         className
       )}
     >
@@ -53,13 +53,13 @@ function Scrape() {
   return (
     <div>
       <div className="flex items-center gap-2 justify-center max-w-[400px] mx-auto mb-8">
-        <div className="border border-outline rounded-2xl p-1 shadow-lg flex items-center gap-2 pl-6 text-xl w-full bg-white">
+        <div className="border border-outline rounded-2xl p-1 shadow-lg flex items-center gap-2 pl-6 text-xl w-full bg-canvas">
           <input
             type="text"
             className="w-full bg-transparent outline-none"
             placeholder="https://example.com"
           />
-          <button className="bg-brand text-white px-6 py-4 rounded-2xl flex-shrink-0 font-medium">
+          <button className="bg-brand text-canvas px-6 py-4 rounded-2xl flex-shrink-0 font-medium">
             Try it
           </button>
         </div>
@@ -82,7 +82,7 @@ function DemoWindow() {
           <div className="w-[10px] h-[10px] bg-green-500 rounded-full" />
         </div>
       </div>
-      <div className="bg-white rounded-lg aspect-[16/12]"></div>
+      <div className="bg-canvas rounded-lg aspect-[16/12]"></div>
     </div>
   );
 }
@@ -102,7 +102,7 @@ function Stats() {
   return (
     <div className="flex flex-col md:flex-row gap-8 w-full mt-8 md:items-center">
       <div className="flex-1 flex flex-col gap-10">
-        <div className="text-md md:text-xl font-medium px-6 py-3 shadow-md rounded-2xl bg-white w-fit flex items-center gap-4 -rotate-[4deg]">
+        <div className="text-md md:text-xl font-medium px-6 py-3 shadow-md rounded-2xl bg-canvas w-fit flex items-center gap-4 -rotate-[4deg]">
           <div className="w-3 h-3 bg-green-500 rounded-full outline-2 outline-green-300 outline" />
           Answering questions continuously
         </div>
@@ -113,7 +113,7 @@ function Stats() {
         </h3>
       </div>
 
-      <div className="flex-1 shadow-md bg-white rounded-2xl">
+      <div className="flex-1 shadow-md bg-canvas rounded-2xl">
         <StatsItem label="Today" value={272} />
         <StatsItem label="In the last week" value={2220} />
         <StatsItem label="In the last month" value={7223} />
@@ -179,7 +179,7 @@ function WorksBox({
   children,
 }: { title: string; description: string } & PropsWithChildren) {
   return (
-    <div className="p-6 rounded-2xl bg-white shadow-md flex-1 pb-10">
+    <div className="p-6 rounded-2xl bg-canvas shadow-md flex-1 pb-10">
       <h4 className="text-2xl font-bold mb-2 font-radio-grotesk">{title}</h4>
       <p className="text opacity-60 mb-8 leading-tight">{description}</p>
 
@@ -289,10 +289,10 @@ function Works() {
               className="w-20 h-20 absolute top-0 left-0 right-0 mx-auto"
             />
 
-            <div className="flex justify-center gap-2 absolute left-0 bottom-0 translate-y-8 -translate-x-1">
+            <div className="flex justify-center gap-2 absolute left-[50%] bottom-0 translate-y-8 -translate-x-32">
               <IntegrateChip label="Ask AI" icon="/new-landing/ai.png" />
             </div>
-            <div className="flex justify-center gap-2 absolute right-0 bottom-0 translate-y-8 translate-x-1">
+            <div className="flex justify-center gap-2 absolute right-[50%] bottom-0 translate-y-8 translate-x-32">
               <IntegrateChip label="MCP" icon="/new-landing/mcp.png" />
             </div>
             <div className="flex justify-center gap-2 absolute left-[50%] -bottom-8 translate-y-6 -translate-x-10">
@@ -347,7 +347,7 @@ function Tab({ children, active }: PropsWithChildren & { active?: boolean }) {
     <div
       className={cn(
         "px-4 py-1 rounded-xl font-bold opacity-60 text-lg font-radio-grotesk border border-transparent hover:border-outline cursor-pointer",
-        active && "bg-white shadow opacity-100 hover:border-transparent"
+        active && "bg-canvas shadow opacity-100 hover:border-transparent"
       )}
     >
       {children}
@@ -357,7 +357,7 @@ function Tab({ children, active }: PropsWithChildren & { active?: boolean }) {
 
 function ImportKnowledgePreview() {
   return (
-    <div className="w-full bg-ash-subtle rounded-2xl bg-white bg-opacity-50 flex flex-col gap-4 p-4 border border-outline">
+    <div className="w-full bg-ash-subtle rounded-2xl bg-canvas bg-opacity-50 flex flex-col gap-4 p-4 border border-outline">
       <div className="flex flex-col gap-2">
         <p className="text-2xl font-bold">Group</p>
         <p className="font-medium opacity-50">
@@ -365,7 +365,7 @@ function ImportKnowledgePreview() {
           set up auto updates on the groups & get analytics on each group.
         </p>
       </div>
-      <div className="w-full flex-1 bg-white rounded-xl p-4 aspect-square">
+      <div className="w-full flex-1 bg-ash rounded-xl p-4 aspect-square">
         Inside
       </div>
     </div>
@@ -411,7 +411,7 @@ function IntegrationCard({
   return (
     <div
       className={
-        "p-4 shadow-md border border-outline rounded-xl bg-white flex flex-col gap-4"
+        "p-4 shadow-md border border-outline rounded-xl bg-canvas flex flex-col gap-4"
       }
       style={{ flex: flex }}
     >
@@ -483,7 +483,7 @@ function ChatWidgetFeature({
       className={cn(
         "rounded-2xl p-4 border border-transparent hover:border-outline gap-2 flex flex-col",
         "cursor-pointer",
-        active && "bg-white shadow-md hover:border-transparent"
+        active && "bg-canvas shadow-md hover:border-transparent"
       )}
     >
       <h3 className="text-2xl font-bold font-radio-grotesk flex items-center gap-2">
@@ -576,7 +576,7 @@ function Tools() {
         most of your use cases.
       </HeadingDescription>
 
-      <div className="bg-white rounded-2xl border border-outline">
+      <div className="bg-canvas rounded-2xl border border-outline">
         <ToolsRow>
           <ToolItem
             title="Scoring"
@@ -637,7 +637,7 @@ function PricingBox({
   return (
     <div
       className={cn(
-        "flex-1 bg-white shadow-md border border-outline rounded-2xl relative",
+        "flex-1 bg-canvas shadow-md border border-outline rounded-2xl relative",
         popular && "bg-brand-subtle bg-opacity-60 rounded-tl-none"
       )}
     >
@@ -808,7 +808,7 @@ function Testimonials() {
 function CTA() {
   return (
     <div className="mt-32">
-      <div className="w-full bg-gradient-to-b from-white to-ash shadow-md rounded-2xl py-20 relative">
+      <div className="w-full bg-gradient-to-b from-canvas to-ash shadow-md rounded-2xl py-20 relative">
         <div className="absolute top-[10%] md:top-[20%] left-[4%] md:left-[8%] rotate-[-24deg] scale-120 opacity-50">
           <IntegrateChip label="Ask AI" icon="/new-landing/ai.png" />
         </div>
@@ -838,7 +838,7 @@ function CTA() {
         <div className="flex justify-center">
           <a
             href="#"
-            className="px-12 py-4 bg-brand text-white font-medium rounded-2xl text-xl"
+            className="px-12 py-4 bg-brand text-canvas font-medium rounded-2xl text-xl"
           >
             Get started
           </a>
@@ -858,7 +858,7 @@ function FooterLink({ children, href }: PropsWithChildren<{ href: string }>) {
 
 function Footer() {
   return (
-    <div className="bg-white mt-32 border-t border-outline">
+    <div className="bg-canvas mt-32 border-t border-outline">
       <Container>
         <div className="py-8 flex flex-col md:flex-row gap-10">
           <div className="flex-[2] flex flex-col gap-4">
@@ -998,7 +998,7 @@ function Hero() {
 export default function LandingV2() {
   return (
     <div className="bg-ash font-aeonik">
-      <div className="aspect-[1440/960] w-full bg-[url('/clouds.png')] bg-contain bg-no-repeat absolute top-0 left-0">
+      <div className="hidden md:block aspect-[1440/960] w-full bg-[url('/clouds.png')] bg-contain bg-no-repeat absolute top-0 left-0">
         <div className="w-full h-full bg-gradient-to-b from-[rgba(246,246,245,0)] to-ash"></div>
       </div>
 

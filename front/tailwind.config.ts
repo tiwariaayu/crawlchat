@@ -19,21 +19,12 @@ export default {
         "radio-grotesk": ["Radio Grotesk"],
       },
       colors: {
-        brand: {
-          DEFAULT: "#7C2CBF",
-        },
-        "brand-subtle": {
-          DEFAULT: "#F4E7FF",
-        },
-        outline: {
-          DEFAULT: "#E5E5E5",
-        },
-        ash: {
-          DEFAULT: "#F6F6F5",
-        },
-        "ash-strong": {
-          DEFAULT: "#F0F0F0",
-        }
+        brand: "var(--color-brand)",
+        "brand-subtle": "var(--color-brand-subtle)",
+        outline: "var(--color-outline)",
+        ash: "var(--color-ash)",
+        "ash-strong": "var(--color-ash-strong)",
+        canvas: "var(--color-canvas)",
       },
     },
   },

@@ -187,6 +187,28 @@
   font-style: italic;
 }
 
+:root {
+  --color-brand: #7C2CBF;
+  --color-brand-subtle: #F4E7FF;
+  --color-outline: #E5E5E5;
+  --color-ash: #F6F6F5;
+  --color-ash-strong: #F0F0F0;
+  --color-canvas: #FFFFFF;
+}
+
+.dark {
+  --color-brand: #cbabe5;
+  --color-brand-subtle: #3e1660;
+  --color-outline: #4d4d4d;
+  --color-ash: #333333;
+  --color-ash-strong: #2C2C2A;
+  --color-canvas: #000000;
+}
+
+html {
+  color-scheme: light;
+}
+
 /* inside your CSS file */
 @layer utilities {
   .no-border-last-3:nth-last-child(-n+3) {

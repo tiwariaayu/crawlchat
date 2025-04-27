@@ -56,6 +56,7 @@ function ChatInput({
   disabled,
   scrape,
   inputRef,
+  embed,
 }: {
   onAsk: (query: string) => void;
   stage: AskStage;
@@ -63,6 +64,7 @@ function ChatInput({
   disabled?: boolean;
   scrape: Scrape;
   inputRef: React.RefObject<HTMLTextAreaElement | null>;
+  embed?: boolean;
 }) {
   const [query, setQuery] = useState("");
   const [height, setHeight] = useState(60);
@@ -84,13 +86,17 @@ function ChatInput({
       }
     };
 
+    if (!embed) {
+      inputRef.current?.focus();
+    }
+
     window.addEventListener("message", handleOnMessage);
     window.addEventListener("keydown", handleKeyDown);
     return () => {
       window.removeEventListener("message", handleOnMessage);
       window.removeEventListener("keydown", handleKeyDown);
     };
-  }, []);
+  }, [embed]);
 
   function handleAsk() {
     onAsk(query);
@@ -952,6 +958,7 @@ export default function ScrapeWidget({
           searchQuery={chat.searchQuery}
           disabled={screen !== "chat" || readOnly}
           scrape={scrape}
+          embed={embed}
         />
 
         <PoweredBy embed={embed} />

@@ -151,6 +151,27 @@ export default function ScrapeWidget({ loaderData }: Route.ComponentProps) {
     if (loaderData.embed) {
       document.documentElement.style.background = "transparent";
     }
+
+    function handleKeyDown(event: KeyboardEvent) {
+      window.parent.postMessage(
+        JSON.stringify({
+          type: "keydown",
+          data: {
+            key: event.key,
+            shiftKey: event.shiftKey,
+            ctrlKey: event.ctrlKey,
+            altKey: event.altKey,
+            metaKey: event.metaKey,
+          },
+        }),
+        "*"
+      );
+    }
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
   }, [loaderData.embed]);
 
   function handleClose() {

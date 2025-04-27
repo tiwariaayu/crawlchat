@@ -1,4 +1,4 @@
-import type { PropsWithChildren } from "react";
+import { useMemo, useState, type PropsWithChildren } from "react";
 import cn from "@meltdownjs/cn";
 import "../tailwind.css";
 import { TbArrowRight } from "react-icons/tb";
@@ -84,7 +84,7 @@ function DemoWindow() {
       </div>
       <div className="bg-canvas rounded-lg aspect-[960/600] overflow-hidden">
         <video
-          src="https://slickwid-public.s3.us-east-1.amazonaws.com/crawlchat-hero.mp4"
+          src="https://slickwid-public.s3.us-east-1.amazonaws.com/crawlchat/crawlchat-hero.mp4"
           autoPlay
           muted
           loop
@@ -349,37 +349,85 @@ function Tabs({ children }: PropsWithChildren) {
   );
 }
 
-function Tab({ children, active }: PropsWithChildren & { active?: boolean }) {
+function Tab({
+  children,
+  active,
+  onClick,
+}: PropsWithChildren & { active?: boolean; onClick?: () => void }) {
   return (
     <div
       className={cn(
         "px-4 py-1 rounded-xl font-bold opacity-60 text-lg font-radio-grotesk border border-transparent hover:border-outline cursor-pointer",
         active && "bg-canvas shadow opacity-100 hover:border-transparent"
       )}
+      onClick={onClick}
     >
       {children}
     </div>
   );
 }
 
-function ImportKnowledgePreview() {
+function ImportKnowledgePreview({
+  title,
+  description,
+  img,
+}: {
+  title: string;
+  description: string;
+  img: string;
+}) {
   return (
     <div className="w-full bg-ash-subtle rounded-2xl bg-canvas bg-opacity-50 flex flex-col gap-4 p-4 border border-outline">
       <div className="flex flex-col gap-2">
-        <p className="text-2xl font-bold">Group</p>
-        <p className="font-medium opacity-50">
-          Knowledge bases are maintained as groups for easy maintenance. You can
-          set up auto updates on the groups & get analytics on each group.
-        </p>
+        <p className="text-2xl font-bold">{title}</p>
+        <p className="font-medium opacity-50">{description}</p>
       </div>
-      <div className="w-full flex-1 bg-ash rounded-xl p-4 aspect-square">
-        Inside
+      <div className="w-full flex-1 bg-ash rounded-xl p-4 aspect-video">
+        <img
+          src={img}
+          alt={title}
+          className="w-full h-full object-cover rounded-md"
+        />
       </div>
     </div>
   );
 }
 
 function ImportKnowledge() {
+  const [activeTab, setActiveTab] = useState("groups");
+  const tabs = useMemo<
+    Record<
+      string,
+      {
+        title: string;
+        description: string;
+        img: string;
+      }
+    >
+  >(
+    () => ({
+      groups: {
+        title: "Groups",
+        description:
+          "Knowledge bases are maintained as groups for easy maintenance. You can set up auto updates on the groups & get analytics on each group.",
+        img: "https://slickwid-public.s3.us-east-1.amazonaws.com/crawlchat/groups-gif.gif",
+      },
+      scrape: {
+        title: "Scrape",
+        description:
+          "Scrape your docs website to get the knowledge base ready for your community. You can scrape your docs website to get the knowledge base ready for your community.",
+        img: "https://slickwid-public.s3.us-east-1.amazonaws.com/crawlchat/scrape-gif.gif",
+      },
+      think: {
+        title: "Think",
+        description:
+          "Scrape your docs website to get the knowledge base ready for your community. You can scrape your docs website to get the knowledge base ready for your community.",
+        img: "https://slickwid-public.s3.us-east-1.amazonaws.com/crawlchat/scrape-gif.gif",
+      },
+    }),
+    []
+  );
+
   return (
     <div className="mt-32">
       <Heading>
@@ -394,13 +442,60 @@ function ImportKnowledge() {
       <div className="flex flex-col gap-6">
         <div className="flex justify-center">
           <Tabs>
-            <Tab active>Groups</Tab>
-            <Tab>Scrape</Tab>
-            <Tab>Think</Tab>
+            <Tab
+              active={activeTab === "groups"}
+              onClick={() => setActiveTab("groups")}
+            >
+              Groups
+            </Tab>
+            <Tab
+              active={activeTab === "scrape"}
+              onClick={() => setActiveTab("scrape")}
+            >
+              Scrape
+            </Tab>
+            <Tab
+              active={activeTab === "think"}
+              onClick={() => setActiveTab("think")}
+            >
+              Think
+            </Tab>
           </Tabs>
         </div>
 
-        <ImportKnowledgePreview />
+        <div className={cn("hidden", activeTab === "groups" && "block")}>
+          <ImportKnowledgePreview
+            title={"Groups"}
+            description={
+              "Knowledge bases are maintained as groups for easy maintenance. You can set up auto updates on the groups & get analytics on each group."
+            }
+            img={
+              "https://slickwid-public.s3.us-east-1.amazonaws.com/crawlchat/groups-gif.gif"
+            }
+          />
+        </div>
+        <div className={cn("hidden", activeTab === "scrape" && "block")}>
+          <ImportKnowledgePreview
+            title={"Scrape"}
+            description={
+              "Scrape your docs website to get the knowledge base ready for your community. You can scrape your docs website to get the knowledge base ready for your community."
+            }
+            img={
+              "https://slickwid-public.s3.us-east-1.amazonaws.com/crawlchat/scrape-gif.gif"
+            }
+          />
+        </div>
+        <div className={cn("hidden", activeTab === "think" && "block")}>
+          <ImportKnowledgePreview
+            title={"Think"}
+            description={
+              "Scrape your docs website to get the knowledge base ready for your community. You can scrape your docs website to get the knowledge base ready for your community."
+            }
+            img={
+              "https://slickwid-public.s3.us-east-1.amazonaws.com/crawlchat/scrape-gif.gif"
+            }
+          />
+        </div>
       </div>
     </div>
   );

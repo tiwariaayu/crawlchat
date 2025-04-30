@@ -14,7 +14,7 @@ In just a few minutes, you can let your users *ask questions* directly on your d
 
 Before the bot can answer questions, it needs to *know* your documentation. Here's how to make that happen:
 
-![Docusaurs based knowledge group](/public/blog-images/docusaurus-based-group.png)
+![Docusaurs based knowledge group](/blog-images/docusaurus-based-group.png)
 
 1. Head to your CrawlChat dashboard and either pick a collection or create a new one.
 2. Go to the **Knowledge** tab and click **Add Group**.
@@ -31,7 +31,7 @@ Before the bot can answer questions, it needs to *know* your documentation. Here
 
 Now that CrawlChat knows your content, it’s time to let users interact with it on your website.
 
-![Docusaurs based knowledge group](/public/blog-images/docusaurus-embed-config.png)
+![Docusaurs based knowledge group](/blog-images/docusaurus-embed-config.png)
 
 1. Go to the **Integrations** section in your CrawlChat dashboard.
 2. Under the **Embed** tab, customize how the “Ask AI” button should look – color, position, text, and so on.

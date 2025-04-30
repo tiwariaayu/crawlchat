@@ -62,5 +62,5 @@ export function readPosts() {
     }
   }
 
-  return posts;
+  return posts.sort((a, b) => b.date.getTime() - a.date.getTime());
 }

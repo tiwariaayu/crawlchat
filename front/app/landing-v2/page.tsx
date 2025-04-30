@@ -2,7 +2,12 @@ import { useMemo, useState, type PropsWithChildren } from "react";
 import cn from "@meltdownjs/cn";
 import "../tailwind.css";
 import "../fonts.css";
-import { TbArrowRight, TbBrandDiscord, TbLoader2, TbMessage } from "react-icons/tb";
+import {
+  TbArrowRight,
+  TbBrandDiscord,
+  TbLoader2,
+  TbMessage,
+} from "react-icons/tb";
 import { useOpenScrape } from "~/landing/use-open-scrape";
 import { prisma } from "libs/prisma";
 import type { Route } from "./+types/page";
@@ -1176,7 +1181,7 @@ function Footer() {
           <div className="flex-[2]">
             <ul className="flex flex-col gap-4">
               <li>
-                <FooterLink href="https://guides.crawlchat.app/walkthrough/680faa4af1418d1ba47042ca/read">
+                <FooterLink href="/blog/how-to-add-ask-ai-chatbot-to-docusaurus-site">
                   How to integrate with Docusaurus
                 </FooterLink>
               </li>
@@ -1255,7 +1260,7 @@ function Footer() {
               </li>
               <li>
                 <a href="https://discord.gg/zW3YmCRJkC">
-                  <TbBrandDiscord/>
+                  <TbBrandDiscord />
                 </a>
               </li>
             </ul>

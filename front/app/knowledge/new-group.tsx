@@ -226,7 +226,7 @@ export default function NewScrape({ loaderData }: Route.ComponentProps) {
                 <Field label="URL" required>
                   <Input
                     required
-                    pattern="^https://[^/]+"
+                    pattern="^https?://.+"
                     placeholder="https://example.com"
                     name="url"
                     disabled={scrapeFetcher.state !== "idle"}
@@ -248,7 +248,7 @@ export default function NewScrape({ loaderData }: Route.ComponentProps) {
                 <Field label="Docs URL" required>
                   <Input
                     required
-                    pattern="^https://[^/]+"
+                    pattern="^https?://.+"
                     placeholder="https://example.com/docs"
                     name="url"
                     disabled={scrapeFetcher.state !== "idle"}
@@ -283,6 +283,8 @@ export default function NewScrape({ loaderData }: Route.ComponentProps) {
                     <Input
                       name="githubRepoUrl"
                       placeholder="https://github.com/user/repo"
+                      pattern="^https://github.com/.+$"
+                      required
                     />
                   </Field>
 
@@ -299,6 +301,8 @@ export default function NewScrape({ loaderData }: Route.ComponentProps) {
                   <Input
                     name="githubRepoUrl"
                     placeholder="https://github.com/user/repo"
+                    pattern="^https://github.com/.+$"
+                    required
                   />
                 </Field>
               </>

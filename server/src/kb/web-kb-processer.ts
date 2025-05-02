@@ -99,7 +99,7 @@ export class WebKbProcesser extends BaseKbProcesser {
           {
             text: markdown,
             error,
-            metaTags,
+            metaTags: [],
             title: getMetaTitle(metaTags),
           },
           progress

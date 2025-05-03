@@ -322,6 +322,24 @@ function UsedBy() {
           />
           <div className="font-medium text-xl">270Degrees</div>
         </div>
+
+        <div className="flex items-center gap-2 dark:hidden">
+          <img
+            src="/used-by/polotno.png"
+            alt="Polotno"
+            className="max-h-[38px]"
+          />
+          <div className="font-medium text-xl">Polotno</div>
+        </div>
+
+        <div className="items-center gap-2 hidden dark:flex">
+          <img
+            src="/used-by/polotno-white.png"
+            alt="Polotno"
+            className="max-h-[38px]"
+          />
+          <div className="font-medium text-xl">Polotno</div>
+        </div>
       </div>
     </div>
   );

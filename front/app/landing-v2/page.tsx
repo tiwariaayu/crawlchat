@@ -1155,7 +1155,7 @@ function Testimonials() {
 function CTA() {
   return (
     <div className="mt-32">
-      <div className="w-full bg-gradient-to-b from-canvas to-ash shadow-md rounded-2xl py-20 relative">
+      <div className="w-full bg-gradient-to-b from-canvas to-ash shadow-md rounded-2xl py-20 px-10 relative">
         {/* <div className="absolute top-[10%] md:top-[20%] left-[4%] md:left-[8%] rotate-[-24deg] scale-120 opacity-50">
           <IntegrateChip label="Ask AI" icon="/new-landing/ai.png" />
         </div>

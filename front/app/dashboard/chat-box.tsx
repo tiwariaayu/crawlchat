@@ -246,10 +246,10 @@ export function Resolved({
         <Group justify={"space-between"} w="full">
           <Stack gap={0}>
             <Text fontSize={"xs"} lineClamp={1}>
-              {resolveQuestion ?? "Issue solved?"}
+              {resolveQuestion || "Issue solved?"}
             </Text>
             <Text fontSize={"xs"} opacity={0.5} lineClamp={1}>
-              {resolveDescription ?? "Confirm if your issue is solved."}
+              {resolveDescription || "Confirm if your issue is solved."}
             </Text>
           </Stack>
           <Group>

@@ -1,23 +1,33 @@
-import { useMemo, useState, type PropsWithChildren } from "react";
+import {
+  useMemo,
+  useState,
+  type PropsWithChildren,
+  type ReactNode,
+} from "react";
 import cn from "@meltdownjs/cn";
 import "../tailwind.css";
 import "../fonts.css";
 import {
   TbArrowRight,
+  TbArrowsShuffle,
   TbBrandDiscord,
   TbBrandSlack,
+  TbChartBar,
+  TbClock,
   TbDatabase,
   TbFile,
   TbLoader2,
   TbMessage,
   TbRobotFace,
   TbScoreboard,
+  TbSettings,
   TbSpider,
   TbWorld,
 } from "react-icons/tb";
 import { useOpenScrape } from "~/landing/use-open-scrape";
 import { prisma } from "libs/prisma";
 import type { Route } from "./+types/page";
+import { Box, Text } from "@chakra-ui/react";
 
 export function meta() {
   return [
@@ -912,7 +922,7 @@ function ChatWidget() {
         <div className="flex-1 flex flex-col gap-4">
           <ChatWidgetFeature
             active={activeTab === "sources"}
-            title="Your sources"
+            title="Custom knowledge base"
             description="All the answers on the chat widget are provided by the resources that the answer is fetched from so that your community can always go find more help if required."
             img="/new-landing/archive-active.png"
             onClick={() => setActiveTab("sources")}
@@ -926,8 +936,8 @@ function ChatWidget() {
           />
           <ChatWidgetFeature
             active={activeTab === "pin"}
-            title="Pin"
-            description="Your community can pin the important answers so that they can always come back and find the critical help with ease"
+            title="Pin & Share"
+            description="Your community can pin and share the important answers so that they can always come back and find the critical help with ease"
             img="/new-landing/pin.png"
             onClick={() => setActiveTab("pin")}
           />
@@ -954,7 +964,7 @@ function ToolItem({
 }: {
   title: string;
   description: string;
-  icon: string;
+  icon: string | ReactNode;
 }) {
   return (
     <div
@@ -964,7 +974,22 @@ function ToolItem({
       )}
     >
       <div className="flex flex-col gap-2">
-        <img src={icon} alt={title} className="w-6 h-6" />
+        {typeof icon === "string" ? (
+          <img src={icon} alt={title} className="w-6 h-6" />
+        ) : (
+          <Box>
+            <Text
+              fontSize={"32px"}
+              color={"brand.fg"}
+              bg={"brand.subtle"}
+              w="fit"
+              p={4}
+              rounded={"full"}
+            >
+              {icon}
+            </Text>
+          </Box>
+        )}
         <h3 className="text-xl font-bold font-radio-grotesk">{title}</h3>
       </div>
       <p className="opacity-50 font-medium leading-tight">{description}</p>
@@ -976,45 +1001,47 @@ function Tools() {
   return (
     <div className="mt-32" id="features">
       <Heading>
-        All the <HeadingHighlight>tools</HeadingHighlight> to improve your docs
+        All the <HeadingHighlight>tools</HeadingHighlight> to reduce your
+        support tickets
       </Heading>
 
       <HeadingDescription>
-        CrawlChat has quick to import options for multiple sources that cover
-        most of your use cases.
+        CrawlChat cuts support tickets by letting users instantly chat with your
+        docs, getting answers without needing human help right from your site,
+        Discord, or Slack.
       </HeadingDescription>
 
       <div className="bg-canvas rounded-2xl border border-outline">
         <ToolsRow>
           <ToolItem
-            title="Scoring"
-            description="All the answers and conversations are given a score that represent how relevant the sources are for the question asked. Low score means not enough data, a chance to improve"
-            icon="/new-landing/ring-chart.png"
+            title="Instant answers"
+            description="CrawlChat lets users ask questions and get immediate answers from your docs, guides, or FAQs, no searching or waiting. This reduces basic support requests and improves self-service."
+            icon={<TbMessage />}
+          />
+          <ToolItem
+            title="Less Repetitive Questions"
+            description="CrawlChat answers frequent questions directly from your documentation, reducing the need for users to contact support for the same issues and letting your team focus on complex tasks."
+            icon={<TbArrowsShuffle />}
+          />
+          <ToolItem
+            title="24/7 Availability"
+            description="CrawlChat is always active, helping users anytime—day or night—so they don’t have to wait for support teams, reducing off-hour ticket volume."
+            icon={<TbClock />}
           />
           <ToolItem
             title="Analytics"
             description="You get a wide range of analytics for your docs and community. The daily messages chart, score distribution and many more that give your more visibility into your docs and the community"
-            icon="/new-landing/graph-up.png"
+            icon={<TbChartBar />}
           />
           <ToolItem
-            title="Dense groups"
-            description="You get to know how each knowledge group is performing against the questions asked. You can always improve them if they are not performing as expected"
-            icon="/new-landing/heirarchy-square.png"
+            title="Discord & Slack bots"
+            description="CrawlChat works inside Discord and Slack, letting users ask questions and get instant answers from your docs—just by tagging the bot. It’s like support, right in chat."
+            icon={<TbBrandDiscord />}
           />
           <ToolItem
-            title="@CrawlChat to answer"
-            description="You don’t have to be available on the channels all the time. Members and just tag @crawlchat to get the answer for the questions they have."
-            icon="/new-landing/chat-bubble.png"
-          />
-          <ToolItem
-            title="Learn"
-            description="Turn the conversations you have on the channels into a knowledge base with just a @crawlchat learn message. The bot adds the whole conversation into the knowledge group so that it uses it in the upcoming answers"
-            icon="/new-landing/online-learning.png"
-          />
-          <ToolItem
-            title="Drafting"
-            description="Get more control on the help you provide on your channels. Use CrawlChat to draft answers for the questions so that you can minimise your efforts in answering them end to end. Automate manually!"
-            icon="/new-landing/edit-pen.png"
+            title="Customisation"
+            description="CrawlChat lets you customize the chat widget’s look and tone. With custom prompts, you guide how the AI responds—tailoring answers to fit your brand and support needs."
+            icon={<TbSettings />}
           />
         </ToolsRow>
       </div>
@@ -1511,9 +1538,9 @@ export default function LandingV2({ loaderData }: Route.ComponentProps) {
           <Works />
         </Container>
 
-        <Container>
+        {/* <Container>
           <ImportKnowledge />
-        </Container>
+        </Container> */}
 
         <Container>
           <Integrations />

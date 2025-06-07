@@ -353,6 +353,7 @@ expressWs.app.ws("/", (ws: any, req) => {
               apiKey: llmConfig.apiKey,
               topN: llmConfig.ragTopN,
               richBlocks: scrape.richBlocksConfig?.blocks,
+              minScore: scrape.minScore ?? undefined,
             }
           );
 
@@ -617,6 +618,7 @@ app.post("/answer/:scrapeId", authenticate, async (req, res) => {
       baseURL: llmConfig.baseURL,
       apiKey: llmConfig.apiKey,
       topN: llmConfig.ragTopN,
+      minScore: scrape.minScore ?? undefined,
     }
   );
 

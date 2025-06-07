@@ -13,6 +13,7 @@ import {
   Input,
   Portal,
   Select,
+  Slider,
   Stack,
   Text,
   Textarea,
@@ -135,10 +136,16 @@ export async function action({ request }: Route.ActionArgs) {
       btnLabel: formData.get("resolveNoBtnLabel") as string,
     };
   }
-  if (formData.get("customYes") !== "on") {
+  if (
+    formData.has("from-ticketing-enabled") &&
+    formData.get("customYes") !== "on"
+  ) {
     update.resolveYesConfig = null;
   }
-  if (formData.get("customNo") !== "on") {
+  if (
+    formData.has("from-ticketing-enabled") &&
+    formData.get("customNo") !== "on"
+  ) {
     update.resolveNoConfig = null;
   }
   if (formData.has("richBlocksJsonString")) {
@@ -151,6 +158,9 @@ export async function action({ request }: Route.ActionArgs) {
         prompt: makeRichBlockPrompt(b),
       })) as any,
     };
+  }
+  if (formData.has("minScore")) {
+    update.minScore = parseFloat(formData.get("minScore") as string);
   }
 
   const scrape = await prisma.scrape.update({
@@ -616,11 +626,13 @@ export default function ScrapeSettings({ loaderData }: Route.ComponentProps) {
   const deleteFetcher = useFetcher();
   const modelFetcher = useFetcher();
   const logoFetcher = useFetcher();
+  const minScoreFetcher = useFetcher();
 
   const [deleteConfirm, setDeleteConfirm] = useState(false);
   const [selectedModel, setSelectedModel] = useState<LlmModel>(
     loaderData.scrape.llmModel ?? "gpt_4o_mini"
   );
+  const [minScore, setMinScore] = useState(loaderData.scrape.minScore ?? 0);
 
   const models = useMemo(() => {
     return createListCollection({
@@ -723,6 +735,36 @@ export default function ScrapeSettings({ loaderData }: Route.ComponentProps) {
         </SettingsSection>
 
         <TicketingSettings scrape={loaderData.scrape} />
+
+        <SettingsSection
+          title="Min score"
+          description="Configure the minimum score (relevance score) required for the knowledge base to have to be considered for a question. If it is too high, it will not be able to answer questions as much. If it is too low, it will answer questions that are not relevant."
+          fetcher={minScoreFetcher}
+        >
+          <Group>
+            <Slider.Root
+              width="300px"
+              defaultValue={[minScore]}
+              onValueChange={(e) => setMinScore(e.value[0])}
+              min={0}
+              max={1}
+              step={0.01}
+            >
+              <Slider.Control>
+                <Slider.Track>
+                  <Slider.Range />
+                </Slider.Track>
+                <Slider.Thumb index={0}>
+                  <Slider.HiddenInput name="minScore" />
+                </Slider.Thumb>
+              </Slider.Control>
+            </Slider.Root>
+
+            <Badge size={"lg"} variant={"surface"}>
+              {minScore}
+            </Badge>
+          </Group>
+        </SettingsSection>
 
         <SettingsSection
           title="AI Model"

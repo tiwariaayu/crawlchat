@@ -25,7 +25,11 @@ export type RAGAgentCustomMessage = {
 export function makeRagTool(
   scrapeId: string,
   indexerKey: string | null,
-  options?: { onPreSearch?: (query: string) => Promise<void>; topN?: number }
+  options?: {
+    onPreSearch?: (query: string) => Promise<void>;
+    topN?: number;
+    minScore?: number;
+  }
 ) {
   const indexer = makeIndexer({ key: indexerKey, topN: options?.topN });
 
@@ -49,13 +53,16 @@ export function makeRagTool(
         topK: 20,
       });
 
-      let processed = await indexer.process(query, result);
+      const processed = await indexer.process(query, result);
+      const filtered = processed.filter(
+        (r) => options?.minScore === undefined || r.score >= options.minScore
+      );
 
       return {
         content:
-          processed.length > 0
+          filtered.length > 0
             ? JSON.stringify(
-                processed.map((r, i) => ({
+                filtered.map((r, i) => ({
                   url: r.url,
                   content: r.content,
                   fetchUniqueId: r.fetchUniqueId,
@@ -83,6 +90,7 @@ export function makeFlow(
     apiKey?: string;
     topN?: number;
     richBlocks?: RichBlockConfig[];
+    minScore?: number;
   }
 ) {
   const ragTool = makeRagTool(scrapeId, indexerKey, options);

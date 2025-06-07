@@ -132,6 +132,7 @@ model Scrape {
   analytics             ScrapeAnalytics?
   llmModel              LlmModel?
   richBlocksConfig      RichBlocksConfig?
+  minScore              Float?
 
   user                  User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 

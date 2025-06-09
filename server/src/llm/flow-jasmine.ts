@@ -157,6 +157,7 @@ export function makeFlow(
       enabledRichBlocks.length > 0 ? richBlocksPrompt : "",
 
       "Don't ask more than 3 questions for the entire answering flow.",
+      "Be polite when you don't have the answer, exlain in a friendly way and inform that it is better to reach out the support team.",
       systemPrompt,
     ]),
     tools: [ragTool.make()],

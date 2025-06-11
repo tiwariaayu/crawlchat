@@ -745,7 +745,7 @@ export default function ScrapeSettings({ loaderData }: Route.ComponentProps) {
               name="slug"
               defaultValue={loaderData.scrape.slug ?? ""}
               placeholder="Ex: remotion"
-              pattern="^[a-z0-9\-]{4,16}$"
+              pattern="^[a-z0-9\-]{4,32}$"
               required
             />
           </SettingsSection>

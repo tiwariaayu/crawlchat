@@ -78,6 +78,14 @@ export function getPendingActions(
       url: "/settings#logo",
     },
     {
+      id: "set-slug",
+      priority: 5,
+      title: "Set slug",
+      description: "Set the slug of the chatbot. Custom URL.",
+      checker: (input) => !input.scrape.slug,
+      url: "/settings#slug",
+    },
+    {
       id: "set-prompt",
       priority: 5,
       title: "Set prompt",

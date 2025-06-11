@@ -22,21 +22,21 @@ export function meta() {
 export function loader() {
   const bots = [
     {
-      url: "https://crawlchat.app/w/684022717d51a04cd9712db8",
+      url: "https://crawlchat.app/w/demo-tailwind-v4",
       title: "Tailwind v4",
       description:
         "Tailwind CSS is a utility-first CSS framework that lets you build custom designs quickly by applying pre-defined classes directly in your HTML.",
       logo: "https://codekitapp.com/images/help/free-tailwind-icon@2x.png",
     },
     {
-      url: "https://crawlchat.app/w/6831452d6f8339e082e17d26",
+      url: "https://crawlchat.app/w/demo-tanstack-s",
       title: "TanStack Start",
       description:
         "TanStack Start is a full-stack React framework with type-safe routing and isomorphic data loading.",
       logo: "https://tanstack.com/assets/splash-light-CHqMsyq8.png",
     },
     {
-      url: "https://crawlchat.app/w/67c52dd30eea2e08d8b04671",
+      url: "https://crawlchat.app/w/demo-daisyui",
       title: "daisyUI",
       description:
         "daisyUI is a Tailwind CSS plugin that provides pre-styled, themeable UI components.",

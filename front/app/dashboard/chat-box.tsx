@@ -207,6 +207,9 @@ export function SourceLink({
       target="_blank"
       textDecoration={"none"}
       outline={"none"}
+      _last={{
+        borderBottom: "none",
+      }}
     >
       <Stack px={4} py={3} w="full">
         <Group justify={"space-between"} w="full">
@@ -342,6 +345,9 @@ function UserMessage({ content }: { content: string }) {
       className="user-message"
       p={4}
       pb={0}
+      _first={{
+        borderTop: "none",
+      }}
     >
       <Text
         fontSize={"xl"}
@@ -776,10 +782,11 @@ function Toolbar({
     <Group
       h="60px"
       borderBottom={"1px solid"}
-      borderColor={"brand.outline"}
+      borderColor={"brand.outline/50"}
       p={4}
       w={"full"}
       justify={"space-between"}
+      bg="brand.gray.50/50"
     >
       <Group>
         <Group>
@@ -919,14 +926,14 @@ function useChatBoxDimensions(
 
     switch (size) {
       case "large":
-        width = Math.min(width, 640);
-        height = Math.min(height, 540);
+        width = Math.min(width, 700);
+        height = Math.min(height, 600);
         return { width: width, height: height };
       // case "full_screen":
       //   return { width: width, height: height };
       default:
         width = Math.min(width, 520);
-        height = Math.min(height, 420);
+        height = Math.min(height, 460);
         return { width: width, height: height };
     }
   }
@@ -1256,6 +1263,7 @@ export default function ScrapeWidget({
         maxH={boxDimensions.height}
         gap={0}
         position={"relative"}
+        overflow={"hidden"}
       >
         <Toolbar
           threadId={thread.id}
@@ -1346,8 +1354,20 @@ export default function ScrapeWidget({
             embed={embed}
           />
         )}
-
-        <PoweredBy embed={embed} />
+        <Group
+          px={4}
+          py={2}
+          bg="brand.gray.50/50"
+          borderTop={"1px solid"}
+          borderColor={"brand.outline/50"}
+        >
+          <Text fontSize={"xs"} opacity={0.4}>
+            Powered by{" "}
+            <Link href="https://crawlchat.com" target="_blank">
+              CrawlChat
+            </Link>
+          </Text>
+        </Group>
       </Stack>
     </Center>
   );

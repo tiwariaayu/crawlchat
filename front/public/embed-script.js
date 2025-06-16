@@ -198,7 +198,9 @@ class CrawlChatEmbed {
       logo.style.width = "40px";
       logo.style.height = "40px";
       div.appendChild(logo);
+      
       div.style.borderRadius = "10px";
+      div.style.border = `1px solid ${color}`;
     }
 
     const span = document.createElement("span");

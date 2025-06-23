@@ -20,7 +20,6 @@ import type {
   MessageSourceLink,
   MessageRating,
   Scrape,
-  Thread,
   WidgetSize,
   ResolveBtnConfig,
 } from "libs/prisma";
@@ -70,9 +69,6 @@ function ChatInput({
   scrape,
   inputRef,
   embed,
-  threadId,
-  onCreateThread,
-  connected,
 }: {
   onAsk: (query: string) => void;
   stage: AskStage;
@@ -81,9 +77,6 @@ function ChatInput({
   scrape: Scrape;
   inputRef: React.RefObject<HTMLTextAreaElement | null>;
   embed?: boolean;
-  threadId?: string;
-  onCreateThread?: () => void;
-  connected?: boolean;
 }) {
   const [query, setQuery] = useState("");
   const [height, setHeight] = useState(60);
@@ -110,21 +103,10 @@ function ChatInput({
     [embed]
   );
 
-  useEffect(() => {
-    if (connected && threadId && query.length) {
-      handleAsk();
-    }
-  }, [connected]);
-
   function handleAsk() {
-    if (!threadId) {
-      onCreateThread?.();
-      return;
-    }
-
     onAsk(query);
-    track("chat_ask", { query });
     setQuery("");
+    track("chat_ask", { query });
   }
 
   function getPlaceholder() {
@@ -1112,6 +1094,7 @@ export default function ScrapeWidget({
   );
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const readOnly = useMemo(() => !onTicketCreate, []);
+  const [pendingQuery, setPendingQuery] = useState<string>();
 
   useEffect(() => {
     if (userToken) {
@@ -1159,6 +1142,13 @@ export default function ScrapeWidget({
   }, []);
 
   useEffect(() => {
+    if (chat.connected && threadId && pendingQuery) {
+      handleAsk(pendingQuery);
+      setPendingQuery(undefined);
+    }
+  }, [chat.connected]);
+
+  useEffect(() => {
     if (eraseAt) {
       chat.erase();
       setScreen("chat");
@@ -1166,6 +1156,12 @@ export default function ScrapeWidget({
   }, [eraseAt]);
 
   async function handleAsk(query: string) {
+    if (!threadId) {
+      chat.setMakingThreadId();
+      makeThreadId?.();
+      setPendingQuery(query);
+      return;
+    }
     chat.ask(query);
     await scroll();
   }
@@ -1245,12 +1241,6 @@ export default function ScrapeWidget({
 
   function handleTicketCreate(email: string, title: string, message: string) {
     onTicketCreate?.(email, title, message);
-  }
-
-  async function handleCreateThread() {
-    chat.setMakingThreadId();
-    makeThreadId?.();
-    await scroll();
   }
 
   return (
@@ -1365,9 +1355,6 @@ export default function ScrapeWidget({
             disabled={screen !== "chat" || readOnly}
             scrape={scrape}
             embed={embed}
-            connected={chat.connected}
-            threadId={threadId}
-            onCreateThread={handleCreateThread}
           />
         )}
         <Group

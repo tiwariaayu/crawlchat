@@ -1,4 +1,9 @@
-import { TbChevronLeft, TbChevronRight, TbTicket } from "react-icons/tb";
+import {
+  TbChevronLeft,
+  TbChevronRight,
+  TbCopy,
+  TbTicket,
+} from "react-icons/tb";
 import { Page } from "./components/page";
 import { getAuthUser } from "./auth/middleware";
 import type { Route } from "./+types/tickets";
@@ -9,7 +14,9 @@ import {
   Badge,
   Box,
   EmptyState,
+  Flex,
   Group,
+  IconButton,
   Link,
   Stack,
   Text,
@@ -19,6 +26,8 @@ import moment from "moment";
 import { Button } from "~/components/ui/button";
 import { redirect } from "react-router";
 import { Link as RouterLink } from "react-router";
+import { useMemo } from "react";
+import { toaster } from "./components/ui/toaster";
 
 export async function loader({ request }: Route.LoaderArgs) {
   const user = await getAuthUser(request);
@@ -84,6 +93,35 @@ export async function loader({ request }: Route.LoaderArgs) {
 }
 
 function Ticket({ thread }: { thread: Thread }) {
+  const customTags = useMemo(() => {
+    if (!thread.customTags) {
+      return [];
+    }
+    const tags = thread.customTags as Record<string, any>;
+    return Object.keys(tags).map((key) => {
+      let link = undefined;
+      if (key === "store") {
+        link = `https://${tags[key]}`;
+      } else if (key === "email") {
+        link = `mailto:${tags[key]}`;
+      } else if (key === "phone") {
+        link = `tel:${tags[key]}`;
+      }
+      return {
+        key,
+        value: tags[key],
+        link,
+      };
+    });
+  }, [thread.customTags]);
+
+  function copyToClipboard(value: string) {
+    navigator.clipboard.writeText(value);
+    toaster.success({
+      title: "Copied to clipboard",
+    });
+  }
+
   return (
     <Stack
       borderBottom={"1px solid"}
@@ -122,12 +160,33 @@ function Ticket({ thread }: { thread: Thread }) {
       </Group>
       <Stack gap={0}>
         {thread.customTags &&
-          Object.keys(thread.customTags).map((key) => (
-            <Box key={key}>
-              <Badge variant={"surface"}>
-                {key}: {(thread.customTags as Record<string, any>)[key]}
-              </Badge>
-            </Box>
+          customTags.map((tag) => (
+            <Flex
+              key={tag.key}
+              fontSize={"sm"}
+              _hover={{ opacity: 1 }}
+              alignItems={"center"}
+              gap={2}
+            >
+              {tag.key}:{" "}
+              <Link
+                href={tag.link}
+                target="_blank"
+                rel="noopener noreferrer"
+                textDecor={!tag.link ? "none" : undefined}
+                cursor={!tag.link ? "default" : "pointer"}
+              >
+                {tag.value}
+              </Link>
+              <Box
+                opacity={0.5}
+                _hover={{ opacity: 1 }}
+                cursor={"pointer"}
+                onClick={() => copyToClipboard(tag.value)}
+              >
+                <TbCopy />
+              </Box>
+            </Flex>
           ))}
       </Stack>
     </Stack>

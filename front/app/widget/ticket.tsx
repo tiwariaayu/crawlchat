@@ -6,6 +6,7 @@ import {
   Box,
   Group,
   Heading,
+  IconButton,
   Image,
   Link,
   Separator,
@@ -17,6 +18,7 @@ import {
   TbAlertCircle,
   TbArrowRight,
   TbCheck,
+  TbCopy,
   TbMessage,
   TbUser,
 } from "react-icons/tb";
@@ -30,6 +32,7 @@ import { MarkdownProse } from "./markdown-prose";
 import { sendReactEmail } from "~/email";
 import TicketUserMessageEmail from "emails/ticket-user-message";
 import TicketAdminMessageEmail from "emails/ticket-admin-message";
+import { Toaster, toaster } from "~/components/ui/toaster";
 
 export async function loader({ params, request }: Route.LoaderArgs) {
   const url = new URL(request.url);
@@ -54,7 +57,7 @@ export async function loader({ params, request }: Route.LoaderArgs) {
     thread = null;
   }
 
-  const role =
+  const role: "agent" | "user" =
     thread && loggedInUser?.id === thread.scrape.userId ? "agent" : "user";
 
   return { thread, passedKey: key, ticketNumber, role };
@@ -220,16 +223,20 @@ type TicketMessage = {
 function Message({
   scrape,
   message,
+  role,
 }: {
   scrape: Scrape;
   message: TicketMessage;
+  role: "agent" | "user";
 }) {
+  const youTag = role === "user" ? "You" : "User";
+  const shouldHighlight =
+    role === "agent" ? message.role === "user" : message.role === "agent";
+
   return (
     <Stack
       border={"2px solid"}
-      borderColor={
-        message.role === "user" ? "brand.outline" : "brand.emphasized"
-      }
+      borderColor={shouldHighlight ? "brand.emphasized" : "brand.outline"}
       rounded={"md"}
       gap={0}
     >
@@ -249,7 +256,7 @@ function Message({
         )}
         {message.role === "user" && <TbUser />}
         <Text fontWeight={"bold"}>
-          {message.role === "user" ? "You" : scrape.title}
+          {message.role === "user" ? youTag : scrape.title}
         </Text>
         <Text opacity={0.5} fontSize={"sm"}>
           {moment(message.createdAt).fromNow()}
@@ -302,6 +309,13 @@ export default function Ticket({ loaderData }: Route.ComponentProps) {
     setResolve(true);
   }
 
+  function copyToClipboard(value: string) {
+    navigator.clipboard.writeText(value);
+    toaster.success({
+      title: "Copied to clipboard",
+    });
+  }
+
   if (!loaderData.thread) {
     return (
       <Stack alignItems={"center"} justifyContent={"center"} h="100vh" w="full">
@@ -335,15 +349,28 @@ export default function Ticket({ loaderData }: Route.ComponentProps) {
                 {loaderData.thread.ticketStatus!.toUpperCase()}
               </Badge>
               <Separator h="4" orientation="vertical" />
-              <Text opacity={0.5} fontSize="sm">
+              <Text opacity={0.8} fontSize="sm">
                 Opened {moment(openedAt).fromNow()}
               </Text>
               {loaderData.role === "agent" && (
                 <>
                   <Separator h="4" orientation="vertical" />
-                  <Text opacity={0.5} fontSize="sm">
-                    {loaderData.thread.ticketUserEmail}
-                  </Text>
+                  <Group>
+                    <Text opacity={0.8} fontSize="sm">
+                      {loaderData.thread.ticketUserEmail}
+                    </Text>
+                    <IconButton
+                      size={"xs"}
+                      variant={"ghost"}
+                      onClick={() =>
+                        copyToClipboard(
+                          loaderData.thread!.ticketUserEmail ?? ""
+                        )
+                      }
+                    >
+                      <TbCopy />
+                    </IconButton>
+                  </Group>
                 </>
               )}
             </Group>
@@ -355,6 +382,7 @@ export default function Ticket({ loaderData }: Route.ComponentProps) {
               key={message.id}
               message={message}
               scrape={loaderData.thread!.scrape}
+              role={loaderData.role}
             />
           ))}
           {loaderData.thread.ticketStatus === "closed" && (
@@ -440,6 +468,8 @@ export default function Ticket({ loaderData }: Route.ComponentProps) {
           </commentFetcher.Form>
         )}
       </Stack>
+
+      <Toaster />
     </Stack>
   );
 }

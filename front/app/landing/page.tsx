@@ -6,7 +6,9 @@ import {
   TbArrowRight,
   TbArrowsShuffle,
   TbBrandDiscord,
+  TbBrandLinkedin,
   TbBrandSlack,
+  TbBrandX,
   TbChartBar,
   TbChevronRight,
   TbClock,
@@ -140,10 +142,10 @@ function Button({
 function StatsItem({ label, value }: { label: string; value: number }) {
   return (
     <div className="flex gap-4 py-6 px-6 items-center border-b border-outline last:border-b-0">
-      <div className="flex-1 text-5xl md:text-6xl font-bold font-radio-grotesk">
+      <div className="flex-1 flex">{label}</div>
+      <div className="text-5xl md:text-6xl font-bold font-radio-grotesk">
         {value}
       </div>
-      <div className="flex-1 flex justify-end">{label}</div>
     </div>
   );
 }
@@ -1126,6 +1128,105 @@ export function Flow() {
   );
 }
 
+export function CustomTestimonial({
+  text,
+  author,
+  authorImage,
+  authorLink,
+  icon,
+  authorCompany,
+}: {
+  text: string | ReactNode;
+  author: string;
+  authorImage: string;
+  authorLink: string;
+  icon: ReactNode;
+  authorCompany: string;
+}) {
+  return (
+    <div className="border-r-0 md:border-r border-b md:border-b-0 border-outline p-6 last:border-r-0 last:border-b-0">
+      <p className="text-xl font-radio-grotesk text-center italic">{text}</p>
+
+      <div className="flex flex-col justify-center gap-2 mt-8">
+        <div className="flex flex-col items-center">
+          <img
+            src={authorImage}
+            alt={author}
+            className="w-16 h-16 rounded-full border border-outline"
+          />
+          <span className="font-medium">{author}</span>
+          <span className="text-sm text-gray-500">{authorCompany}</span>
+        </div>
+        <div className="flex justify-center gap-2">
+          <a href={authorLink}>{icon}</a>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function CTH({ children }: PropsWithChildren) {
+  return (
+    <span className="bg-brand-subtle text-brand px-2 mx-1 whitespace-nowrap">
+      {children}
+    </span>
+  );
+}
+
+function CTHS({ children }: PropsWithChildren) {
+  return <span className="text-brand font-bold">{children}</span>;
+}
+
+export function CustomTestimonials() {
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-3 border border-outline rounded-2xl mt-32 bg-canvas">
+      <CustomTestimonial
+        text={
+          <div>
+            MCP, llms.txt and remotion.ai are now live! Thanks to @pramodk73 and{" "}
+            <CTHS>CrawlChat</CTHS> for getting us up to speed with{" "}
+            <CTH>AI integrations.</CTH>
+          </div>
+        }
+        author="Jonny Burger"
+        authorImage="https://pbs.twimg.com/profile_images/1701672174661046272/Ez-SKeJ1_400x400.jpg"
+        authorLink="https://x.com/JNYBGR/status/1899786274635927674"
+        icon={<TbBrandX />}
+        authorCompany="Remotion"
+      />
+      <CustomTestimonial
+        text={
+          <div>
+            Integrated <CTHS>CrawlChat</CTHS> into the new Konva docs – hats off
+            to @pramodk73 for making it insanely useful. It now powers{" "}
+            <CTH>"Ask AI"</CTH> widget on site, <CTH>MCP server</CTH> for docs,{" "}
+            <CTH>Discord bot</CTH> for community. Smarter docs. Better support.
+          </div>
+        }
+        author="Anton Lavrenov"
+        authorImage="https://pbs.twimg.com/profile_images/1561788279313383424/RcRFiKnE_400x400.png"
+        authorLink="https://x.com/lavrton/status/1915467775734350149"
+        icon={<TbBrandX />}
+        authorCompany="Konvajs & Polotno"
+      />
+      <CustomTestimonial
+        text={
+          <div>
+            Can wholeheartedly <CTH>recommend this</CTH>. The number of support
+            calls to 270 Degrees significantly <CTH>dropped</CTH> after we
+            implemented <CTHS>CrawlChat</CTHS>.
+          </div>
+        }
+        author="Maurits Koekoek"
+        authorImage="https://media.licdn.com/dms/image/v2/D4E03AQG-zmBs0zHLvA/profile-displayphoto-shrink_800_800/profile-displayphoto-shrink_800_800/0/1683012930288?e=1756339200&v=beta&t=MxfQWsU6WS3fxC1vAKYR_bb-z-sfNfXIAcEWXBw2iQA"
+        authorLink="https://www.linkedin.com/feed/update/urn:li:activity:7353688013584977920?commentUrn=urn%3Ali%3Acomment%3A%28activity%3A7353688013584977920%2C7353699420036571137%29&dashCommentUrn=urn%3Ali%3Afsd_comment%3A%287353699420036571137%2Curn%3Ali%3Aactivity%3A7353688013584977920%29"
+        icon={<TbBrandLinkedin />}
+        authorCompany="270 Degrees"
+      />
+    </div>
+  );
+}
+
 export default function Landing({ loaderData }: Route.ComponentProps) {
   return (
     <LandingPage>
@@ -1154,6 +1255,10 @@ export default function Landing({ loaderData }: Route.ComponentProps) {
       </Container>
 
       <Container>
+        <CustomTestimonials />
+      </Container>
+
+      <Container>
         <Flow />
       </Container>
 
@@ -1169,9 +1274,9 @@ export default function Landing({ loaderData }: Route.ComponentProps) {
         <Pricing />
       </Container>
 
-      <Container>
+      {/* <Container>
         <Testimonials />
-      </Container>
+      </Container> */}
 
       <Container>
         <CTA />

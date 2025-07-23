@@ -794,8 +794,8 @@ function Toolbar({
       justify={"space-between"}
       bg="brand.gray.50/50"
     >
-      <Group>
-        <Group>
+      <Group flex="1">
+        <Group w="full">
           {scrape.logoUrl && (
             <img
               src={scrape.logoUrl}

@@ -1043,7 +1043,7 @@ function Hero() {
       <div className="flex justify-center gap-4 my-8 flex-wrap">
         <button className={ctaClassNames(false)} onClick={handleAskCrawlChat}>
           <TbMessage />
-          Ask CrawlChat
+          Try it now
         </button>
         <a className={ctaClassNames(true)} href="/login">
           Create your chatbot

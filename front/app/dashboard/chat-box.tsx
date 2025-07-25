@@ -1374,9 +1374,15 @@ export default function ScrapeWidget({
           borderTop={"1px solid"}
           borderColor={"brand.outline/50"}
         >
-          <Text fontSize={"xs"} opacity={0.4}>
-            Powered by{" "}
-            <Link href="https://crawlchat.app" target="_blank">
+          <Text fontSize={"xs"}>
+            <Text as="span" opacity={0.4}>
+              Powered by{" "}
+            </Text>
+            <Link
+              href="https://crawlchat.app"
+              target="_blank"
+              color={"brand.fg"}
+            >
               CrawlChat
             </Link>
           </Text>

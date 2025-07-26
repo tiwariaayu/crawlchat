@@ -560,6 +560,8 @@ app.post("/resource/:scrapeId", authenticate, async (req, res) => {
 });
 
 app.post("/answer/:scrapeId", authenticate, async (req, res) => {
+  console.log("Answer request for", req.params.scrapeId);
+  
   const scrape = await prisma.scrape.findFirstOrThrow({
     where: { id: req.params.scrapeId },
   });

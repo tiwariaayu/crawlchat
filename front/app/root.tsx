@@ -131,6 +131,10 @@ export function Layout({ children }: { children: React.ReactNode }) {
             data-code="aO7kKYfA1oQ3g4FLHanketwYCWPu2cE0"
           ></script>
         )}
+        <script>
+          {"window.lemonSqueezyAffiliateConfig = { store: 'beestack' };"}
+        </script>
+        <script src="https://lmsqueezy.com/affiliate.js" defer></script>
         <Meta />
         <Links />
       </head>

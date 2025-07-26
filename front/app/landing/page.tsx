@@ -34,6 +34,7 @@ import { prisma } from "libs/prisma";
 import type { Route } from "./+types/page";
 import { Badge, Box, Text } from "@chakra-ui/react";
 import { Tooltip } from "~/components/ui/tooltip";
+import { track } from "~/pirsch";
 
 export function meta() {
   return [
@@ -448,6 +449,13 @@ function ChatWidgetFeature({
 function ChatWidget() {
   const [activeTab, setActiveTab] = useState("sources");
 
+  function handleClick(tab: string) {
+    track("chat-widget-click", {
+      tab,
+    });
+    setActiveTab(tab);
+  }
+
   return (
     <div className="mt-32">
       <Heading>
@@ -467,21 +475,21 @@ function ChatWidget() {
             title="Custom knowledge base"
             description="All the answers on the chat widget are provided by the resources that the answer is fetched from so that your community can always go find more help if required."
             img="/new-landing/archive-active.png"
-            onClick={() => setActiveTab("sources")}
+            onClick={() => handleClick("sources")}
           />
           <ChatWidgetFeature
             active={activeTab === "code"}
             title="Code blocks"
             description="CrawlChat supports showing code blocks and your community can just copy and paste the generated code to their workflow."
             img="/new-landing/app-programming.png"
-            onClick={() => setActiveTab("code")}
+            onClick={() => handleClick("code")}
           />
           <ChatWidgetFeature
             active={activeTab === "pin"}
             title="Pin & Share"
             description="Your community can pin and share the important answers so that they can always come back and find the critical help with ease"
             img="/new-landing/pin.png"
-            onClick={() => setActiveTab("pin")}
+            onClick={() => handleClick("pin")}
           />
         </div>
         <div className="flex-1 bg-ash-strong rounded-2xl shadow-md border border-outline aspect-square overflow-hidden">
@@ -995,6 +1003,9 @@ export function ctaClassNames(primary: boolean) {
 
 function Hero() {
   function handleAskCrawlChat() {
+    track("hero-ask-ai", {
+      page: "landing",
+    });
     (window as any).crawlchatEmbed.show();
   }
 
@@ -1417,6 +1428,17 @@ function FAQ() {
 
   const [active, setActive] = useState<number>();
 
+  function handleClick(index: number) {
+    track("faq-click", {
+      question: questions[index].question,
+    });
+    if (active === index) {
+      setActive(undefined);
+    } else {
+      setActive(index);
+    }
+  }
+
   return (
     <div className="flex flex-col mt-32">
       <Heading>Frequently Asked Questions</Heading>
@@ -1430,7 +1452,7 @@ function FAQ() {
                 "hover:text-brand",
                 active === index && "text-brand"
               )}
-              onClick={() => setActive(active === index ? undefined : index)}
+              onClick={() => handleClick(index)}
             >
               <h3>{question.question}</h3>
               <span className="shrink-0">
@@ -1454,7 +1476,7 @@ function Gallery() {
     {
       title: "Dashboard",
       img: "/dashboard.png",
-      icon: <TbDashboard/>
+      icon: <TbDashboard />,
     },
     {
       title: "Add knowledge",
@@ -1498,10 +1520,14 @@ function Gallery() {
 
   const handleStepChange = (index: number) => {
     if (index === activeStep) return;
-    
+
+    track("gallery-click", {
+      step: steps[index].title,
+    });
+
     setIsLoading(true);
     setActiveStep(index);
-    
+
     const img = new Image();
     img.onload = () => {
       setIsLoading(false);
@@ -1529,8 +1555,8 @@ function Gallery() {
             </div>
           </div>
         )}
-        <img 
-          src={steps[activeStep].img} 
+        <img
+          src={steps[activeStep].img}
           alt={steps[activeStep].title}
           className={cn(
             "w-full h-full object-cover",
@@ -1613,10 +1639,6 @@ export default function Landing({ loaderData }: Route.ComponentProps) {
       <Container>
         <Pricing />
       </Container>
-
-      {/* <Container>
-        <Testimonials />
-      </Container> */}
 
       <Container>
         <FAQ />

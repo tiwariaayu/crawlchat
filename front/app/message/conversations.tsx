@@ -159,7 +159,7 @@ export default function Conversations({ loaderData }: Route.ComponentProps) {
                 <Link
                   to={
                     loaderData.page > 1
-                      ? `/conversations?page=${loaderData.page - 1}`
+                      ? `/messages/conversations?page=${loaderData.page - 1}`
                       : "#"
                   }
                 >
@@ -182,7 +182,7 @@ export default function Conversations({ loaderData }: Route.ComponentProps) {
                 <Link
                   to={
                     loaderData.page < loaderData.totalPages
-                      ? `/conversations?page=${loaderData.page + 1}`
+                      ? `/messages/conversations?page=${loaderData.page + 1}`
                       : "#"
                   }
                 >

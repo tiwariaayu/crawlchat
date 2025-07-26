@@ -1502,7 +1502,6 @@ function Gallery() {
     setIsLoading(true);
     setActiveStep(index);
     
-    // Create a new image element to preload
     const img = new Image();
     img.onload = () => {
       setIsLoading(false);
@@ -1534,7 +1533,7 @@ function Gallery() {
           src={steps[activeStep].img} 
           alt={steps[activeStep].title}
           className={cn(
-            "w-full h-full object-contain",
+            "w-full h-full object-cover",
             isLoading && "opacity-50"
           )}
         />

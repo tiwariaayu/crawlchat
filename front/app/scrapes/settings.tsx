@@ -7,11 +7,12 @@ import {
   DataList,
   Drawer,
   Group,
+  HStack,
   IconButton,
   Image,
   Input,
   Portal,
-  Select,
+  RadioCard,
   Slider,
   Stack,
   Text,
@@ -26,9 +27,22 @@ import {
 import { prisma } from "~/prisma";
 import type { Route } from "./+types/settings";
 import { getAuthUser } from "~/auth/middleware";
-import type { LlmModel, Prisma, RichBlockConfig, Scrape } from "libs/prisma";
+import type {
+  LlmModel,
+  Prisma,
+  RichBlockConfig,
+  Scrape,
+  User,
+} from "libs/prisma";
 import { getSession } from "~/session";
-import { TbPencil, TbPhoto, TbPlus, TbSettings, TbTrash } from "react-icons/tb";
+import {
+  TbCrown,
+  TbPencil,
+  TbPhoto,
+  TbPlus,
+  TbSettings,
+  TbTrash,
+} from "react-icons/tb";
 import { Page } from "~/components/page";
 import moment from "moment";
 import { Button } from "~/components/ui/button";
@@ -65,7 +79,7 @@ export async function loader({ request }: Route.LoaderArgs) {
     throw new Response("Not found", { status: 404 });
   }
 
-  return { scrape };
+  return { scrape, user: user! };
 }
 
 export async function action({ request }: Route.ActionArgs) {
@@ -651,30 +665,146 @@ function TicketingSettings({ scrape }: { scrape: Scrape }) {
   );
 }
 
+function AiModelSettings({ scrape, user }: { scrape: Scrape; user: User }) {
+  const modelFetcher = useFetcher();
+  const [selectedModel, setSelectedModel] = useState<LlmModel>(
+    scrape.llmModel ?? "gpt_4o_mini"
+  );
+  const models = useMemo(() => {
+    return createListCollection({
+      items: [
+        {
+          label: "OpenAI 4o-mini",
+          value: "gpt_4o_mini",
+          creditsPerMessage: 1,
+          description: "Base model, does the job.",
+          plans: ["free", "starter", "pro"],
+        },
+        {
+          label: "Gemini 2.5-flash",
+          value: "gemini_2_5_flash",
+          creditsPerMessage: 1,
+          description: "Good for most of the use cases.",
+          plans: ["starter", "pro"],
+        },
+        {
+          label: "OpenAI o4-mini",
+          value: "o4_mini",
+          creditsPerMessage: 2,
+          description:
+            "Best for complex use cases, programming docs, better searches.",
+          plans: ["pro"],
+        },
+      ],
+    });
+  }, []);
+
+  function isAllowed(plans: string[]) {
+    if (plans.includes("free")) {
+      return true;
+    }
+
+    return plans.some((plan) => user.plan?.planId === plan);
+  }
+
+  return (
+    <SettingsSection
+      id="ai-model"
+      title="AI Model"
+      description="Select the AI model to use for the messages across channels."
+      fetcher={modelFetcher}
+    >
+      <Stack>
+        <RadioCard.Root
+          defaultValue={scrape.llmModel ?? "gpt_4o_mini"}
+          onValueChange={(e) => setSelectedModel(e.value as LlmModel)}
+        >
+          <HStack align="stretch">
+            {models.items.map((item) => (
+              <RadioCard.Item
+                key={item.value}
+                value={item.value}
+                disabled={!isAllowed(item.plans)}
+              >
+                <RadioCard.ItemHiddenInput />
+                <RadioCard.ItemControl>
+                  <RadioCard.ItemContent>
+                    <RadioCard.ItemText
+                      gap={2}
+                      display={"flex"}
+                      alignItems={"center"}
+                    >
+                      {item.label}
+                      {item.plans[0] === "pro" && (
+                        <Badge
+                          variant={"solid"}
+                          colorPalette={"brand"}
+                          size={"xs"}
+                        >
+                          <TbCrown /> Pro
+                        </Badge>
+                      )}
+                      {item.plans[0] === "starter" && (
+                        <Badge
+                          variant={"surface"}
+                          colorPalette={"brand"}
+                          size={"xs"}
+                        >
+                          <TbCrown /> Starter
+                        </Badge>
+                      )}
+                    </RadioCard.ItemText>
+                    <RadioCard.ItemDescription>
+                      {item.creditsPerMessage}{" "}
+                      {item.creditsPerMessage === 1 ? "credit" : "credits"} /
+                      message
+                    </RadioCard.ItemDescription>
+
+                    <RadioCard.ItemDescription>
+                      {item.description}
+                    </RadioCard.ItemDescription>
+                  </RadioCard.ItemContent>
+                  <RadioCard.ItemIndicator />
+                </RadioCard.ItemControl>
+              </RadioCard.Item>
+            ))}
+          </HStack>
+        </RadioCard.Root>
+
+        {selectedModel.startsWith("sonnet") && (
+          <Alert.Root status="info" title="Alert" maxW="400px">
+            <Alert.Indicator />
+            <Alert.Title>
+              <Text>
+                <Text as={"span"} fontWeight={"bolder"}>
+                  {selectedModel}
+                </Text>{" "}
+                is the best performing model available and it consumes{" "}
+                <Text as="span" fontWeight={"bolder"}>
+                  4 message credits
+                </Text>
+                .
+              </Text>
+            </Alert.Title>
+          </Alert.Root>
+        )}
+      </Stack>
+    </SettingsSection>
+  );
+}
+
 export default function ScrapeSettings({ loaderData }: Route.ComponentProps) {
   const promptFetcher = useFetcher();
   const nameFetcher = useFetcher();
   const deleteFetcher = useFetcher();
-  const modelFetcher = useFetcher();
+
   const logoFetcher = useFetcher();
   const minScoreFetcher = useFetcher();
   const slugFetcher = useFetcher();
 
   const [deleteConfirm, setDeleteConfirm] = useState(false);
-  const [selectedModel, setSelectedModel] = useState<LlmModel>(
-    loaderData.scrape.llmModel ?? "gpt_4o_mini"
-  );
-  const [minScore, setMinScore] = useState(loaderData.scrape.minScore ?? 0);
 
-  const models = useMemo(() => {
-    return createListCollection({
-      items: [
-        { label: "GPT-4o-mini", value: "gpt_4o_mini" },
-        { label: "Gemini-2.5-flash", value: "gemini_2_5_flash" },
-        { label: "o4-mini", value: "o4_mini" },
-      ],
-    });
-  }, []);
+  const [minScore, setMinScore] = useState(loaderData.scrape.minScore ?? 0);
 
   useEffect(() => {
     if (deleteConfirm) {
@@ -826,62 +956,7 @@ export default function ScrapeSettings({ loaderData }: Route.ComponentProps) {
             </Group>
           </SettingsSection>
 
-          <SettingsSection
-            id="ai-model"
-            title="AI Model"
-            description="Select the AI model to use for the messages across channels."
-            fetcher={modelFetcher}
-          >
-            <Stack>
-              <Select.Root
-                name="llmModel"
-                collection={models}
-                maxW="400px"
-                positioning={{ sameWidth: true }}
-                defaultValue={[loaderData.scrape.llmModel ?? "gpt_4o_mini"]}
-                onValueChange={(e) => setSelectedModel(e.value[0] as LlmModel)}
-              >
-                <Select.HiddenSelect />
-                <Select.Control>
-                  <Select.Trigger>
-                    <Select.ValueText placeholder="Select model" />
-                  </Select.Trigger>
-                  <Select.IndicatorGroup>
-                    <Select.Indicator />
-                  </Select.IndicatorGroup>
-                </Select.Control>
-                <Portal>
-                  <Select.Positioner>
-                    <Select.Content>
-                      {models.items.map((model) => (
-                        <Select.Item item={model} key={model.value}>
-                          {model.label}
-                          <Select.ItemIndicator />
-                        </Select.Item>
-                      ))}
-                    </Select.Content>
-                  </Select.Positioner>
-                </Portal>
-              </Select.Root>
-              {selectedModel.startsWith("sonnet") && (
-                <Alert.Root status="info" title="Alert" maxW="400px">
-                  <Alert.Indicator />
-                  <Alert.Title>
-                    <Text>
-                      <Text as={"span"} fontWeight={"bolder"}>
-                        {selectedModel}
-                      </Text>{" "}
-                      is the best performing model available and it consumes{" "}
-                      <Text as="span" fontWeight={"bolder"}>
-                        4 message credits
-                      </Text>
-                      .
-                    </Text>
-                  </Alert.Title>
-                </Alert.Root>
-              )}
-            </Stack>
-          </SettingsSection>
+          <AiModelSettings scrape={loaderData.scrape} user={loaderData.user} />
 
           <RichBlocksSettings scrape={loaderData.scrape} />
 

@@ -1275,7 +1275,7 @@ export function CustomTestimonials() {
 function FAQ() {
   const questions = [
     {
-      question: <span>How do I train the AI chatbot?</span>,
+      question: "How do I train the AI chatbot?",
       answer: (
         <p>
           There is technically no special process like training the AI chatbot.
@@ -1288,7 +1288,7 @@ function FAQ() {
       ),
     },
     {
-      question: <span>I already user other chatbot, why do I switch?</span>,
+      question: "I already user other chatbot, why do I switch?",
       answer: (
         <p>
           CrawlChat shines in three areas:
@@ -1310,7 +1310,7 @@ function FAQ() {
       ),
     },
     {
-      question: <span>Do I need to bring my own OpenAI API key?</span>,
+      question: "Do I need to bring my own OpenAI API key?",
       answer: (
         <p>
           No, CrawlChat uses the latest LLM models from OpenAI, Anthropic,
@@ -1320,7 +1320,7 @@ function FAQ() {
       ),
     },
     {
-      question: <span>Does it support other languages?</span>,
+      question: "Does it support other languages?",
       answer: (
         <p>
           Absolutely. That's is the advantage of using AI based chatbots. The
@@ -1332,7 +1332,7 @@ function FAQ() {
       ),
     },
     {
-      question: <span>Can I try it out first?</span>,
+      question: "Can I try it out first?",
       answer: (
         <p>
           You can signup without paying anything and try out adding your
@@ -1346,7 +1346,7 @@ function FAQ() {
       ),
     },
     {
-      question: <span>How can I integrate the chatbot to my website?</span>,
+      question: "How can I integrate the chatbot to my website?",
       answer: (
         <p>
           It is a very simple process. You can navigate to the integration
@@ -1357,7 +1357,7 @@ function FAQ() {
       ),
     },
     {
-      question: <span>How can add chatbot to Slack or Discord?</span>,
+      question: "How can add chatbot to Slack or Discord?",
       answer: (
         <p>
           Yes! CrawlChat provides a Discord bot and a Slack app that can be
@@ -1374,7 +1374,7 @@ function FAQ() {
       ),
     },
     {
-      question: <span>What kind of analytics does it provide?</span>,
+      question: "What kind of analytics does it provide?",
       answer: (
         <div className="flex flex-col gap-4">
           <p>
@@ -1398,7 +1398,7 @@ function FAQ() {
       ),
     },
     {
-      question: <span>How does Support Ticket System work?</span>,
+      question: "How does Support Ticket System work?",
       answer: (
         <div className="flex flex-col gap-4">
           <p>
@@ -1415,7 +1415,7 @@ function FAQ() {
       ),
     },
     {
-      question: <span>How can I customise the Ask AI widget?</span>,
+      question: "How can I customise the Ask AI widget?",
       answer: (
         <p>
           You can configure your own brand colors, text, logo for the Ask AI

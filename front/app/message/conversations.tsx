@@ -25,7 +25,7 @@ import type { Prisma } from "libs/prisma";
 import { prisma } from "~/prisma";
 import moment from "moment";
 import { useState } from "react";
-import ChatBox from "~/widget/chat-box";
+import ChatBox, { ChatboxContainer } from "~/widget/chat-box";
 import { getMessagesScore, getScoreColor } from "~/score";
 import { Tooltip } from "~/components/ui/tooltip";
 import { Link, redirect } from "react-router";
@@ -273,7 +273,9 @@ export default function Conversations({ loaderData }: Route.ComponentProps) {
                   admin={true}
                   token={null}
                 >
-                  <ChatBox />
+                  <ChatboxContainer>
+                    <ChatBox />
+                  </ChatboxContainer>
                 </ChatBoxProvider>
               )}
             </Center>

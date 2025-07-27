@@ -10,7 +10,7 @@ import {
 } from "@chakra-ui/react";
 import { TbArrowRight, TbCheck, TbSettingsBolt } from "react-icons/tb";
 import { Page } from "~/components/page";
-import ChatBox from "~/widget/chat-box";
+import ChatBox, { ChatboxContainer } from "~/widget/chat-box";
 import type { Route } from "./+types/fix";
 import { prisma } from "~/prisma";
 import { getAuthUser } from "~/auth/middleware";
@@ -289,7 +289,9 @@ export default function FixMessage({ loaderData }: Route.ComponentProps) {
               admin={true}
               token={null}
             >
-              <ChatBox />
+              <ChatboxContainer>
+                <ChatBox />
+              </ChatboxContainer>
             </ChatBoxProvider>
           </Center>
         </Stack>

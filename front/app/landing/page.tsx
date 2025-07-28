@@ -758,7 +758,7 @@ export function CTA({ text }: { text?: string }) {
       <div className="w-full bg-gradient-to-b from-canvas to-ash shadow-md rounded-2xl py-20 px-10 relative">
         <h2 className="font-radio-grotesk text-[42px] md:text-[42px] leading-[1.2] font-medium text-center max-w-[800px] mx-auto">
           {text ||
-            "Make your documents and knowledge base be powered by AI now!"}
+            "Reduce your support queries and make your users happy now!"}
         </h2>
 
         <div className="flex justify-center mt-8">

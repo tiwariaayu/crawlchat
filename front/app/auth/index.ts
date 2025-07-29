@@ -40,10 +40,30 @@ authenticator.use(
               provider: "CUSTOM",
               status: "ACTIVE",
               credits: PLAN_FREE.credits,
+              limits: PLAN_FREE.limits,
               activatedAt: new Date(),
             },
           },
         });
+
+        const pendingScrapeUsers = await prisma.scrapeUser.findMany({
+          where: {
+            email: email,
+            invited: true,
+          },
+        });
+
+        for (const scrapeUser of pendingScrapeUsers) {
+          await prisma.scrapeUser.update({
+            where: {
+              id: scrapeUser.id,
+            },
+            data: {
+              invited: false,
+              userId: user.id,
+            },
+          });
+        }
 
         await sendWelcomeEmail(email);
       }

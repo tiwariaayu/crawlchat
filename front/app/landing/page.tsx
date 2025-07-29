@@ -253,6 +253,18 @@ export function UsedBy() {
           <div className="font-medium text-xl">270Degrees</div>
         </div>
 
+        <img
+          src="/used-by/trustworks.png"
+          alt="Trustworks"
+          className="max-h-[38px] dark:hidden"
+        />
+
+        <img
+          src="/used-by/trustworks-white.png"
+          alt="Trustworks"
+          className="max-h-[38px] hidden dark:block"
+        />
+
         <div className="flex items-center gap-2 dark:hidden">
           <img
             src="/used-by/polotno.png"
@@ -757,8 +769,7 @@ export function CTA({ text }: { text?: string }) {
     <div className="mt-32">
       <div className="w-full bg-gradient-to-b from-canvas to-ash shadow-md rounded-2xl py-20 px-10 relative">
         <h2 className="font-radio-grotesk text-[42px] md:text-[42px] leading-[1.2] font-medium text-center max-w-[800px] mx-auto">
-          {text ||
-            "Reduce your support queries and make your users happy now!"}
+          {text || "Reduce your support queries and make your users happy now!"}
         </h2>
 
         <div className="flex justify-center mt-8">

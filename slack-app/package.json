@@ -12,10 +12,10 @@
   "license": "ISC",
   "dependencies": {
     "@slack/bolt": "^4.2.1",
-    "@tryfabric/mack": "^1.2.1",
     "dotenv": "^16.4.7",
     "jsonwebtoken": "^9.0.2",
-    "libs": "file:../libs"
+    "libs": "file:../libs",
+    "slackify-markdown": "^4.5.0"
   },
   "devDependencies": {
     "@types/node": "^22.14.0",

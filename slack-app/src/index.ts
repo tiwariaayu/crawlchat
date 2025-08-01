@@ -6,7 +6,7 @@ import { InstallationStore } from "@slack/oauth";
 import { prisma } from "libs/prisma";
 import { createToken } from "./jwt";
 import { query } from "./api";
-import { markdownToBlocks } from "@tryfabric/mack";
+import slackifyMarkdown from "slackify-markdown";
 
 const LOADING_REACTION = "hourglass";
 
@@ -184,7 +184,15 @@ app.message(async ({ message, say, client, context }) => {
     mrkdwn: true,
     thread_ts: message.ts,
     channel: message.channel,
-    blocks: await markdownToBlocks(answer),
+    blocks: [
+      {
+        type: "section",
+        text: {
+          type: "mrkdwn",
+          text: slackifyMarkdown(answer),
+        },
+      },
+    ],
   });
   if (!sayResult.message) return;
 

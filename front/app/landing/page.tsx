@@ -22,7 +22,6 @@ import {
   TbDatabase,
   TbFile,
   TbMessage,
-  TbNumber,
   TbPencil,
   TbRobotFace,
   TbScoreboard,
@@ -30,7 +29,7 @@ import {
   TbSpider,
   TbWorld,
 } from "react-icons/tb";
-import { prisma } from "libs/prisma";
+// import { prisma } from "libs/prisma";
 import type { Route } from "./+types/page";
 import { Badge, Box, Text } from "@chakra-ui/react";
 import { Tooltip } from "~/components/ui/tooltip";
@@ -69,29 +68,29 @@ export async function loader() {
   const startOfMonth = new Date(now.getTime() - MONTH);
 
   if (cache.updatedAt < now.getTime() - MINS_5) {
-    cache.messagesThisWeek = await prisma.message.count({
-      where: {
-        createdAt: {
-          gte: startOfWeek,
-        },
-      },
-    });
+    // cache.messagesThisWeek = await prisma.message.count({
+    //   where: {
+    //     createdAt: {
+    //       gte: startOfWeek,
+    //     },
+    //   },
+    // });
 
-    cache.messagesDay = await prisma.message.count({
-      where: {
-        createdAt: {
-          gte: startOfDay,
-        },
-      },
-    });
+    // cache.messagesDay = await prisma.message.count({
+    //   where: {
+    //     createdAt: {
+    //       gte: startOfDay,
+    //     },
+    //   },
+    // });
 
-    cache.messagesMonth = await prisma.message.count({
-      where: {
-        createdAt: {
-          gte: startOfMonth,
-        },
-      },
-    });
+    // cache.messagesMonth = await prisma.message.count({
+    //   where: {
+    //     createdAt: {
+    //       gte: startOfMonth,
+    //     },
+    //   },
+    // });
   }
 
   return {

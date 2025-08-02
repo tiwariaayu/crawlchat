@@ -435,7 +435,7 @@ export function SideMenu({
                   {scrape?.widgetConfig?.private ? <TbLock /> : <TbWorld />}
                 </Badge>
               </Tooltip>
-              {["pro", "starter"].includes(scrapeOwner.plan?.type ?? "") && (
+              {["pro", "starter"].includes(scrapeOwner.plan?.planId ?? "") && (
                 <Tooltip
                   content={`Collection on ${scrapeOwner.plan!.type} plan`}
                   positioning={{ placement: "right" }}

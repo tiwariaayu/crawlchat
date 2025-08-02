@@ -298,7 +298,7 @@ expressWs.app.ws("/", (ws: any, req) => {
           where: { id: thread.scrapeId },
         });
 
-        if (scrape.widgetConfig?.private && userId !== thread.id) {
+        if (scrape.widgetConfig?.private) {
           throw new Error("Private collection");
         }
 

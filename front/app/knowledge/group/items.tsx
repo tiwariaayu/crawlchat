@@ -16,6 +16,7 @@ import { Link, Outlet } from "react-router";
 import { authoriseScrapeUser, getSessionScrapeId } from "~/scrapes/util";
 import { EmptyState } from "~/components/ui/empty-state";
 import type { ScrapeItem } from "libs/prisma";
+import { Tooltip } from "~/components/ui/tooltip";
 
 export async function loader({ request, params }: Route.LoaderArgs) {
   const user = await getAuthUser(request);
@@ -95,7 +96,9 @@ export default function ScrapeLinks({ loaderData }: Route.ComponentProps) {
                 <Table.Row key={item.id}>
                   <Table.Cell className="group">
                     <Group>
-                      <Text>{getKey(item)}</Text>
+                      <Tooltip content={item.url}>
+                        <Text>{getKey(item)}</Text>
+                      </Tooltip>
                     </Group>
                   </Table.Cell>
                   <Table.Cell>

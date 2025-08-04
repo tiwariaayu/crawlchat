@@ -6,6 +6,8 @@ import {
   Table,
   Text,
   Center,
+  Box,
+  Spinner,
 } from "@chakra-ui/react";
 import type { Route } from "./+types/items";
 import { getAuthUser } from "~/auth/middleware";
@@ -15,8 +17,8 @@ import { TbCheck, TbRefresh, TbX, TbStack } from "react-icons/tb";
 import { Link, Outlet } from "react-router";
 import { authoriseScrapeUser, getSessionScrapeId } from "~/scrapes/util";
 import { EmptyState } from "~/components/ui/empty-state";
-import type { ScrapeItem } from "libs/prisma";
 import { Tooltip } from "~/components/ui/tooltip";
+import { useEffect, useState } from "react";
 
 export async function loader({ request, params }: Route.LoaderArgs) {
   const user = await getAuthUser(request);
@@ -66,7 +68,42 @@ function getKey(item: { id: string; url?: string | null }) {
   return item.url;
 }
 
+function truncateEnd(text: string, maxLength: number) {
+  const prefix = text.length > maxLength ? "..." : "";
+  const postfix = text.slice(Math.max(0, text.length - maxLength));
+
+  return prefix + postfix;
+}
+
+function truncateStart(text: string, maxLength: number) {
+  const prefix = text.slice(0, maxLength);
+  const postfix = text.length > maxLength ? "..." : "";
+
+  return prefix + postfix;
+}
+
 export default function ScrapeLinks({ loaderData }: Route.ComponentProps) {
+  const [maxLength, setMaxLength] = useState(0);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setMaxLength(Math.floor(window.innerWidth / 40));
+    };
+
+    handleResize();
+
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  if (maxLength === 0) {
+    return (
+      <Center h="200px" w="full">
+        <Spinner />
+      </Center>
+    );
+  }
+
   return (
     <>
       {loaderData.items.length === 0 && (
@@ -83,31 +120,29 @@ export default function ScrapeLinks({ loaderData }: Route.ComponentProps) {
           <Table.Root size="sm">
             <Table.Header>
               <Table.Row>
-                <Table.ColumnHeader w="300px" truncate>
-                  Key
-                </Table.ColumnHeader>
+                <Table.ColumnHeader>Key</Table.ColumnHeader>
                 <Table.ColumnHeader>Title</Table.ColumnHeader>
-                <Table.ColumnHeader w="120px">Status</Table.ColumnHeader>
-                <Table.ColumnHeader w="200px">Updated</Table.ColumnHeader>
+                <Table.ColumnHeader>Status</Table.ColumnHeader>
+                <Table.ColumnHeader>Updated</Table.ColumnHeader>
               </Table.Row>
             </Table.Header>
             <Table.Body>
               {loaderData.items.map((item) => (
                 <Table.Row key={item.id}>
                   <Table.Cell className="group">
-                    <Group>
-                      <Tooltip content={item.url}>
-                        <Text>{getKey(item)}</Text>
-                      </Tooltip>
-                    </Group>
+                    <Tooltip content={item.url}>
+                      <Text>{truncateEnd(getKey(item), maxLength)}</Text>
+                    </Tooltip>
                   </Table.Cell>
+
                   <Table.Cell>
                     <ChakraLink asChild variant={"underline"}>
                       <Link to={`/knowledge/item/${item.id}`}>
-                        {item.title?.trim() || "-"}
+                        {truncateStart(item.title?.trim() || "-", maxLength)}
                       </Link>
                     </ChakraLink>
                   </Table.Cell>
+
                   <Table.Cell>
                     <Badge
                       variant={"surface"}

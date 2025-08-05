@@ -150,6 +150,8 @@ export async function loader({ request }: Route.LoaderArgs) {
     }
   }
 
+  console.log({ itemCounts });
+
   const topItemIds = Object.entries(itemCounts)
     .sort((a, b) => b[1] - a[1])
     .slice(0, 5);
@@ -586,7 +588,9 @@ export default function DashboardPage({ loaderData }: Route.ComponentProps) {
                   {loaderData.latestQuestions.map((question) => (
                     <Table.Row key={question.id}>
                       <Table.Cell>
-                        {(question.llmMessage as any).content}
+                        <Text truncate w="300px">
+                          {(question.llmMessage as any).content}
+                        </Text>
                       </Table.Cell>
                       <Table.Cell textAlign="end">
                         {moment(question.createdAt).fromNow()}

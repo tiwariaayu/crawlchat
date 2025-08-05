@@ -64,6 +64,9 @@ export async function loader({ request }: Route.LoaderArgs) {
     include: {
       thread: true,
     },
+    orderBy: {
+      createdAt: "desc",
+    },
   });
 
   let messagePairs = makeMessagePairs(messages);

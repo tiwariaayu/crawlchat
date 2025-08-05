@@ -406,12 +406,12 @@ export default function DashboardPage({ loaderData }: Route.ComponentProps) {
         <Stack height={"100%"} gap={8} ref={containerRef}>
           <Group>
             <StatCard
-              label="Messages today"
+              label="Today"
               value={loaderData.messagesToday}
               icon={<TbMessage />}
             />
             <StatCard
-              label="Messages this week"
+              label="This week"
               value={Object.values(loaderData.dailyMessages).reduce(
                 (acc, curr) => acc + curr,
                 0
@@ -422,14 +422,12 @@ export default function DashboardPage({ loaderData }: Route.ComponentProps) {
               label="Helpful"
               value={loaderData.ratingUpCount}
               icon={<TbThumbUp />}
-              href={`/messages?rating=up`}
               color="green.500"
             />
             <StatCard
               label="Not helpful"
               value={loaderData.ratingDownCount}
               icon={<TbThumbDown />}
-              href={`/messages?rating=down`}
               color="red.600"
             />
           </Group>

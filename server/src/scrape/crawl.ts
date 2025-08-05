@@ -164,7 +164,7 @@ export async function scrapeLoop(
     scrollSelector?: string;
   }
 ) {
-  const { limit = 300 } = options ?? {};
+  const { limit = 5000 } = options ?? {};
 
   if (options?.shouldScrape && !(await options.shouldScrape())) {
     return;

@@ -149,7 +149,9 @@ export async function loader({ request }: Route.LoaderArgs) {
     }
   }
 
-  const topItems = Object.entries(itemCounts).sort((a, b) => b[1] - a[1]);
+  const topItems = Object.entries(itemCounts)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 5);
 
   const latestQuestions = messages
     .filter((m) => (m.llmMessage as any)?.role === "user")

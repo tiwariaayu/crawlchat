@@ -509,7 +509,9 @@ export default function DashboardPage({ loaderData }: Route.ComponentProps) {
                 <Table.Header>
                   <Table.Row>
                     <Table.ColumnHeader>Page</Table.ColumnHeader>
-                    <Table.ColumnHeader>Count</Table.ColumnHeader>
+                    <Table.ColumnHeader textAlign="end">
+                      Count
+                    </Table.ColumnHeader>
                   </Table.Row>
                 </Table.Header>
                 <Table.Body>
@@ -524,7 +526,7 @@ export default function DashboardPage({ loaderData }: Route.ComponentProps) {
                   {loaderData.topItems.map((item) => (
                     <Table.Row key={item[0]}>
                       <Table.Cell>{item[0] || "Untitled"}</Table.Cell>
-                      <Table.Cell>{item[1]}</Table.Cell>
+                      <Table.Cell textAlign="end">{item[1]}</Table.Cell>
                     </Table.Row>
                   ))}
                 </Table.Body>

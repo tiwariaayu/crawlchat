@@ -1,5 +1,6 @@
 import { Text } from "@chakra-ui/react";
 import { Tooltip } from "./ui/tooltip";
+import { truncate } from "~/util";
 
 export function SingleLineCell({
   children,
@@ -9,7 +10,14 @@ export function SingleLineCell({
   tooltip?: boolean;
 }) {
   function render() {
-    return <Text lineClamp={1}>{children}</Text>;
+    return (
+      <Text 
+        lineClamp={1}
+        wordBreak="break-all"
+      >
+        {truncate(children as string, 100)}
+      </Text>
+    );
   }
 
   if (!tooltip) return render();

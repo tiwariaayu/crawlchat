@@ -328,7 +328,7 @@ export default function Messages({ loaderData }: Route.ComponentProps) {
                     <Table.ColumnHeader w={"100px"}></Table.ColumnHeader>
                     <Table.ColumnHeader w={"100px"}>Channel</Table.ColumnHeader>
                     <Table.ColumnHeader w={"60px"}>Score</Table.ColumnHeader>
-                    <Table.ColumnHeader w={"180px"} textAlign={"end"}>
+                    <Table.ColumnHeader w={"200px"} textAlign={"end"}>
                       Time
                     </Table.ColumnHeader>
                   </Table.Row>

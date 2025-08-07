@@ -467,8 +467,6 @@ function AssistantMessage({
             </IconButton>
           </Tooltip>
 
-          <Separator orientation="vertical" h="50%" mx={2} />
-
           <Tooltip content="Helpful" showArrow>
             <IconButton
               size={"xs"}

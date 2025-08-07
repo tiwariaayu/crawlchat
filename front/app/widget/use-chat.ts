@@ -17,7 +17,10 @@ export function useScrapeChat({
 }) {
   const socket = useRef<WebSocket>(null);
   const [messages, setMessages] = useState<Message[]>(defaultMessages);
-  const [content, setContent] = useState("");
+  const [content, setContent] = useState<{ text: string; date: Date }>({
+    text: "",
+    date: new Date(),
+  });
   const [askStage, setAskStage] = useState<AskStage>("idle");
   const [searchQuery, setSearchQuery] = useState<string>();
   const [connected, setConnected] = useState(false);
@@ -25,15 +28,15 @@ export function useScrapeChat({
   const allMessages = useMemo(() => {
     const allMessages = [
       ...messages.filter((message) => !message.ticketMessage),
-      ...(content
+      ...(content.text
         ? [
             {
-              llmMessage: { role: "assistant", content },
+              llmMessage: { role: "assistant", content: content.text },
               links: [],
               pinnedAt: null,
               id: "new-answer",
               rating: null,
-              createdAt: new Date(),
+              createdAt: content.date,
             },
           ]
         : []),
@@ -120,18 +123,21 @@ export function useScrapeChat({
   }) {
     if (end) {
       setMessages((prev) => [...prev, message]);
-      setContent("");
+      setContent({ text: "", date: new Date() });
       setAskStage("idle");
       return;
     }
     setAskStage("answering");
-    setContent((prev) => prev + content);
+    setContent((prev) => ({
+      ...prev,
+      text: prev.text + content,
+    }));
     setSearchQuery(undefined);
   }
 
   function handleError(message: string) {
     alert(message);
-    setContent("");
+    setContent({ text: "", date: new Date() });
     setAskStage("idle");
   }
 
@@ -188,8 +194,6 @@ export function useScrapeChat({
   return {
     connect,
     disconnect,
-    content,
-    setContent,
     messages,
     setMessages,
     ask,

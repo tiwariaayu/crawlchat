@@ -12,6 +12,7 @@ import {
   Center,
   Table,
   Badge,
+  Box,
 } from "@chakra-ui/react";
 import type { Route } from "./+types/page";
 import {
@@ -330,6 +331,7 @@ export default function DashboardPage({ loaderData }: Route.ComponentProps) {
   const [width, setWidth] = useState(0);
   const newCollectionFetcher = useFetcher();
   const [newCollectionDialogOpen, setNewCollectionDialogOpen] = useState(false);
+  const [showAllDataGaps, setShowAllDataGaps] = useState(false);
 
   const chartData = useMemo(() => {
     const data = [];
@@ -555,37 +557,48 @@ export default function DashboardPage({ loaderData }: Route.ComponentProps) {
                   <Table.Row>
                     <Table.ColumnHeader>Question</Table.ColumnHeader>
                     <Table.ColumnHeader>Queries</Table.ColumnHeader>
-                    <Table.ColumnHeader>Max Score</Table.ColumnHeader>
+                    <Table.ColumnHeader w="60px">Score</Table.ColumnHeader>
                     <Table.ColumnHeader textAlign="end" w="180px">
                       Date
                     </Table.ColumnHeader>
                   </Table.Row>
                 </Table.Header>
                 <Table.Body>
-                  {loaderData.lowRatingQueries.map((item) => (
-                    <Table.Row key={item.message.id}>
-                      <Table.Cell>
-                        <SingleLineCell>
-                          {(item.userMessage?.llmMessage as any).content}
-                        </SingleLineCell>
-                      </Table.Cell>
-                      <Table.Cell>
-                        <SingleLineCell>
-                          {item.queries.join(", ")}
-                        </SingleLineCell>
-                      </Table.Cell>
-                      <Table.Cell>
-                        <Badge colorPalette={"red"} variant={"surface"}>
-                          {item.maxScore.toFixed(2)}
-                        </Badge>
-                      </Table.Cell>
-                      <Table.Cell textAlign="end">
-                        {moment(item.message.createdAt).fromNow()}
-                      </Table.Cell>
-                    </Table.Row>
-                  ))}
+                  {loaderData.lowRatingQueries
+                    .slice(0, showAllDataGaps ? undefined : 2)
+                    .map((item) => (
+                      <Table.Row key={item.message.id}>
+                        <Table.Cell>
+                          <SingleLineCell>
+                            {(item.userMessage?.llmMessage as any).content}
+                          </SingleLineCell>
+                        </Table.Cell>
+                        <Table.Cell>
+                          <SingleLineCell>
+                            {item.queries.join(", ")}
+                          </SingleLineCell>
+                        </Table.Cell>
+                        <Table.Cell>
+                          <Badge colorPalette={"red"} variant={"surface"}>
+                            {item.maxScore.toFixed(2)}
+                          </Badge>
+                        </Table.Cell>
+                        <Table.Cell textAlign="end">
+                          {moment(item.message.createdAt).fromNow()}
+                        </Table.Cell>
+                      </Table.Row>
+                    ))}
                 </Table.Body>
               </Table.Root>
+              <Group justifyContent={"end"}>
+                <Button
+                  variant={"subtle"}
+                  onClick={() => setShowAllDataGaps((s) => !s)}
+                  size={"xs"}
+                >
+                  {showAllDataGaps ? "Show less" : "Show all"}
+                </Button>
+              </Group>
             </Stack>
           )}
 

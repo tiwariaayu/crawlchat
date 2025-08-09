@@ -25,7 +25,7 @@ export default function ChangelogPage({ loaderData }: Route.ComponentProps) {
     <div className="mt-16">
       <Container>
         <Heading>Changelog</Heading>
-        <div className="mt-32 flex flex-col items-center">
+        <div className="mt-32 flex flex-col">
           {loaderData.posts.map((post) => (
             <div key={post.slug}>
               <div className="flex flex-col gap-2">

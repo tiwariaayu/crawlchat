@@ -140,6 +140,8 @@ function ChatInput() {
         return "🤓 Answering...";
       case "searching":
         return `🔍 Searching for "${chat.searchQuery ?? "answer"}"`;
+      case "action-call":
+        return `🤖 Doing "${chat.actionCall}"`;
     }
     return scrape.widgetConfig?.textInputPlaceholder ?? "Ask your question";
   }
@@ -455,18 +457,6 @@ function AssistantMessage({
           {citation.content}
         </MarkdownProse>
         <Group pb={Object.keys(citation.citedLinks).length === 0 ? 4 : 0}>
-          <Tooltip content="Regenerate message" showArrow>
-            <IconButton
-              size={"xs"}
-              rounded={"full"}
-              variant={"subtle"}
-              onClick={() => refresh(questionId, id)}
-              disabled={readOnly}
-            >
-              <TbRefresh />
-            </IconButton>
-          </Tooltip>
-
           <Tooltip content="Helpful" showArrow>
             <IconButton
               size={"xs"}
@@ -991,7 +981,9 @@ export default function ScrapeWidget() {
                     last={index === chat.allMessages.length - 1}
                   />
                 )}
-                {(chat.askStage === "asked" || chat.askStage === "searching") &&
+                {(chat.askStage === "asked" ||
+                  chat.askStage === "searching" ||
+                  chat.askStage === "action-call") &&
                   index === chat.allMessages.length - 1 && <LoadingMessage />}
                 {chat.askStage !== "idle" &&
                   index === chat.allMessages.length - 1 && (

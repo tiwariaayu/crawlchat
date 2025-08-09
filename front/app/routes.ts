@@ -57,6 +57,14 @@ export default [
     route("team", "team/page.tsx"),
 
     route("setup-progress", "dashboard/setup-progress-api.ts"),
+
+    layout("actions/layout.tsx", [
+      ...prefix("actions", [
+        index("actions/list.tsx"),
+        route("new", "actions/new.tsx"),
+        route(":actionId", "actions/edit.tsx"),
+      ]),
+    ]),
   ]),
 
   layout("landing/layout.tsx", [

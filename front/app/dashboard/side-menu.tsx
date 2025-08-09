@@ -5,7 +5,6 @@ import {
   Group,
   IconButton,
   Progress,
-  Separator,
   Spinner,
   Stack,
   Text,
@@ -21,6 +20,7 @@ import {
   TbLogout,
   TbMessage,
   TbPlug,
+  TbPointer,
   TbRoad,
   TbSettings,
   TbThumbDown,
@@ -276,6 +276,12 @@ export function SideMenu({
         icon: <TbBook />,
         forScrape: true,
       },
+      // {
+      //   label: "Actions",
+      //   to: "/actions",
+      //   icon: <TbPointer />,
+      //   forScrape: true,
+      // },
       {
         label: "Messages",
         to: "/messages",

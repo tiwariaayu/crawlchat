@@ -30,6 +30,7 @@ model User {
   ownedMessages       Message[]
   knowoledgeGroups    KnowledgeGroup[]
   scrapeUsers         ScrapeUser[]
+  ApiActions          ApiAction[]
 }
 
 enum ScrapeStatus {
@@ -162,6 +163,7 @@ model Scrape {
   messages              Message[]
   knowoledgeGroups      KnowledgeGroup[]
   scrapeUsers           ScrapeUser[]
+  apiActions            ApiAction[]
 
   @@index([slug])
 }
@@ -215,6 +217,7 @@ model Message {
   rating                    MessageRating?
   correctionItemId          String?  @db.ObjectId
   ticketMessage             TicketMessage?
+  apiActionCalls            ApiActionCall[]
 
   slackMessageId            String?
   discordMessageId          String?
@@ -445,4 +448,61 @@ model ScrapeUser {
 
   user            User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
   scrape          Scrape @relation(fields: [scrapeId], references: [id], onDelete: Cascade)
+}
+
+enum ApiActionDataType {
+  string
+  number
+  boolean
+}
+
+enum ApiActionItemType {
+  dynamic
+  value
+}
+
+type ApiActionDataItem {
+  type ApiActionItemType
+  key String
+  dataType ApiActionDataType
+  description String
+  value String?
+}
+
+type ApiActionData {
+  items ApiActionDataItem[]
+}
+
+enum ApiActionMethod {
+  get
+  post
+  delete
+  put
+}
+
+model ApiAction {
+  id              String  @id @default(auto()) @map("_id") @db.ObjectId
+  userId          String  @db.ObjectId
+  scrapeId        String  @db.ObjectId
+  
+  title           String
+  url             String
+  method          ApiActionMethod
+  data            ApiActionData
+  headers         ApiActionData
+  description     String
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  user            User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  scrape          Scrape   @relation(fields: [scrapeId], references: [id], onDelete: Cascade)
+}
+
+type ApiActionCall {
+  actionId        String  @db.ObjectId
+  data            Json
+  response        String
+  statusCode      Int
+  createdAt       DateTime
 }

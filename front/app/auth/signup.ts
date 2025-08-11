@@ -1,6 +1,7 @@
 import { Prisma, prisma } from "libs/prisma";
 import { PLAN_FREE } from "libs/user-plan";
 import { sendTeamJoinEmail, sendWelcomeEmail } from "~/email";
+import { Resend } from "resend";
 
 export async function signUpNewUser(
   email: string,
@@ -58,6 +59,19 @@ export async function signUpNewUser(
     }
 
     await sendWelcomeEmail(email);
+
+    try {
+      const resend = new Resend(process.env.RESEND_KEY);
+      resend.contacts.create({
+        email: email,
+        firstName: user.name ?? "",
+        lastName: "",
+        unsubscribed: false,
+        audienceId: "e109f8cd-05d4-4c21-b3b4-3d7fa75da1e0",
+      });
+    } catch (e) {
+      console.error("Error adding to audience", e);
+    }
   }
 
   const update: Prisma.UserUpdateInput = {};

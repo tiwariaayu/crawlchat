@@ -67,7 +67,7 @@ export async function signUpNewUser(
         firstName: user.name ?? "",
         lastName: "",
         unsubscribed: false,
-        audienceId: "e109f8cd-05d4-4c21-b3b4-3d7fa75da1e0",
+        audienceId: "d9f508e2-deda-412a-a675-563b65052113",
       });
     } catch (e) {
       console.error("Error adding to audience", e);

@@ -29,7 +29,7 @@ const app: Express = express();
 const expressWs = ws(app);
 const port = process.env.PORT || 3000;
 
-app.use(/\/((?!sse).)*/, express.json());
+app.use(/\/((?!sse).)*/, express.json({ limit: "50mb" }));
 app.use(cors());
 
 function makeMessage(type: string, data: any) {

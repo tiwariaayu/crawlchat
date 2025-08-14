@@ -649,11 +649,17 @@ app.post("/fix-message", authenticate, async (req, res) => {
     include: {
       messages: true,
     },
+    orderBy: {
+      createdAt: "desc",
+    },
+    take: 10,
   });
 
   const messageIndex = thread.messages.findIndex((m) => m.id === messageId);
 
-  const messages = thread.messages.slice(0, messageIndex + 1);
+  const messages = thread.messages
+    .slice(0, messageIndex + 1)
+    .sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime());
 
   const agent = new SimpleAgent<RAGAgentCustomMessage>({
     id: "fix-agent",

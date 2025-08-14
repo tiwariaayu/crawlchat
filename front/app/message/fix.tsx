@@ -49,25 +49,8 @@ export async function loader({ params, request }: Route.LoaderArgs) {
     throw redirect("/app");
   }
 
-  const thread = await prisma.thread.findUnique({
-    where: {
-      id: message.threadId,
-    },
-    include: {
-      messages: true,
-    },
-  });
-
-  if (!thread) {
-    throw redirect("/app");
-  }
-
-  const messageIndex = thread.messages.findIndex((m) => m.id === message.id);
-
   return {
     scrape,
-    messages: thread.messages.slice(0, messageIndex + 1),
-    thread,
     message,
   };
 }
@@ -188,114 +171,86 @@ export default function FixMessage({ loaderData }: Route.ComponentProps) {
 
   return (
     <Page title="Fix message" icon={<TbSettingsBolt />} noPadding>
-      <Flex h="full">
-        <Stack
-          maxW="300px"
-          w="full"
-          borderRight={"1px solid"}
-          borderColor="brand.outline"
-          h="full"
-          maxH={"calc(100dvh - 60px)"}
-          gap={4}
-          overflowY={"auto"}
-          p={4}
-        >
-          <Text opacity={0.5}>
-            You can attach your answer below and the AI will summarise the fix.
-            It finally adds it to the knowledge base so that this will be
-            considered for further answers.
-          </Text>
+      <Stack gap={4} p={4}>
+        <Text opacity={0.5}>
+          You can attach your answer below and the AI will summarise the fix. It
+          finally adds it to the knowledge base so that this will be considered
+          for further answers.
+        </Text>
 
-          <Text opacity={0.5}>Uses 1 message credit & 1 scrape credit.</Text>
+        <Text opacity={0.5}>Uses 1 message credit & 1 scrape credit.</Text>
 
-          {loaderData.message.correctionItemId && (
-            <Alert.Root status="info" title="This is the alert title">
-              <Alert.Indicator />
-              <Alert.Title>
-                This message is already corrected{" "}
-                <Link
-                  to={`/knowledge/item/${loaderData.message.correctionItemId}`}
-                  style={{
-                    display: "inline-block",
-                    textDecoration: "underline",
-                  }}
-                >
-                  here
-                </Link>
-              </Alert.Title>
-            </Alert.Root>
-          )}
+        {loaderData.message.correctionItemId && (
+          <Alert.Root status="info" title="This is the alert title">
+            <Alert.Indicator />
+            <Alert.Title>
+              This message is already corrected{" "}
+              <Link
+                to={`/knowledge/item/${loaderData.message.correctionItemId}`}
+                style={{
+                  display: "inline-block",
+                  textDecoration: "underline",
+                }}
+              >
+                here
+              </Link>
+            </Alert.Title>
+          </Alert.Root>
+        )}
 
-          {summarizeFetcher.data?.title && summarizeFetcher.data?.content ? (
-            <saveFetcher.Form method="post">
-              <Stack>
-                <input type="hidden" name="intent" value={"save"} />
-                <Field label="Title">
-                  <Input
-                    name="title"
-                    defaultValue={summarizeFetcher.data.title}
-                    disabled={saveFetcher.state !== "idle"}
-                  />
-                </Field>
-                <Field label="Answer">
-                  <Textarea
-                    placeholder="Answer to add as knowledge"
-                    rows={4}
-                    autoresize
-                    name="content"
-                    defaultValue={summarizeFetcher.data.content}
-                    disabled={saveFetcher.state !== "idle"}
-                  />
-                </Field>
-                <Group justifyContent={"flex-end"} w="full">
-                  <Button type="submit" loading={saveFetcher.state !== "idle"}>
-                    Save
-                    <TbCheck />
-                  </Button>
-                </Group>
-              </Stack>
-            </saveFetcher.Form>
-          ) : (
-            <summarizeFetcher.Form method="post">
-              <Stack>
-                <input type="hidden" name="intent" value={"summarise"} />
-                <Textarea
-                  placeholder="Enter the correct answer/fix here"
-                  rows={4}
-                  autoresize
-                  name="answer"
+        {summarizeFetcher.data?.title && summarizeFetcher.data?.content ? (
+          <saveFetcher.Form method="post">
+            <Stack>
+              <input type="hidden" name="intent" value={"save"} />
+              <Field label="Title">
+                <Input
+                  name="title"
+                  defaultValue={summarizeFetcher.data.title}
                   disabled={saveFetcher.state !== "idle"}
                 />
-                <Group justifyContent={"flex-end"} w="full">
-                  <Button
-                    type="submit"
-                    loading={summarizeFetcher.state !== "idle"}
-                  >
-                    Summarise
-                    <TbArrowRight />
-                  </Button>
-                </Group>
-              </Stack>
-            </summarizeFetcher.Form>
-          )}
-        </Stack>
-        <Stack h="full" flex={1} bg="brand.gray.100">
-          <Center h="full" w="full">
-            <ChatBoxProvider
-              scrape={loaderData.scrape}
-              thread={loaderData.thread}
-              messages={loaderData.messages}
-              embed={false}
-              admin={true}
-              token={null}
-            >
-              <ChatboxContainer>
-                <ChatBox />
-              </ChatboxContainer>
-            </ChatBoxProvider>
-          </Center>
-        </Stack>
-      </Flex>
+              </Field>
+              <Field label="Answer">
+                <Textarea
+                  placeholder="Answer to add as knowledge"
+                  rows={4}
+                  autoresize
+                  name="content"
+                  defaultValue={summarizeFetcher.data.content}
+                  disabled={saveFetcher.state !== "idle"}
+                />
+              </Field>
+              <Group justifyContent={"flex-end"} w="full">
+                <Button type="submit" loading={saveFetcher.state !== "idle"}>
+                  Save
+                  <TbCheck />
+                </Button>
+              </Group>
+            </Stack>
+          </saveFetcher.Form>
+        ) : (
+          <summarizeFetcher.Form method="post">
+            <Stack>
+              <input type="hidden" name="intent" value={"summarise"} />
+              <Textarea
+                placeholder="Enter the correct answer/fix here"
+                rows={4}
+                autoresize
+                name="answer"
+                disabled={saveFetcher.state !== "idle"}
+              />
+              <Group justifyContent={"flex-end"} w="full">
+                <Button
+                  type="submit"
+                  loading={summarizeFetcher.state !== "idle"}
+                >
+                  Summarise
+                  <TbArrowRight />
+                </Button>
+              </Group>
+            </Stack>
+          </summarizeFetcher.Form>
+        )}
+      </Stack>
     </Page>
   );
 }

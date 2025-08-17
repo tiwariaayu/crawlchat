@@ -220,5 +220,5 @@ export function getMetaTitle(metaTags: MetaTag[]) {
   const tagTitle = metaTags.find(
     (metaTag) => metaTag.key === "tag:title"
   )?.value;
-  return ogTitle ?? tagTitle;
+  return tagTitle ?? ogTitle;
 }

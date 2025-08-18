@@ -122,12 +122,14 @@ export async function fillMessageAnalysis(
       analysis.dataGapDescription = null;
     }
 
-    await prisma.message.update({
-      where: { id: messageId },
-      data: {
-        analysis,
-      },
-    });
+    console.log(analysis);
+
+    // await prisma.message.update({
+    //   where: { id: messageId },
+    //   data: {
+    //     analysis,
+    //   },
+    // });
   } catch (e) {
     console.error("Failed to analyse message", e);
   }

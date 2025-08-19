@@ -266,6 +266,7 @@ export async function action({ request }: Route.ActionArgs) {
         userId: user!.id,
         status: "done",
         indexer: "mars",
+        analyseMessage: true,
       },
     });
 

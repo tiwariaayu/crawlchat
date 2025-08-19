@@ -1,4 +1,5 @@
 import {
+  Message,
   MessageAnalysis,
   MessageSourceLink,
   prisma,
@@ -7,13 +8,13 @@ import {
 import { SimpleAgent } from "./agentic";
 import { z } from "zod";
 import { Flow } from "./flow";
-import { getConfig } from "./config";
 
 export async function analyseMessage(
   question: string,
   answer: string,
   sources: MessageSourceLink[],
-  context: string
+  context: string,
+  messages: Message[]
 ) {
   const agent = new SimpleAgent({
     id: "analyser",
@@ -21,9 +22,16 @@ export async function analyseMessage(
     You are a helpful assistant that analyses a message and returns a message analysis.
     You need to analyse the question, answer and the sources provided and give back the details provided.
 
-    Question: ${question}
-    Answer: ${answer}
-    Sources: ${JSON.stringify(
+    <question>
+    ${question}
+    </question>
+
+    <answer>
+    ${answer}
+    </answer>
+
+    <sources>
+    ${JSON.stringify(
       sources.map((s) => ({
         url: s.url,
         title: s.title,
@@ -31,7 +39,19 @@ export async function analyseMessage(
         searchQuery: s.searchQuery,
       }))
     )}
-    Context: ${context}
+    </sources>
+
+    <context>
+    ${context}
+    </context>
+
+    <previous-messages>
+    ${messages
+      .map(
+        (m) => `${(m.llmMessage as any).role}: ${(m.llmMessage as any).content}`
+      )
+      .join("\n")}
+    </previous-messages>
     `,
     schema: z.object({
       contextRelevanceScore: z.number().describe(`
@@ -43,7 +63,7 @@ export async function analyseMessage(
         `),
       questionRelevanceScore: z.number().describe(
         `
-          The relevance score of question to the context.
+          The relevance score of question to the context and previous messages.
           It is about relevance but not about having answer or not.
           Only if the question is relevant to the context, it should be close to 1.
           It should be from 0 to 1.
@@ -59,7 +79,7 @@ export async function analyseMessage(
       ),
       dataGapTitle: z.string().describe(
         `
-          Make a title for the data gap (if any). It should be under 10 words.
+          Make a title for the data gap (if any). It should be under 10 words and respresent the gap clearly.
           It is used to represent the data gap from the sources for the given question.
         `
       ),
@@ -87,23 +107,49 @@ export async function analyseMessage(
     return null;
   }
 
-  return JSON.parse(content as string) as MessageAnalysis;
+  return JSON.parse(content as string) as {
+    questionRelevanceScore: number;
+    contextRelevanceScore: number;
+    questionSentiment: QuestionSentiment;
+    dataGapTitle: string;
+    dataGapDescription: string;
+  };
 }
 
-function isDataGap(sources: MessageSourceLink[], analysis: MessageAnalysis) {
+function isDataGap(
+  sources: MessageSourceLink[],
+  questionRelevanceScore: number,
+  contextRelevanceScore: number
+) {
+  const friction = {
+    low: {
+      questionRelevanceScore: 0.4,
+      contextRelevanceScore: 0.6,
+    },
+    medium: {
+      questionRelevanceScore: 0.5,
+      contextRelevanceScore: 0.5,
+    },
+    high: {
+      questionRelevanceScore: 0.6,
+      contextRelevanceScore: 0.4,
+    },
+  };
+
+  const frictionLevel = friction["high"];
+
   const avgScore =
     sources.reduce((acc, s) => acc + (s.score ?? 0), 0) / sources.length;
-  const contextRelevanceScore = Math.min(
-    avgScore,
-    analysis.contextRelevanceScore ?? 0
-  );
+  const contextRelevanceScoreWeighted =
+    avgScore * 0.5 + contextRelevanceScore * 0.5;
+
   return (
+    // it actually searched the knowledge base
     sources.length > 0 &&
-    analysis.questionRelevanceScore !== null &&
-    analysis.questionRelevanceScore >= 0.5 &&
-    contextRelevanceScore !== null &&
-    contextRelevanceScore <= 0.3 &&
-    avgScore >= 0.01
+    // question is relevant to the context
+    questionRelevanceScore >= frictionLevel.questionRelevanceScore &&
+    // poor answer
+    contextRelevanceScoreWeighted <= frictionLevel.contextRelevanceScore
   );
 }
 
@@ -115,21 +161,66 @@ export async function fillMessageAnalysis(
   context: string
 ) {
   try {
-    const analysis = await analyseMessage(question, answer, sources, context);
+    const message = await prisma.message.findFirstOrThrow({
+      where: { id: messageId },
+      include: {
+        scrape: true,
+      },
+    });
 
-    if (analysis && !isDataGap(sources, analysis)) {
-      analysis.dataGapTitle = null;
-      analysis.dataGapDescription = null;
+    if (!message.scrape.analyseMessage) {
+      return;
     }
 
-    console.log(analysis);
+    const messages = await prisma.message.findMany({
+      where: {
+        threadId: message.threadId,
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+      take: 10,
+    });
 
-    // await prisma.message.update({
-    //   where: { id: messageId },
-    //   data: {
-    //     analysis,
-    //   },
-    // });
+    const partialAnalysis = await analyseMessage(
+      question,
+      answer,
+      sources,
+      context,
+      messages
+    );
+
+    const dataGap =
+      partialAnalysis &&
+      isDataGap(
+        sources,
+        partialAnalysis.questionRelevanceScore,
+        partialAnalysis.contextRelevanceScore
+      );
+
+    const analysis: MessageAnalysis = {
+      contextRelevanceScore: partialAnalysis?.contextRelevanceScore ?? null,
+      questionRelevanceScore: partialAnalysis?.questionRelevanceScore ?? null,
+      questionSentiment: partialAnalysis?.questionSentiment ?? null,
+      dataGapTitle: null,
+      dataGapDescription: null,
+      category: null,
+      dataGapDone: false,
+    };
+
+    if (dataGap) {
+      analysis.dataGapTitle = partialAnalysis?.dataGapTitle ?? null;
+      analysis.dataGapDescription = partialAnalysis?.dataGapDescription ?? null;
+    }
+
+    console.log({ dataGap, analysis });
+
+    await prisma.message.update({
+      where: { id: messageId },
+      data: {
+        analysis,
+      },
+    });
   } catch (e) {
     console.error("Failed to analyse message", e);
   }

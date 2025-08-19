@@ -156,6 +156,7 @@ model Scrape {
   minScore              Float?
   slug                  String?
   showSources           Boolean?
+  analyseMessage        Boolean?
 
   user                  User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -219,6 +220,7 @@ type MessageAnalysis {
   
   dataGapTitle String?
   dataGapDescription String?
+  dataGapDone Boolean?
 }
 
 model Message {

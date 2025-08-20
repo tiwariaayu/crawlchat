@@ -122,7 +122,7 @@ export function DataGapCard({
       borderColor="brand.outline"
       p={4}
       borderRadius="md"
-      gap={0}
+      gap={4}
     >
       <Stack>
         <Text fontWeight="bold">{message.analysis!.dataGapTitle}</Text>

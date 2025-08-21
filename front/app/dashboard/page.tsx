@@ -67,6 +67,7 @@ import { truncate } from "~/util";
 import { SingleLineCell } from "~/components/single-line-cell";
 import { fetchDataGaps } from "~/data-gaps/fetch";
 import { DataGapCard } from "~/data-gaps/page";
+import { RGroup } from "~/components/r-group";
 
 export async function loader({ request }: Route.LoaderArgs) {
   const user = await getAuthUser(request);
@@ -455,7 +456,7 @@ export default function DashboardPage({ loaderData }: Route.ComponentProps) {
 
       {!loaderData.noScrapes && (
         <Stack height={"100%"} gap={8} ref={containerRef}>
-          <Flex flexDir={["column", "column", "row"]} gap={2}>
+          <RGroup>
             <StatCard
               label="Today"
               value={loaderData.messagesToday}
@@ -481,7 +482,7 @@ export default function DashboardPage({ loaderData }: Route.ComponentProps) {
               icon={<TbThumbDown />}
               color="red.600"
             />
-          </Flex>
+          </RGroup>
 
           <Flex gap={8} display={["none", "none", "flex"]}>
             <Stack>
@@ -502,11 +503,7 @@ export default function DashboardPage({ loaderData }: Route.ComponentProps) {
                   </ChakraTooltip>
                 </Group>
               </Heading>
-              <AreaChart
-                width={width / 2 - 20}
-                height={200}
-                data={chartData}
-              >
+              <AreaChart width={width / 2 - 20} height={200} data={chartData}>
                 <XAxis dataKey="name" />
                 <Tooltip />
                 <CartesianGrid strokeDasharray="3 3" />
@@ -588,7 +585,7 @@ export default function DashboardPage({ loaderData }: Route.ComponentProps) {
             </Stack>
           )}
 
-          <Flex gap={8} flexDir={["column", "column", "row"]} align={"start"}>
+          <RGroup gap={8} align={"start"}>
             <Stack flex={1} w="full">
               <Heading>
                 <Group>
@@ -665,7 +662,7 @@ export default function DashboardPage({ loaderData }: Route.ComponentProps) {
                 </Table.Body>
               </Table.Root>
             </Stack>
-          </Flex>
+          </RGroup>
         </Stack>
       )}
 

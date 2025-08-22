@@ -38,7 +38,7 @@ export default function LowCreditsEmail({
         <span style={{ fontWeight: "bold" }}>
           {scrapeTitle || "collection"}
         </span>{" "}
-        scrape. Please upgrade to higher plan or top up the credits. Click the
+        collection. Please upgrade to higher plan or top up the credits. Click the
         folling button to go to your billing section.
       </Container>
     </MailTemplate>

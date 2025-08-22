@@ -12,7 +12,7 @@ import {
   TextChannel,
 } from "discord.js";
 import { learn, query } from "./api";
-import { createToken } from "./jwt";
+import { createToken } from "libs/jwt";
 import { MessageRating, prisma } from "libs/prisma";
 
 type DiscordMessage = Message<boolean>;

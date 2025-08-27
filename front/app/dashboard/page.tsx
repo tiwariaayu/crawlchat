@@ -354,12 +354,21 @@ export default function DashboardPage({ loaderData }: Route.ComponentProps) {
           </button>
           {loaderData.scrape && loaderData.nScrapeItems > 0 && (
             <a
-              className="btn btn-primary btn-soft"
+              className="btn btn-primary btn-soft hidden md:flex"
               href={`/w/${loaderData.scrape.slug ?? loaderData.scrapeId}`}
               target="_blank"
             >
               <TbMessage />
               Chat
+            </a>
+          )}
+          {loaderData.scrape && loaderData.nScrapeItems > 0 && (
+            <a
+              className="btn btn-primary btn-soft btn-square md:hidden"
+              href={`/w/${loaderData.scrape.slug ?? loaderData.scrapeId}`}
+              target="_blank"
+            >
+              <TbMessage />
             </a>
           )}
         </div>
@@ -504,7 +513,7 @@ export default function DashboardPage({ loaderData }: Route.ComponentProps) {
                   <tr>
                     <th>Question</th>
                     <th className="w-10">Channel</th>
-                    <th className="w-42 text-right">Created at</th>
+                    <th className="min-w-34 text-right">Created at</th>
                   </tr>
                 </thead>
                 <tbody>

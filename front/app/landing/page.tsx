@@ -284,6 +284,10 @@ export function UsedBy() {
           />
           <div className="font-medium text-xl">Polotno</div>
         </div>
+
+        <div className="bg-gray-900 rounded-full p-4 px-6 pb-3">
+          <img src="/used-by/postiz.svg" alt="Postiz" className="max-h-[24px]" />
+        </div>
       </div>
     </div>
   );

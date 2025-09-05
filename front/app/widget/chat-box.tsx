@@ -561,16 +561,9 @@ const ToolbarButton = forwardRef<
   HTMLButtonElement,
   PropsWithChildren<{ onClick?: () => void }>
 >(function ToolbarButton({ children, onClick }, ref) {
-  const { scrape } = useChatBoxContext();
-  const widgetConfig = scrape.widgetConfig;
-
-  const color = widgetConfig?.applyColorsToChatbox
-    ? widgetConfig.buttonTextColor
-    : undefined;
-
   return (
     <button
-      className="btn btn-sm btn-ghost btn-plain btn-square text-lg mb-1"
+      className="btn btn-sm btn-ghost btn-plain btn-square text-lg"
       tabIndex={0}
       ref={ref}
       onClick={onClick}
@@ -644,9 +637,9 @@ function Toolbar() {
     >
       <div className="flex flex-1 gap-2 items-center">
         {fullscreen && (
-          <button className="btn btn-square btn-soft" onClick={() => close()}>
+          <ToolbarButton onClick={() => close()}>
             <TbX />
-          </button>
+          </ToolbarButton>
         )}
         {scrape.widgetConfig?.logoUrl && (
           <img

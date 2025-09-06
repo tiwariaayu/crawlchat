@@ -15,6 +15,7 @@ import {
 import { Flow } from "./flow";
 import { z } from "zod";
 import { richMessageBlocks } from "libs/rich-message-block";
+import { createBooking, getSlots } from "libs/cal";
 import zodToJsonSchema from "zod-to-json-schema";
 
 export type RAGAgentCustomMessage = {
@@ -169,58 +170,208 @@ export function makeActionTools(
       schameItems[item.key] = itemToZod(item);
     }
 
-    const tool = new SimpleTool({
-      id: titleToId(action.title),
-      description: action.description,
-      schema: z.object(schameItems),
-      execute: async (input) => {
-        console.log("Executing action", action.id);
+    if (!action.type || action.type === "custom") {
+      const tool = new SimpleTool({
+        id: titleToId(action.title),
+        description: action.description,
+        schema: z.object(schameItems),
+        execute: async (input) => {
+          console.log("Executing action", action.id);
 
-        const data: Record<string, any> = {};
-        for (const item of action.data.items) {
-          data[item.key] = typeCast(makeValue(input, item), item.dataType);
-        }
+          const data: Record<string, any> = {};
+          for (const item of action.data.items) {
+            data[item.key] = typeCast(makeValue(input, item), item.dataType);
+          }
 
-        const queryParams =
-          action.method === "get"
-            ? "?" + new URLSearchParams(data).toString()
-            : "";
-        const body = action.method === "get" ? undefined : JSON.stringify(data);
+          const queryParams =
+            action.method === "get"
+              ? "?" + new URLSearchParams(data).toString()
+              : "";
+          const body =
+            action.method === "get" ? undefined : JSON.stringify(data);
 
-        const headers: Record<string, any> = {};
-        for (const item of action.headers.items) {
-          headers[item.key] = typeCast(makeValue(input, item), item.dataType);
-        }
+          const headers: Record<string, any> = {};
+          for (const item of action.headers.items) {
+            headers[item.key] = typeCast(makeValue(input, item), item.dataType);
+          }
 
-        if (options?.onPreAction) {
-          options.onPreAction(action.title);
-        }
+          if (options?.onPreAction) {
+            options.onPreAction(action.title);
+          }
 
-        const response = await fetch(action.url + queryParams, {
-          method: action.method,
-          body,
-          headers,
-        });
+          const response = await fetch(action.url + queryParams, {
+            method: action.method,
+            body,
+            headers,
+          });
 
-        const content = await response.text();
+          const content = await response.text();
 
-        console.log("Action response", action.id, response.status);
-        return {
-          content,
-          customMessage: {
-            actionCall: {
-              actionId: action.id,
-              data: input,
-              response: content,
-              statusCode: response.status,
-              createdAt: new Date(),
+          console.log("Action response", action.id, response.status);
+          return {
+            content,
+            customMessage: {
+              actionCall: {
+                actionId: action.id,
+                data: input,
+                response: content,
+                statusCode: response.status,
+                createdAt: new Date(),
+              },
             },
-          },
-        };
-      },
-    });
+          };
+        },
+      });
 
-    tools.push(tool);
+      tools.push(tool);
+    } else if (action.type === "cal" && action.calConfig) {
+      const getSlotsTool = new SimpleTool({
+        id: "get-slots",
+        description: `Get the availability slots of the user. ${action.description}`,
+        schema: z.object({
+          start: z
+            .string()
+            .describe(
+              "The start date and time of the availability. It should be in ISO 8601 format. Example: 2025-01-01T00:00:00Z"
+            ),
+          end: z
+            .string()
+            .describe(
+              "The end date and time of the availability. Make it 6 hours from the start time. It should be in ISO 8601 format. Example: 2025-01-01T00:00:00Z"
+            ),
+          timeZone: z
+            .string()
+            .describe(
+              "The time zone of the availability. Example: Asia/Kolkata"
+            ),
+        }),
+        execute: async ({
+          start,
+          end,
+          timeZone,
+        }: {
+          start: string;
+          end: string;
+          timeZone: string;
+        }) => {
+          options?.onPreAction?.("get availability");
+          const slots = await getSlots(
+            action.calConfig!.apiKey!,
+            start,
+            end,
+            Number(action.calConfig!.eventTypeId!),
+            timeZone
+          );
+          const json = await slots.json();
+          return {
+            content: JSON.stringify(json),
+            customMessage: {
+              actionCall: {
+                actionId: action.id,
+                data: {
+                  start,
+                  end,
+                  api: "get-slots",
+                  timeZone,
+                  eventTypeId: action.calConfig!.eventTypeId!,
+                },
+                response: JSON.stringify(json),
+                statusCode: 200,
+                createdAt: new Date(),
+              },
+            },
+          };
+        },
+      });
+
+      const bookSlotTool = new SimpleTool({
+        id: "book-slot",
+        description: `Book a slot. 
+        Ask the user to provide the name and email. 
+        You need to absolutely collect the name and the email from the user.
+        Don't use dummy or default name or email.
+        Don't use this tool without collecting the name and email from the user.
+        Don't make up the name and email yourself. This is very important.
+         
+        ${action.description}`,
+        schema: z.object({
+          start: z.string({
+            description:
+              "The start date and time of the booking. It should be in ISO 8601 format. Example: 2025-01-01T00:00:00Z",
+          }),
+          name: z.string({
+            description:
+              "The name of the user. Collect it from the user. It is required and don't use dummy or default name.",
+          }),
+          email: z.string({
+            description:
+              "The email of the user. Collect it from the user. It is required and don't use dummy or default email.",
+          }),
+          timeZone: z.string({
+            description:
+              "The time zone of the user. Don't ask the user, it must be available already. Example: Asia/Kolkata",
+          }),
+        }),
+        execute: async ({
+          start,
+          name,
+          email,
+          timeZone,
+        }: {
+          start: string;
+          name: string;
+          email: string;
+          timeZone: string;
+        }) => {
+          if (!name || !email) {
+            return {
+              content: "Name and email are required. Please provide them.",
+            };
+          }
+          if (
+            name.toLowerCase().includes("user") ||
+            email.toLowerCase().includes("user") ||
+            email.toLowerCase().includes("example")
+          ) {
+            return {
+              content: "Need a valid name and email. Please provide them.",
+            };
+          }
+
+          options?.onPreAction?.("book slot");
+          const booking = await createBooking(
+            action.calConfig!.apiKey!,
+            Number(action.calConfig!.eventTypeId!),
+            start,
+            name,
+            email,
+            timeZone
+          );
+          const json = await booking.json();
+          return {
+            content: JSON.stringify(json),
+            customMessage: {
+              actionCall: {
+                actionId: action.id,
+                data: {
+                  start,
+                  name,
+                  email,
+                  api: "book-slot",
+                  timeZone,
+                  eventTypeId: action.calConfig!.eventTypeId!,
+                },
+                response: JSON.stringify(json),
+                statusCode: 200,
+                createdAt: new Date(),
+              },
+            },
+          };
+        },
+      });
+
+      tools.push(getSlotsTool, bookSlotTool);
+    }
   }
 
   return tools;
@@ -243,6 +394,7 @@ export function makeFlow(
     minScore?: number;
     showSources?: boolean;
     actions?: ApiAction[];
+    clientData?: any;
   }
 ) {
   const ragTool = makeRagTool(scrapeId, indexerKey, options);
@@ -277,7 +429,7 @@ export function makeFlow(
     "Cite only for the sources that are used to answer the query.",
     "Cite every fact that is used in the answer.",
     "Pick most relevant sources and cite them.",
-    "You should definitely cite sources that you used to answer the query.",
+    "You should definitely cite sources that you used to answer the query if the id is available in the context.",
     "Add the citation wherever applicable either in middle of the sentence or at the end of the sentence.",
     "But don't add it as a separate section at the end of the answer.",
   ]);
@@ -330,6 +482,8 @@ export function makeFlow(
       "Don't ask more than 3 questions for the entire answering flow.",
       "Be polite when you don't have the answer, explain in a friendly way and inform that it is better to reach out the support team.",
       systemPrompt,
+
+      `<client-data>\n${JSON.stringify(options?.clientData)}\n</client-data>`,
     ]),
     tools: [ragTool.make(), ...actionTools.map((tool) => tool.make())],
     model: options?.model,

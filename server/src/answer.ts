@@ -10,6 +10,11 @@ import {
 } from "libs/prisma";
 import { getConfig } from "./llm/config";
 import { makeFlow, RAGAgentCustomMessage } from "./llm/flow-jasmine";
+import {
+  getQueryString,
+  MultimodalContent,
+  removeImages,
+} from "libs/llm-message";
 import { FlowMessage, LlmRole } from "./llm/agentic";
 
 export type StreamDeltaEvent = {
@@ -52,7 +57,7 @@ export type AnswerListener = (event: AnswerEvent) => void;
 
 export type Answerer = (
   scrape: Scrape,
-  query: string,
+  query: string | MultimodalContent[],
   messages: FlowMessage<RAGAgentCustomMessage>[],
   options?: {
     listen?: AnswerListener;
@@ -166,8 +171,17 @@ export const baseAnswerer: Answerer = async (
     type: "init",
     scrapeId: scrape.id,
     userId: scrape.userId,
-    query,
+    query: getQueryString(query),
   });
+
+  if (!llmConfig.supportsImages) {
+    query = removeImages(query);
+    for (let i = 0; i < messages.length; i++) {
+      messages[i].llmMessage.content = removeImages(
+        messages[i].llmMessage.content as string | MultimodalContent[]
+      );
+    }
+  }
 
   const flow = makeFlow(
     scrape.id,

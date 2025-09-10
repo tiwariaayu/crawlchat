@@ -6,8 +6,9 @@ import { useEffect, useRef, useState } from "react";
 import { TbArrowRight, TbCircleCheck, TbCircleX } from "react-icons/tb";
 import { getAuthUser } from "./middleware";
 import { Logo } from "~/dashboard/logo";
-import cn from "@meltdownjs/cn";
 import { makeMeta } from "~/meta";
+import { AntonTestimonial, JonnyTestimonial, MauritsTestimonial } from "~/landing/page";
+import cn from "@meltdownjs/cn";
 
 export async function loader({ request }: Route.LoaderArgs) {
   const user = await getAuthUser(request, { dontRedirect: true });
@@ -43,81 +44,6 @@ export async function action({ request }: Route.ActionArgs) {
   });
 }
 
-function Testi1() {
-  return (
-    <div>
-      <blockquote className="twitter-tweet">
-        <p lang="en" dir="ltr">
-          MCP, llms.txt and{" "}
-          <a href="https://t.co/wvTaGlv99L">https://t.co/wvTaGlv99L</a> are now
-          live!
-          <br />
-          <br />
-          Thanks to{" "}
-          <a href="https://twitter.com/pramodk73?ref_src=twsrc%5Etfw">
-            @pramodk73
-          </a>{" "}
-          and <a href="https://t.co/dv2PDLzt2V">https://t.co/dv2PDLzt2V</a> for
-          getting us up to speed with AI integrations.{" "}
-          <a href="https://t.co/Sornu9aIFi">https://t.co/Sornu9aIFi</a>
-        </p>
-        &mdash; Jonny Burger (@JNYBGR){" "}
-        <a href="https://twitter.com/JNYBGR/status/1899786274635927674?ref_src=twsrc%5Etfw">
-          March 12, 2025
-        </a>
-      </blockquote>
-      <script async src="https://platform.twitter.com/widgets.js" />
-    </div>
-  );
-}
-
-function Testi2() {
-  return (
-    <div>
-      <blockquote className="twitter-tweet">
-        <p lang="en" dir="ltr">
-          Integrated{" "}
-          <a href="https://t.co/uKP4sKdbjV">https://t.co/uKP4sKdbjV</a> into the
-          new Konva docs – hats off to{" "}
-          <a href="https://twitter.com/pramodk73?ref_src=twsrc%5Etfw">
-            @pramodk73
-          </a>{" "}
-          for making it insanely useful.
-          <br />
-          <br />
-          It now powers:
-          <br />- &quot;Ask AI&quot; widget on site
-          <br />- MCP server for docs
-          <br />- Discord bot for community
-          <br />
-          <br />
-          Smarter docs. Better support.
-        </p>
-        &mdash; Anton Lavrenov (@lavrton){" "}
-        <a href="https://twitter.com/lavrton/status/1915467775734350149?ref_src=twsrc%5Etfw">
-          April 24, 2025
-        </a>
-      </blockquote>{" "}
-      <script async src="https://platform.twitter.com/widgets.js" />
-    </div>
-  );
-}
-
-function Testi3() {
-  return (
-    <div>
-      <iframe
-        src="https://www.linkedin.com/embed/feed/update/urn:li:ugcPost:7323678686812020736"
-        height="860"
-        width="500px"
-        frameBorder="0"
-        allowFullScreen
-        title="Embedded post"
-      ></iframe>
-    </div>
-  );
-}
-
 export default function LoginPage() {
   const fetcher = useFetcher();
   const { mailSent } = useLoaderData();
@@ -134,17 +60,18 @@ export default function LoginPage() {
     <div className="flex h-screen w-screen gap-2 items-stretch">
       <div
         className={cn(
-          "flex-col items-center justify-center bg-base-300 flex-1",
-          "hidden md:flex px-4 gap-0 relative"
+          "flex-col items-center justify-center bg-base-200 flex-1",
+          "hidden md:flex px-4 gap-0 relative",
+          "border-r border-base-300"
         )}
       >
         <div className="text-2xl font-bold text-center py-4">
           People love <span className="font-radio-grotesk">CrawlChat</span> ❤️
         </div>
         <div className="max-w-500px overflow-y-auto no-scrollbar pb-4">
-          {testiIndex === 0 && <Testi1 />}
-          {testiIndex === 1 && <Testi2 />}
-          {testiIndex === 2 && <Testi3 />}
+          {testiIndex === 0 && <JonnyTestimonial />}
+          {testiIndex === 1 && <AntonTestimonial />}
+          {testiIndex === 2 && <MauritsTestimonial />}
         </div>
       </div>
       <div className="flex flex-col flex-1 gap-2 h-full justify-center items-center">
@@ -152,7 +79,7 @@ export default function LoginPage() {
           <div
             className={cn(
               "flex flex-col w-82 gap-4 items-center border",
-              "border-base-300 rounded-box p-6 bg-base-200/50 shadow"
+              "border-base-300 rounded-box p-6 bg-base-200 shadow"
             )}
           >
             <Logo />

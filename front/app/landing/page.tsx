@@ -23,6 +23,7 @@ import {
   TbDashboard,
   TbDatabase,
   TbFile,
+  TbMail,
   TbMessage,
   TbRobotFace,
   TbScoreboard,
@@ -974,16 +975,12 @@ export function Footer() {
             <ul className="flex gap-6 mt-4">
               <li>
                 <a href="mailto:support@crawlchat.app">
-                  <img
-                    src="/new-landing/mail.png"
-                    alt="Mail"
-                    className="w-4 h-4"
-                  />
+                  <TbMail />
                 </a>
               </li>
               <li>
                 <a href="https://x.com/pramodk73">
-                  <img src="/new-landing/x.png" alt="X" className="w-4 h-4" />
+                  <TbBrandX />
                 </a>
               </li>
               <li>
@@ -1257,52 +1254,70 @@ function CTHS({ children }: PropsWithChildren) {
   return <span className="text-primary font-bold">{children}</span>;
 }
 
+export function JonnyTestimonial() {
+  return (
+    <CustomTestimonial
+      text={
+        <div>
+          MCP, llms.txt and remotion.ai are now live! Thanks to @pramodk73 and{" "}
+          <CTHS>CrawlChat</CTHS> for getting us up to speed with{" "}
+          <CTH>AI integrations.</CTH>
+        </div>
+      }
+      author="Jonny Burger"
+      authorImage="https://pbs.twimg.com/profile_images/1701672174661046272/Ez-SKeJ1_400x400.jpg"
+      authorLink="https://x.com/JNYBGR/status/1899786274635927674"
+      icon={<TbBrandX />}
+      authorCompany="Remotion"
+    />
+  );
+}
+
+export function AntonTestimonial() {
+  return (
+    <CustomTestimonial
+      text={
+        <div>
+          Integrated <CTHS>CrawlChat</CTHS> into the new Konva docs – hats off
+          to @pramodk73 for making it insanely useful. It now powers{" "}
+          <CTH>"Ask AI"</CTH> widget on site, <CTH>MCP server</CTH> for docs,{" "}
+          <CTH>Discord bot</CTH> for community. Smarter docs. Better support.
+        </div>
+      }
+      author="Anton Lavrenov"
+      authorImage="https://pbs.twimg.com/profile_images/1561788279313383424/RcRFiKnE_400x400.png"
+      authorLink="https://x.com/lavrton/status/1915467775734350149"
+      icon={<TbBrandX />}
+      authorCompany="Konvajs & Polotno"
+    />
+  );
+}
+
+export function MauritsTestimonial() {
+  return (
+    <CustomTestimonial
+      text={
+        <div>
+          Can wholeheartedly <CTH>recommend this</CTH>. The number of support
+          calls to 270 Degrees significantly <CTH>dropped</CTH> after we
+          implemented <CTHS>CrawlChat</CTHS>.
+        </div>
+      }
+      author="Maurits Koekoek"
+      authorImage="https://media.licdn.com/dms/image/v2/D4E03AQG-zmBs0zHLvA/profile-displayphoto-shrink_400_400/profile-displayphoto-shrink_400_400/0/1683012930288?e=1759968000&v=beta&t=4Q_NhlyWwWzn48ZqWllrHwonzwjOHr37rDgU4txRacA"
+      authorLink="https://www.linkedin.com/feed/update/urn:li:activity:7353688013584977920?commentUrn=urn%3Ali%3Acomment%3A%28activity%3A7353688013584977920%2C7353699420036571137%29&dashCommentUrn=urn%3Ali%3Afsd_comment%3A%287353699420036571137%2Curn%3Ali%3Aactivity%3A7353688013584977920%29"
+      icon={<TbBrandLinkedin />}
+      authorCompany="270 Degrees"
+    />
+  );
+}
+
 export function CustomTestimonials() {
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 border border-base-300 rounded-2xl mt-32 bg-base-100">
-      <CustomTestimonial
-        text={
-          <div>
-            MCP, llms.txt and remotion.ai are now live! Thanks to @pramodk73 and{" "}
-            <CTHS>CrawlChat</CTHS> for getting us up to speed with{" "}
-            <CTH>AI integrations.</CTH>
-          </div>
-        }
-        author="Jonny Burger"
-        authorImage="https://pbs.twimg.com/profile_images/1701672174661046272/Ez-SKeJ1_400x400.jpg"
-        authorLink="https://x.com/JNYBGR/status/1899786274635927674"
-        icon={<TbBrandX />}
-        authorCompany="Remotion"
-      />
-      <CustomTestimonial
-        text={
-          <div>
-            Integrated <CTHS>CrawlChat</CTHS> into the new Konva docs – hats off
-            to @pramodk73 for making it insanely useful. It now powers{" "}
-            <CTH>"Ask AI"</CTH> widget on site, <CTH>MCP server</CTH> for docs,{" "}
-            <CTH>Discord bot</CTH> for community. Smarter docs. Better support.
-          </div>
-        }
-        author="Anton Lavrenov"
-        authorImage="https://pbs.twimg.com/profile_images/1561788279313383424/RcRFiKnE_400x400.png"
-        authorLink="https://x.com/lavrton/status/1915467775734350149"
-        icon={<TbBrandX />}
-        authorCompany="Konvajs & Polotno"
-      />
-      <CustomTestimonial
-        text={
-          <div>
-            Can wholeheartedly <CTH>recommend this</CTH>. The number of support
-            calls to 270 Degrees significantly <CTH>dropped</CTH> after we
-            implemented <CTHS>CrawlChat</CTHS>.
-          </div>
-        }
-        author="Maurits Koekoek"
-        authorImage="https://media.licdn.com/dms/image/v2/D4E03AQG-zmBs0zHLvA/profile-displayphoto-shrink_400_400/profile-displayphoto-shrink_400_400/0/1683012930288?e=1759968000&v=beta&t=4Q_NhlyWwWzn48ZqWllrHwonzwjOHr37rDgU4txRacA"
-        authorLink="https://www.linkedin.com/feed/update/urn:li:activity:7353688013584977920?commentUrn=urn%3Ali%3Acomment%3A%28activity%3A7353688013584977920%2C7353699420036571137%29&dashCommentUrn=urn%3Ali%3Afsd_comment%3A%287353699420036571137%2Curn%3Ali%3Aactivity%3A7353688013584977920%29"
-        icon={<TbBrandLinkedin />}
-        authorCompany="270 Degrees"
-      />
+      <JonnyTestimonial />
+      <AntonTestimonial />
+      <MauritsTestimonial />
     </div>
   );
 }

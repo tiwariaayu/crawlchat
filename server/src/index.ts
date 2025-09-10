@@ -220,6 +220,7 @@ expressWs.app.ws("/", (ws: any, req) => {
   let userId: string | null = null;
 
   ws.on("message", async (msg: Buffer | string) => {
+    console.log("Socket message", msg.toString());
     try {
       const message = JSON.parse(msg.toString());
 

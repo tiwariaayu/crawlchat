@@ -809,6 +809,7 @@ function PricingBox({
   items,
   free,
   href,
+  payLabel,
 }: {
   popular?: boolean;
   title: string;
@@ -817,6 +818,7 @@ function PricingBox({
   items: PricingItem[];
   free?: boolean;
   href?: string;
+  payLabel?: string
 }) {
   return (
     <div
@@ -872,7 +874,7 @@ function PricingBox({
             variant={popular ? "solid" : "outline"}
             href={href}
           >
-            {free ? "Try it out" : "🚀 Purchase"}
+            {payLabel ?? (free ? "Try it out" : "🚀 Purchase")}
             <TbArrowRight />
           </Button>
         </div>
@@ -930,6 +932,7 @@ export function PricingBoxes({
           { text: "Image inputs", excluded: true },
         ]}
         href="https://beestack.lemonsqueezy.com/buy/19cd8f91-a20d-4563-8557-2325c425d87e"
+        payLabel="Start 7 days trial"
       />
       <PricingBox
         title="Starter"

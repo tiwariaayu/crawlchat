@@ -948,7 +948,7 @@ export function PricingBoxes({
           { text: "GitHub issues", excluded: true },
           { text: "Image inputs", excluded: true },
         ]}
-        href="https://beestack.lemonsqueezy.com/buy/19cd8f91-a20d-4563-8557-2325c425d87e"
+        href="https://checkout.dodopayments.com/buy/pdt_IcrpqSx48qoCenz4lnLi1?quantity=1&redirect_url=https://crawlchat.app%2Fprofile%23billing"
         payLabel="Start 7 days trial"
       />
       <PricingBox
@@ -967,7 +967,7 @@ export function PricingBoxes({
           { text: "GitHub issues", excluded: true },
           { text: "Image inputs", excluded: true },
         ]}
-        href="https://beestack.lemonsqueezy.com/buy/a13beb2a-f886-4a9a-a337-bd82e745396a"
+        href="https://checkout.dodopayments.com/buy/pdt_vgCVfRAaCT99LM1Dfk5qF?quantity=1&redirect_url=https://crawlchat.app%2Fprofile%23billing"
       />
       <PricingBox
         title="Pro"
@@ -986,7 +986,7 @@ export function PricingBoxes({
           { text: "GitHub issues" },
           { text: "Image inputs" },
         ]}
-        href="https://beestack.lemonsqueezy.com/buy/3a487266-72de-492d-8884-335c576f89c0"
+        href="https://checkout.dodopayments.com/buy/pdt_P68hLo9a0At8cgn4WbzBe?quantity=1&redirect_url=https://crawlchat.app%2Fprofile%23billing"
       />
     </>
   );

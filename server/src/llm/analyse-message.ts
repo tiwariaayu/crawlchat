@@ -12,7 +12,7 @@ import { makeIndexer } from "../indexer/factory";
 import { getConfig } from "./config";
 
 const MAX_ANSWER_SCORE = 0.3;
-const MIN_QUESTION_SCORE = 0.5;
+const MIN_QUESTION_SCORE = 0.6;
 
 export async function decomposeQuestion(question: string) {
   const agent = new SimpleAgent({
@@ -83,7 +83,7 @@ export async function getRelevantScore(
   return result;
 }
 
-async function getDataGap(question: string, answer: string) {
+async function getDataGap(question: string, context: string[]) {
   const llmConfig = getConfig("gpt_5");
 
   const agent = new SimpleAgent({
@@ -123,9 +123,9 @@ async function getDataGap(question: string, answer: string) {
             ${question}
             </question>
             
-            <answer>
-            ${answer}
-            </answer>
+            <context>
+            ${context.join("\n\n")}
+            </context>
           `,
         },
       },
@@ -202,7 +202,8 @@ export async function fillMessageAnalysis(
   messageId: string,
   question: string,
   answer: string,
-  sources: MessageSourceLink[]
+  sources: MessageSourceLink[],
+  context: string[]
 ) {
   try {
     const message = await prisma.message.findFirstOrThrow({
@@ -235,7 +236,7 @@ export async function fillMessageAnalysis(
       );
 
       if (questionRelevance.hit) {
-        const dataGap = await getDataGap(question, answer);
+        const dataGap = await getDataGap(question, context);
         console.log("dataGap", dataGap);
         if (dataGap.title && dataGap.description) {
           analysis.dataGapTitle = dataGap.title;

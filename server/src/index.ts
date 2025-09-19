@@ -375,7 +375,8 @@ expressWs.app.ws("/", (ws: any, req) => {
                 newAnswerMessage.id,
                 message.data.query,
                 event.content,
-                event.sources
+                event.sources,
+                event.context
               );
           }
         };
@@ -694,7 +695,8 @@ app.post("/answer/:scrapeId", authenticate, async (req, res) => {
     newAnswerMessage.id,
     getQueryString(query),
     answer!.content,
-    answer!.sources
+    answer!.sources,
+    answer!.context
   );
 
   if (!answer) {

@@ -32,6 +32,7 @@ export type AnswerCompleteEvent = {
   llmCalls: number;
   creditsUsed: number;
   messages: FlowMessage<RAGAgentCustomMessage>[];
+  context: string[];
 };
 
 export type ToolCallEvent = {
@@ -154,6 +155,14 @@ export async function collectActionCalls(
     .flat();
 }
 
+export function collectContext(messages: FlowMessage<RAGAgentCustomMessage>[]) {
+  return messages
+    .map((m) => m.custom?.result)
+    .filter((r) => r !== undefined)
+    .flat()
+    .map((m) => m.content);
+}
+
 export const baseAnswerer: Answerer = async (
   scrape,
   query,
@@ -246,6 +255,7 @@ export const baseAnswerer: Answerer = async (
       llmCalls: 1,
       creditsUsed: llmConfig.creditsPerMessage,
       messages: flow.flowState.state.messages,
+      context: collectContext(flow.flowState.state.messages),
     };
     options?.listen?.(answer);
   }

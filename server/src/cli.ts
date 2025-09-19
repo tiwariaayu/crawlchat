@@ -2,14 +2,38 @@ import dotenv from "dotenv";
 import { SimpleAgent } from "./llm/agentic";
 import { Flow } from "./llm/flow";
 import { wsRateLimiter } from "./rate-limiter";
+import { prisma } from "libs/prisma";
 dotenv.config();
 
-async function main() {
-  for (let i = 0; i < 100; i++) {
-    console.log(`Checking ${i}...`);
-    await new Promise((resolve) => setTimeout(resolve, 2000));
-    wsRateLimiter.check();
+async function clearDataGaps() {
+  const dataGapMessages = await prisma.message.findMany({
+    where: {
+      NOT: {
+        analysis: {
+          dataGapTitle: null,
+        },
+      },
+    },
+  });
+
+  const messages = dataGapMessages.filter(
+    (m) =>
+      m.analysis?.dataGapTitle &&
+      m.analysis?.dataGapDescription &&
+      !m.analysis?.dataGapDone
+  );
+
+  for (const message of messages) {
+    console.log("Updating message", message.id);
+    await prisma.message.update({
+      where: { id: message.id },
+      data: { analysis: { dataGapTitle: null, dataGapDescription: null } },
+    });
   }
+}
+
+async function main() {
+  
 }
 
 console.log("Starting...");

@@ -69,6 +69,7 @@ export default [
     route("data-gaps", "data-gaps/page.tsx"),
 
     route("assistance", "assistance.tsx"),
+    route("draft", "draft.tsx"),
   ]),
 
   layout("landing/layout.tsx", [

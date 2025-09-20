@@ -130,21 +130,6 @@ class CrawlChatEmbed {
     if (data.type === "embed-ready") {
       this.widgetConfig = data.widgetConfig;
       await this.showAskAIButton();
-
-      const customTags = this.getCustomTags();
-      if (customTags.sidepanel === "true") {
-        const iframe = document.getElementById(this.iframeId);
-        iframe.contentWindow.postMessage(
-          JSON.stringify({
-            type: "internal-link-host",
-            host: window.location.host,
-          }),
-          "*"
-        );
-      }
-    }
-    if (data.type === "internal-link-click") {
-      window.location.href = data.url;
     }
   }
 

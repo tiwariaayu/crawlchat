@@ -232,7 +232,7 @@ export function SourceLink({
       className={cn(
         "flex items-center gap-1",
         "transition-all decoration-0 opacity-70",
-        "hover:opacity-100 w-fit text-sm group",
+        "hover:opacity-100 text-sm group",
         link.url && "cursor-pointer"
       )}
       href={internal ? undefined : link.url ?? undefined}
@@ -244,13 +244,8 @@ export function SourceLink({
         internal ? () => handleInternalLinkClick(link.url ?? "") : undefined
       }
     >
-      <TbFileDescription />
-      {link.title}
-      {link.url && (
-        <span className="hidden group-hover:inline-block">
-          <TbArrowRight />
-        </span>
-      )}
+      <TbFileDescription size={14} className="flex-shrink-0" />
+      <span className="truncate min-w-0">{link.title}</span>
     </a>
   );
 }
@@ -270,6 +265,7 @@ export function Sources({
   citation: ReturnType<typeof extractCitations>;
   color?: string;
 }) {
+  const { internalLinkHosts } = useChatBoxContext();
   const [showSources, setShowSources] = useState(false);
   const citedLinks = Object.entries(citation.citedLinks)
     .filter(([_, link]) => link)
@@ -277,6 +273,12 @@ export function Sources({
       index: Number(index),
       link,
     }));
+
+  useEffect(() => {
+    if (internalLinkHosts.length > 0) {
+      setShowSources(true);
+    }
+  }, [internalLinkHosts]);
 
   if (citedLinks.length === 0) {
     return null;

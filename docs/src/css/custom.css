@@ -32,3 +32,22 @@
 .theme-back-to-top-button {
   display: none;
 }
+
+.crawlchat-nav-askai {
+  background-color: var(--ifm-color-emphasis-100);
+  border: none;
+  padding: 8px 20px;
+  border-radius: 40px;
+  font-size: inherit;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  border: 1px solid var(--ifm-color-emphasis-200);
+}
+
+.crawlchat-nav-askai:hover {
+  background-color: var(--ifm-color-emphasis-200);
+}
+
+.crawlchat-nav-askai .keyboard-keys {
+  margin-left: 8px;
+}

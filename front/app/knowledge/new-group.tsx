@@ -245,7 +245,19 @@ export default function NewScrape({ loaderData }: Route.ComponentProps) {
           value: "confluence",
           description: "Fetch Confluence pages",
           icon: <FaConfluence />,
-          longDescription: "Fetch Confluence pages as the knowledge base",
+          longDescription: (
+            <p>
+              Fetch Confluence pages as the knowledge base. Learn more about
+              creating an API Key{" "}
+              <a
+                href="https://docs.crawlchat.app/knowledge-base/confluence-pages"
+                target="_blank"
+                className="link link-primary"
+              >
+                here
+              </a>
+            </p>
+          ),
         },
       ];
     },

@@ -1292,10 +1292,10 @@ function Hero() {
           <ul className="mt-4 flex flex-col gap-2">
             {features.map((feature, index) => (
               <li key={index} className="flex items-center gap-2">
-                <div className="bg-primary text-primary-content rounded-full p-1 text-sm">
+                <div className="bg-primary/10 text-primary rounded-full p-1 text-sm">
                   {feature.icon}
                 </div>{" "}
-                {feature.text}
+                <span>{feature.text}</span>
               </li>
             ))}
           </ul>

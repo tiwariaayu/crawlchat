@@ -1242,75 +1242,97 @@ export function ctaClassNames(primary: boolean) {
 function Hero() {
   const { focusChangelog } = useLoaderData<typeof loader>();
 
-  function handleAskCrawlChat() {
-    track("hero-ask-ai", {
-      page: "landing",
-    });
-    (window as any).crawlchatEmbed.show();
-  }
-
   return (
-    <div className="py-4">
-      {focusChangelog && (
-        <a
-          className="flex justify-center mb-8 cursor-pointer hover:scale-[1.02] transition-all"
-          href={`/changelog/${focusChangelog.slug}`}
+    <div className={cn("flex gap-10 md:gap-14 mb-10 flex-col md:flex-row")}>
+      <div className={cn("py-4 flex flex-col flex-[1.4]")}>
+        {focusChangelog && (
+          <a
+            className="mb-4 cursor-pointer hover:scale-[1.02] transition-all w-fit"
+            href={`/changelog/${focusChangelog.slug}`}
+          >
+            <div className="bg-red-50 text-sm px-1.5 py-1 rounded-full flex items-center gap-2 pr-2 border border-red-300 text-red-700">
+              <span className="px-2 bg-red-200 rounded-full font-medium border border-red-300">
+                NEW
+              </span>
+              <span className="leading-none">{focusChangelog.title}</span>
+              <span>
+                <TbChevronRight />
+              </span>
+            </div>
+          </a>
+        )}
+
+        <h1 className="font-radio-grotesk text-[42px] md:text-[64px] leading-[1.1]">
+          <span className="text-primary">AI Chatbot</span> for your technical{" "}
+          documentation
+        </h1>
+
+        <h2 className="text-xl mt-6">
+          Power up your technical documentation with CrawlChat AI chatbot that
+          you can connect on your{" "}
+          <span className="bg-red-50 text-red-500 border border-red-500 px-3 py-1 inline-flex m-1 rounded-full leading-none items-center gap-1">
+            <TbWorld />
+            Website
+          </span>
+          <span className="hidden">,</span>{" "}
+          <a
+            className="bg-green-50 text-green-500 border border-green-500 px-3 py-1 inline-flex m-1 rounded-full leading-none items-center gap-1"
+            href="/discord-bot"
+          >
+            <TbBrandDiscord />
+            Discord
+          </a>
+          <span className="hidden">,</span> or{" "}
+          <span className="bg-purple-50 text-purple-500 border border-purple-500 px-3 py-1 inline-flex m-1 rounded-full leading-none items-center gap-1">
+            <TbBrandSlack />
+            Slack
+          </span>
+          <span className="hidden">.</span> so that your community, users &
+          clients get the help they need.
+        </h2>
+
+        <div
+          className={cn(
+            "flex gap-4 mt-8 mb-4 flex-wrap",
+            "flex-col sm:flex-row"
+          )}
         >
-          <div className="bg-red-50 text-sm px-1.5 py-1 rounded-full flex items-center gap-2 pr-2 border border-red-300 text-red-700">
-            <span className="px-2 bg-red-200 rounded-full font-medium border border-red-300">
-              NEW
-            </span>
-            <span className="leading-none">{focusChangelog.title}</span>
-            <span>
-              <TbChevronRight />
+          {/* <button className={ctaClassNames(false)} onClick={handleAskCrawlChat}>
+            <TbMessage />
+            Ask AI
+          </button> */}
+
+          <a className={ctaClassNames(true)} href="/login">
+            Try it out now
+            <TbArrowRight />
+          </a>
+        </div>
+
+        <div className="flex flex-col gap-4">
+          <div className="text-sm text-base-content/50 italic max-w-md">
+            CrawlChat now powers "Ask AI" widget on site, MCP server for docs,
+            Discord bot for community. Smarter docs. Better support.
+          </div>
+
+          <div className="flex items-center gap-2">
+            <img
+              src="https://pbs.twimg.com/profile_images/1561788279313383424/RcRFiKnE_400x400.png"
+              className="w-6 h-6 rounded-full"
+            />
+            <span className="text-sm text-base-content/50">
+              Anton Lavrenov, Konvajs
             </span>
           </div>
-        </a>
-      )}
-
-      <h1 className="font-radio-grotesk text-[42px] md:text-[64px] leading-[1.2] text-center max-w-[800px] mx-auto">
-        <span className="text-primary">AI Chatbot</span> for your technical{" "}
-        documentation
-      </h1>
-
-      <h2 className="text-center text-xl max-w-[700px] mx-auto mt-8">
-        Power up your technical documentation with CrawlChat AI chatbot that you
-        can connect on your{" "}
-        <span className="bg-red-50 text-red-500 border border-red-500 px-3 py-1 inline-flex m-1 rounded-full leading-none items-center gap-1">
-          <TbWorld />
-          Website
-        </span>
-        <span className="hidden">,</span>{" "}
-        <a
-          className="bg-green-50 text-green-500 border border-green-500 px-3 py-1 inline-flex m-1 rounded-full leading-none items-center gap-1"
-          href="/discord-bot"
-        >
-          <TbBrandDiscord />
-          Discord
-        </a>
-        <span className="hidden">,</span> or{" "}
-        <span className="bg-purple-50 text-purple-500 border border-purple-500 px-3 py-1 inline-flex m-1 rounded-full leading-none items-center gap-1">
-          <TbBrandSlack />
-          Slack
-        </span>
-        <span className="hidden">.</span> so that your community, users &
-        clients get the help they need.
-      </h2>
-
-      <div
-        className={cn(
-          "flex justify-center gap-4 my-8 flex-wrap",
-          "flex-col sm:flex-row"
-        )}
-      >
-        <button className={ctaClassNames(false)} onClick={handleAskCrawlChat}>
-          <TbMessage />
-          Ask AI
-        </button>
-        <a className={ctaClassNames(true)} href="/login">
-          Try it out now
-          <TbArrowRight />
-        </a>
+        </div>
+      </div>
+      <div className="flex-1 flex-col">
+        <div className="border border-base-300 rounded-box overflow-hidden shadow">
+          <iframe src="/w/crawlchat" className="w-full h-[560px]" />
+        </div>
+        <div className="text-sm text-base-content/50 text-center mt-4">
+          You can embed above chatbot on your website, Discord server, Slack
+          workspace, or as an MCP server.
+        </div>
       </div>
     </div>
   );
@@ -1321,7 +1343,8 @@ export function LandingPage({ children }: PropsWithChildren) {
     <div data-theme="brand" className="bg-base-200 font-aeonik">
       <div
         className={cn(
-          "hidden md:block aspect-[1440/960] w-full bg-[url('https://slickwid-public.s3.us-east-1.amazonaws.com/crawlchat/clouds.png')]",
+          "hidden md:block aspect-[1440/960] w-full",
+          // "bg-[url('https://slickwid-public.s3.us-east-1.amazonaws.com/crawlchat/clouds.png')]",
           // "dark:bg-[url('https://slickwid-public.s3.us-east-1.amazonaws.com/crawlchat/clouds-dark.png')]",
           "bg-contain bg-no-repeat absolute top-0 left-0"
         )}

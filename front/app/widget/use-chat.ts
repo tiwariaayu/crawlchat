@@ -211,6 +211,7 @@ export function useScrapeChat({
 
   function erase() {
     setMessages([]);
+    setFollowUpQuestions([]);
   }
 
   function deleteMessage(ids: string[]) {

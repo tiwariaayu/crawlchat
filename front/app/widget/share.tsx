@@ -9,6 +9,7 @@ import { MessageCopyButton, Sources } from "~/widget/chat-box";
 import { TbAlertCircle } from "react-icons/tb";
 import cn from "@meltdownjs/cn";
 import { makeMeta } from "~/meta";
+import { ChatBoxProvider } from "./use-chat-box";
 
 export async function loader({ params }: Route.LoaderArgs) {
   const { id } = params;
@@ -161,22 +162,32 @@ export default function Share({ loaderData }: Route.ComponentProps) {
     );
   }
   return (
-    <div className="flex flex-col items-center gap-2">
-      <div className="max-w-prose w-full">
-        <Nav scrape={loaderData.thread.scrape} />
-        <div className="flex flex-col">
-          {loaderData.thread.messages.map((message, idx) => (
-            <Message
-              key={message.id}
-              message={message}
-              pullUp={
-                (loaderData.thread?.messages[idx - 1]?.llmMessage as any)
-                  ?.role === "user"
-              }
-            />
-          ))}
+    <ChatBoxProvider
+      scrape={loaderData.thread.scrape}
+      thread={loaderData.thread}
+      messages={loaderData.thread.messages}
+      embed={false}
+      admin={false}
+      token={null}
+      fullscreen={false}
+    >
+      <div className="flex flex-col items-center gap-2">
+        <div className="max-w-prose w-full">
+          <Nav scrape={loaderData.thread.scrape} />
+          <div className="flex flex-col">
+            {loaderData.thread.messages.map((message, idx) => (
+              <Message
+                key={message.id}
+                message={message}
+                pullUp={
+                  (loaderData.thread?.messages[idx - 1]?.llmMessage as any)
+                    ?.role === "user"
+                }
+              />
+            ))}
+          </div>
         </div>
       </div>
-    </div>
+    </ChatBoxProvider>
   );
 }

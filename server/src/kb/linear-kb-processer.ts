@@ -30,12 +30,20 @@ export class LinearKbProcesser extends BaseKbProcesser {
     const skipRegexes = (
       this.knowledgeGroup.skipPageRegex?.split(",") ?? []
     ).filter(Boolean);
+
     const filteredPages = pages.filter((page) => {
       return !skipRegexes.some((regex) => {
         const r = new RegExp(regex.trim());
         return r.test(page.id);
       });
     });
+
+    const projects = await this.client.projects();
+    do {
+      await projects.fetchNext();
+    } while (projects.pageInfo.hasNextPage);
+
+    const totalPages = filteredPages.length + projects.nodes.length;
 
     for (let i = 0; i < filteredPages.length; i++) {
       const page = filteredPages[i];
@@ -72,8 +80,43 @@ export class LinearKbProcesser extends BaseKbProcesser {
           title: page.title || "Untitled",
         },
         {
-          remaining: pages.length - i,
+          remaining: totalPages - i,
           completed: i,
+        }
+      );
+    }
+
+    for (let i = 0; i < projects.nodes.length; i++) {
+      const project = projects.nodes[i];
+      const updates = await project.projectUpdates();
+      do {
+        await updates.fetchNext();
+      } while (updates.pageInfo.hasNextPage);
+
+      const parts: string[] = [];
+      parts.push(`# ${project.name}\n\n${project.description}`);
+      if (project.content) {
+        parts.push(project.content);
+      }
+      if (updates.nodes.length > 0) {
+        parts.push(
+          `### Updates\n${updates.nodes
+            .map((update) => update.body)
+            .join("\n\n")}`
+        );
+      }
+
+      const text = parts.join("\n\n");
+
+      this.onContentAvailable(
+        project.url,
+        {
+          text,
+          title: project.name || "Untitled",
+        },
+        {
+          remaining: totalPages - (i + filteredPages.length),
+          completed: i + filteredPages.length,
         }
       );
     }

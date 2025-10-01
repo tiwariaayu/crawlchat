@@ -74,6 +74,14 @@ const config: Config = {
     {
       "tagName": "script",
       "attributes": {
+        "src": "https://datafa.st/js/script.js",
+        "data-domain": "crawlchat.app",
+        "data-code": "aO7kKYfA1oQ3g4FLHanketwYCWPu2cE0"
+      },
+    },
+    {
+      "tagName": "script",
+      "attributes": {
         "type": "text/javascript"
       },
       "innerHTML": `

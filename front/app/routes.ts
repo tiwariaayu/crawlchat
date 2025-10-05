@@ -90,6 +90,11 @@ export default [
     route("pricing", "landing/pricing.tsx"),
 
     ...prefix("tool", [route("draft", "tool/draft-page.tsx")]),
+
+    ...prefix("use-case", [
+      route("community-support", "landing/use-case/community-support.tsx"),
+      route("empower-gtm-teams", "landing/use-case/empower-gtm-teams.tsx"),
+    ]),
   ]),
 
   ...prefix("admin-fowl", [index("admin/page.tsx")]),

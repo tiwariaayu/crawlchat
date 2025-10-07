@@ -1091,13 +1091,18 @@ export function Footer() {
           <div className="flex-[2]">
             <ul className="flex flex-col gap-4">
               <li>
-                <FooterLink href="/blog/internal-assistant-for-gtm-teams">
-                  Internal assistant for GTM teams
+                <FooterLink href="/blog/crawlchat-vs-kapa-ai">
+                  CrawlChat vs Kapa.ai
                 </FooterLink>
               </li>
               <li>
-                <FooterLink href="/blog/crawlchat-vs-kapa-ai">
-                  CrawlChat vs Kapa.ai
+                <FooterLink href="/blog/crawlchat-vs-chatbase">
+                  CrawlChat vs Chatbase
+                </FooterLink>
+              </li>
+              <li>
+                <FooterLink href="/blog/internal-assistant-for-gtm-teams">
+                  Internal assistant for GTM teams
                 </FooterLink>
               </li>
               <li>
@@ -1262,11 +1267,11 @@ export function Nav() {
                     Internal assistant
                   </span>
                   <span className="text-sm text-base-content/50">
-                    Let your internal teams have a unified knowledge base. Best for GTM teams
+                    Let your internal teams have a unified knowledge base. Best
+                    for GTM teams
                   </span>
                 </Link>
               </li>
-              
             </ul>
           </div>
           <NavLink href="/#pricing">Pricing</NavLink>

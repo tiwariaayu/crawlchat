@@ -90,11 +90,9 @@ Add the following styles for the above Ask AI button. Feel free to change it as 
 }
 ```
 
-## Source links
+## crawlchat-client
 
-As mentioned above, one of the biggest advantages of having side panel so that the source link navigation is client side and gives a better experiance to the users. Following code handles whenever a user clicks the source links and navigates the page without doing a full page reload.
-
-You need to install the `crawlchat-client` npm package on your Docusaurus project.
+You need to install the `crawlchat-client` npm package on your Docusaurus project and use the `useCrawlChatSidePanel` hook on your `Layout/index.tsx` file so that it handles client side navigation, dark theme sync, resizing, and makes it a regular Ask AI Popup on mobile devices.
 
 ```bash
 npm install crawlchat-client
@@ -112,10 +110,6 @@ export default function LayoutWrapper(props) {
   return (
     <>
       <Layout {...props} />
-      <CrawlChatScript
-        id="YOUR_COLLECTION_ID"
-        sidePanel
-      />
     </>
   );
 }

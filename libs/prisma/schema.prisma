@@ -453,6 +453,7 @@ model KnowledgeGroup {
   staticContentThresholdLength              Int?
   skipPageRegex                             String?
   scrollSelector                            String?
+  maxWait                                   Int?
 
   githubUrl                                 String?
   githubBranch                              String?

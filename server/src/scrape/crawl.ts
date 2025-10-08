@@ -61,6 +61,7 @@ export async function scrape(
     dynamicFallbackContentLength?: number;
     removeHtmlTags?: string;
     scrollSelector?: string;
+    maxWait?: number;
   }
 ): Promise<ScrapeResult> {
   const { dynamicFallbackContentLength = 100 } = options ?? {};
@@ -72,6 +73,7 @@ export async function scrape(
     try {
       text = await scrapePw(url, {
         scrollSelector: options?.scrollSelector,
+        maxWait: options?.maxWait,
       });
     } catch (e: any) {
       console.log(e);
@@ -92,6 +94,7 @@ export async function scrapeWithLinks(
     dynamicFallbackContentLength?: number;
     allowOnlyRegex?: RegExp;
     scrollSelector?: string;
+    maxWait?: number;
   }
 ) {
   if (options?.onPreScrape) {
@@ -162,6 +165,7 @@ export async function scrapeLoop(
     removeHtmlTags?: string;
     shouldScrape?: (url?: string) => Promise<boolean>;
     scrollSelector?: string;
+    maxWait?: number;
   }
 ) {
   const { limit = 5000 } = options ?? {};

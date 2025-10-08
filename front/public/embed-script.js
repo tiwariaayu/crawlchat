@@ -25,6 +25,14 @@ class CrawlChatEmbed {
     return Object.fromEntries(allTags);
   }
 
+  isMobile() {
+    return window.innerWidth < 700;
+  }
+
+  isSidePanel() {
+    return this.getCustomTags().sidepanel === "true";
+  }
+
   async mount() {
     const style = document.createElement("link");
     style.rel = "stylesheet";
@@ -40,7 +48,7 @@ class CrawlChatEmbed {
 
     const customTags = this.getCustomTags();
 
-    if (customTags.sidepanel === "true") {
+    if (!this.isMobile() && this.isSidePanel()) {
       this.mountSidePanel();
       return;
     }
@@ -54,7 +62,7 @@ class CrawlChatEmbed {
     if (Object.keys(customTags).length > 0) {
       params.set("tags", btoa(JSON.stringify(customTags)));
     }
-    if (window.innerWidth < 700) {
+    if (this.isMobile()) {
       params.set("width", window.innerWidth.toString() + "px");
       params.set("height", window.innerHeight.toString() + "px");
       params.set("fullscreen", "true");
@@ -146,7 +154,12 @@ class CrawlChatEmbed {
   async showAskAIButton() {
     const script = document.getElementById(this.scriptId);
 
-    if (!script || script?.getAttribute("data-hide-ask-ai") === "true") return;
+    if (
+      !script ||
+      script?.getAttribute("data-hide-ask-ai") === "true" ||
+      (this.isSidePanel() && !this.isMobile())
+    )
+      return;
 
     const text =
       this.widgetConfig.buttonText ??

@@ -2,10 +2,12 @@ export function CrawlChatScript({
   id,
   sidePanel,
   src,
+  hideAskAI,
 }: {
   id: string;
   sidePanel?: boolean;
   src?: string;
+  hideAskAI?: boolean;
 }) {
   return (
     <script
@@ -14,7 +16,7 @@ export function CrawlChatScript({
       id="crawlchat-script"
       data-id={id}
       data-tag-sidepanel={sidePanel}
-      data-hide-ask-ai={sidePanel}
+      data-hide-ask-ai={hideAskAI}
     />
   );
 }

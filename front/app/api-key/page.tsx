@@ -337,7 +337,7 @@ export default function ApiKeyPage({ loaderData }: Route.ComponentProps) {
             Manage your API keys to access your collection programmatically.
             Read more about the API{" "}
             <a
-              href="https://docs.crawlchat.app/api"
+              href="https://docs.crawlchat.app/category/api"
               target="_blank"
               rel="noopener noreferrer"
               className="link link-primary link-hover"

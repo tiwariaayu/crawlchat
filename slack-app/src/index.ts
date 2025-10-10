@@ -225,6 +225,14 @@ You should use only the above formatting in the answer.
   });
 
   if (error) {
+    try {
+      await client.reactions.remove({
+        token: context.botToken,
+        channel: message.channel,
+        timestamp: message.ts,
+        name: LOADING_REACTION,
+      });
+    } catch {}
     await say({
       text: `Error: ${error}`,
     });

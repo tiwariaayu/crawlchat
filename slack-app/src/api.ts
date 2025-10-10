@@ -25,6 +25,7 @@ export async function query(
   let error = null;
 
   if (result.status === 400) {
+    console.log("Error", result.status);
     error = (await result.json()).message;
   } else {
     answerJson = await result.json();

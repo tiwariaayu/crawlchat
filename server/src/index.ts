@@ -87,7 +87,7 @@ app.post("/scrape", authenticate, async function (req: Request, res: Response) {
   const scrapeId = req.body.scrapeId!;
   const knowledgeGroupId = req.body.knowledgeGroupId!;
 
-  authoriseScrapeUser(req.user!.scrapeUsers, scrapeId);
+  authoriseScrapeUser(req.user!.scrapeUsers, scrapeId, res);
 
   const scrape = await prisma.scrape.findFirstOrThrow({
     where: { id: scrapeId },
@@ -157,7 +157,7 @@ app.delete(
   authenticate,
   async function (req: Request, res: Response) {
     const scrapeId = req.body.scrapeId;
-    authoriseScrapeUser(req.user!.scrapeUsers, scrapeId);
+    authoriseScrapeUser(req.user!.scrapeUsers, scrapeId, res);
 
     const scrape = await prisma.scrape.findFirstOrThrow({
       where: { id: scrapeId },
@@ -182,7 +182,7 @@ app.delete(
       },
     });
 
-    authoriseScrapeUser(req.user!.scrapeUsers, scrapeItem.scrapeId);
+    authoriseScrapeUser(req.user!.scrapeUsers, scrapeItem.scrapeId, res);
 
     const indexer = makeIndexer({ key: scrapeItem.scrape.indexer });
     await deleteByIds(
@@ -210,7 +210,7 @@ app.delete(
       },
     });
 
-    authoriseScrapeUser(req.user!.scrapeUsers, knowledgeGroup.scrapeId);
+    authoriseScrapeUser(req.user!.scrapeUsers, knowledgeGroup.scrapeId, res);
 
     const items = await prisma.scrapeItem.findMany({
       where: { knowledgeGroupId },
@@ -549,7 +549,7 @@ app.post("/resource/:scrapeId", authenticate, async (req, res) => {
   const title = req.body.title;
   const knowledgeGroupId = req.body.knowledgeGroupId;
 
-  authoriseScrapeUser(req.user!.scrapeUsers, scrapeId);
+  authoriseScrapeUser(req.user!.scrapeUsers, scrapeId, res);
 
   if (!scrapeId || !markdown || !title) {
     res.status(400).json({ message: "Missing scrapeId or markdown or title" });
@@ -644,7 +644,7 @@ app.post("/answer/:scrapeId", authenticate, async (req, res) => {
     return;
   }
 
-  authoriseScrapeUser(req.user!.scrapeUsers, scrape.id);
+  authoriseScrapeUser(req.user!.scrapeUsers, scrape.id, res);
 
   if (
     !(await hasEnoughCredits(scrape.userId, "messages", {
@@ -734,7 +734,8 @@ app.post("/answer/:scrapeId", authenticate, async (req, res) => {
     },
   });
   await updateLastMessageAt(thread.id);
-  await fillMessageAnalysis(
+
+  fillMessageAnalysis(
     newAnswerMessage.id,
     getQueryString(query),
     answer!.content,
@@ -776,7 +777,7 @@ app.post("/ticket/:scrapeId", authenticate, async (req, res) => {
     return;
   }
 
-  authoriseScrapeUser(req.user!.scrapeUsers, scrape.id);
+  authoriseScrapeUser(req.user!.scrapeUsers, scrape.id, res);
 
   const userEmail = req.body.userEmail as string;
   const title = req.body.title as string;
@@ -861,7 +862,7 @@ app.post("/compose/:scrapeId", authenticate, async (req, res) => {
     where: { id: req.params.scrapeId },
   });
 
-  authoriseScrapeUser(req.user!.scrapeUsers, scrape.id);
+  authoriseScrapeUser(req.user!.scrapeUsers, scrape.id, res);
 
   if (
     !(await hasEnoughCredits(scrape.userId, "messages", {
@@ -983,7 +984,7 @@ app.post("/fix-message", authenticate, async (req, res) => {
     return;
   }
 
-  authoriseScrapeUser(req.user!.scrapeUsers, message.scrapeId);
+  authoriseScrapeUser(req.user!.scrapeUsers, message.scrapeId, res);
 
   if (
     !(await hasEnoughCredits(userId, "messages", {

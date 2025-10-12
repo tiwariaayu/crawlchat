@@ -189,7 +189,6 @@ model Scrape {
   knowoledgeGroups      KnowledgeGroup[]
   scrapeUsers           ScrapeUser[]
   apiActions            ApiAction[]
-  apiKeys               ApiKey[]
 
   @@index([slug])
 }
@@ -583,11 +582,9 @@ type ApiActionCall {
 
 model ApiKey {
   id              String  @id @default(auto()) @map("_id") @db.ObjectId
-  scrapeId        String  @db.ObjectId
   userId          String  @db.ObjectId
   key             String
   title           String
 
   user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  scrape          Scrape   @relation(fields: [scrapeId], references: [id], onDelete: Cascade)
 }

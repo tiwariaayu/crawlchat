@@ -34,7 +34,7 @@ export async function loader({ request }: Route.LoaderArgs) {
 
   const apiKeys = await prisma.apiKey.findMany({
     where: {
-      scrapeId,
+      userId: user!.id,
     },
   });
 
@@ -60,7 +60,7 @@ export async function action({ request }: Route.ActionArgs) {
   if (intent === "create") {
     // Check current API key count
     const currentCount = await prisma.apiKey.count({
-      where: { scrapeId },
+      where: { userId: user!.id },
     });
 
     if (currentCount >= 10) {
@@ -76,7 +76,6 @@ export async function action({ request }: Route.ActionArgs) {
     const key = crypto.randomUUID();
     await prisma.apiKey.create({
       data: {
-        scrapeId,
         userId: user!.id,
         key,
         title,
@@ -334,7 +333,7 @@ export default function ApiKeyPage({ loaderData }: Route.ComponentProps) {
       ) : (
         <div className="flex flex-col gap-4">
           <p className="text-base-content/50">
-            Manage your API keys to access your collection programmatically.
+            Manage your API keys to access your collections programmatically.
             Read more about the API{" "}
             <a
               href="https://docs.crawlchat.app/category/api"

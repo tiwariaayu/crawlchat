@@ -270,7 +270,6 @@ export function SideMenu({
         label: "API Keys",
         to: "/api-key",
         icon: <TbKey />,
-        forScrape: true,
       },
       {
         label: "Team",

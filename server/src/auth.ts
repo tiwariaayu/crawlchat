@@ -37,19 +37,15 @@ export async function authenticate(
       const apiKey = await prisma.apiKey.findFirst({
         where: { key: xApiKey as string },
         include: {
-          scrape: {
+          user: {
             include: {
-              user: {
-                include: {
-                  scrapeUsers: true,
-                },
-              },
+              scrapeUsers: true,
             },
           },
         },
       });
-      if (apiKey?.scrape.user) {
-        user = apiKey?.scrape.user;
+      if (apiKey?.user) {
+        user = apiKey?.user;
         authMode = AuthMode.apiKey;
       }
     }
@@ -82,9 +78,11 @@ declare global {
 
 export function authoriseScrapeUser(
   scrapeUsers: ScrapeUser[],
-  scrapeId: string
+  scrapeId: string,
+  response: Response
 ) {
   if (!scrapeUsers.find((su) => su.scrapeId === scrapeId)) {
+    response.status(401).json({ error: "Unauthorised" });
     throw new Error("Unauthorised");
   }
 }

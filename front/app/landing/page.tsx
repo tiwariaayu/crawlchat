@@ -146,7 +146,7 @@ function NavLink({
   tooltip,
 }: PropsWithChildren<{ href: string; tooltip?: string }>) {
   return (
-    <a href={href} className="font-medium hover:underline relative">
+    <a href={href} className="hover:underline relative">
       {children}
       {tooltip && (
         <div
@@ -1093,6 +1093,11 @@ export function Footer() {
           </div>
           <div className="flex-[2]">
             <ul className="flex flex-col gap-4">
+              <li>
+                <FooterLink href="/blog/why-crawlchat-is-the-better-choice-for-you">
+                  Why CrawlChat is the better choice for you
+                </FooterLink>
+              </li>
               <li>
                 <FooterLink href="/blog/crawlchat-vs-kapa-ai">
                   CrawlChat vs Kapa.ai

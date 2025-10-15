@@ -92,7 +92,7 @@ export async function loader({ request }: Route.LoaderArgs) {
 
   const dataGapMessages = scrapeId ? await fetchDataGaps(scrapeId) : [];
 
-  const usedPages = await getPagesCount(user!.id);
+  const usedPages = await getPagesCount(scrape?.userId ?? user!.id);
 
   return {
     user: user!,

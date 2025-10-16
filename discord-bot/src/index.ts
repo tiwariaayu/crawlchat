@@ -106,6 +106,8 @@ const makeMessage = async (message: DiscordMessage, scrape: Scrape) => {
     }
   }
 
+  console.log(message.attachments.size, scrape.discordConfig);
+
   if (scrape.discordConfig?.sendImages && message.attachments.size > 0) {
     const imageUrls = [];
 

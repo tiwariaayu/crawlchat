@@ -1350,18 +1350,18 @@ function Hero() {
           </a>
         )}
 
-        <h1 className="font-radio-grotesk text-[42px] md:text-[64px] leading-[1.1]">
+        <h1 className="font-radio-grotesk text-[42px] md:text-[58px] leading-[1.1]">
           Make your technical docs answer the queries{" "}
           <span className="text-primary">instantly!</span>
         </h1>
 
-        <p className="text-xl mt-6">
+        <p className="text-xl mt-6 text-base-content/60">
           Your users don't want to dig through endless pages of docs. They want
           answers that meet them where they are. With CrawlChat you get
           <ul className="mt-4 flex flex-col gap-2">
             {features.map((feature, index) => (
               <li key={index} className="flex items-center gap-2">
-                <div className="bg-primary/10 text-primary rounded-full p-1 text-sm">
+                <div className="text-primary/60 rounded-full p-1 text">
                   {feature.icon}
                 </div>{" "}
                 <span>{feature.text}</span>

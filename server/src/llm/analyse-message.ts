@@ -397,40 +397,37 @@ export async function fillMessageAnalysis(
       },
     });
 
-    const maxScore = Math.max(...sources.map((s) => s.score ?? 0));
-    if (maxScore > 0.15) {
-      const cleanedCategory =
-        partialAnalysis?.category &&
-        options?.categories &&
-        options?.categories.some(
-          (c) =>
-            c.title.trim().toLowerCase() ===
-            partialAnalysis.category?.title.trim().toLowerCase()
-        )
-          ? partialAnalysis.category
-          : null;
-      const category =
-        cleanedCategory && cleanedCategory.score > 0.8
-          ? cleanedCategory.title
-          : null;
-      await prisma.message.update({
-        where: { id: questionMessageId },
-        data: {
-          analysis: {
-            upsert: {
-              set: {
-                category,
-                categorySuggestions: partialAnalysis?.categorySuggestions ?? [],
-              },
-              update: {
-                category,
-                categorySuggestions: partialAnalysis?.categorySuggestions ?? [],
-              },
+    const cleanedCategory =
+      partialAnalysis?.category &&
+      options?.categories &&
+      options?.categories.some(
+        (c) =>
+          c.title.trim().toLowerCase() ===
+          partialAnalysis.category?.title.trim().toLowerCase()
+      )
+        ? partialAnalysis.category
+        : null;
+    const category =
+      cleanedCategory && cleanedCategory.score > 0.8
+        ? cleanedCategory.title
+        : null;
+    await prisma.message.update({
+      where: { id: questionMessageId },
+      data: {
+        analysis: {
+          upsert: {
+            set: {
+              category,
+              categorySuggestions: partialAnalysis?.categorySuggestions ?? [],
+            },
+            update: {
+              category,
+              categorySuggestions: partialAnalysis?.categorySuggestions ?? [],
             },
           },
         },
-      });
-    }
+      },
+    });
 
     if (analysis.dataGapTitle && analysis.dataGapDescription) {
       await fetch(`${process.env.FRONT_URL}/email-alert`, {

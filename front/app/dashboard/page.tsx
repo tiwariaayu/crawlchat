@@ -4,6 +4,7 @@ import {
   TbChartBar,
   TbCheck,
   TbDatabase,
+  TbExternalLink,
   TbFolder,
   TbHome,
   TbMessage,
@@ -19,7 +20,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { numberToKMB } from "~/number-util";
 import { commitSession } from "~/session";
 import { getSession } from "~/session";
-import { redirect, useFetcher } from "react-router";
+import { Link, redirect, useFetcher } from "react-router";
 import { getLimits } from "libs/user-plan";
 import { fetchDataGaps } from "~/data-gaps/fetch";
 import { hideModal, showModal } from "~/components/daisy-utils";
@@ -176,6 +177,7 @@ export async function loader({ request }: Route.LoaderArgs) {
   const categories: Record<string, number> = {};
   for (const message of messages) {
     if (
+      (message.llmMessage as any)?.role !== "assistant" ||
       !message.analysis?.category ||
       !scrape?.messageCategories.some(
         (c) =>
@@ -483,20 +485,28 @@ export default function DashboardPage({ loaderData }: Route.ComponentProps) {
 
           <div className="flex gap-2 items-center flex-wrap my-4">
             {Object.entries(loaderData.categories).map(([category, count]) => (
-              <div
+              <Link
                 key={category}
-                className="badge badge-accent badge-soft pr-0"
+                to={`/messages?category=${category}`}
+                className={cn(
+                  "badge badge-accent badge-soft pr-0",
+                  "hover:shadow transition-all group"
+                )}
               >
                 <TbFolder />
                 <span>{category}</span>
                 <span
                   className={cn(
-                    "bg-accent text-accent-content border-left-base-300 px-1.5 rounded-full"
+                    "bg-accent text-accent-content border-left-base-300 px-1.5 rounded-full",
+                    "w-8 text-center h-full flex items-center justify-center"
                   )}
                 >
-                  {count}
+                  <span className="group-hover:hidden">{count}</span>
+                  <span className="hidden group-hover:block">
+                    <TbMessage />
+                  </span>
                 </span>
-              </div>
+              </Link>
             ))}
             <div
               className={cn(

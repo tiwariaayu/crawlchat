@@ -360,6 +360,21 @@ export async function fillMessageAnalysis(
       ]);
     }
 
+    const cleanedCategory =
+      partialAnalysis?.category &&
+      options?.categories &&
+      options?.categories.some(
+        (c) =>
+          c.title.trim().toLowerCase() ===
+          partialAnalysis.category?.title.trim().toLowerCase()
+      )
+        ? partialAnalysis.category
+        : null;
+    const category =
+      cleanedCategory && cleanedCategory.score > 0.8
+        ? cleanedCategory.title
+        : null;
+
     const analysis: MessageAnalysis = {
       questionRelevanceScore: null,
       questionSentiment: partialAnalysis?.questionSentiment ?? null,
@@ -367,7 +382,7 @@ export async function fillMessageAnalysis(
       followUpQuestions: partialAnalysis?.followUpQuestions ?? [],
       dataGapTitle: null,
       dataGapDescription: null,
-      category: null,
+      category,
       dataGapDone: false,
       categorySuggestions: [],
     };
@@ -397,20 +412,6 @@ export async function fillMessageAnalysis(
       },
     });
 
-    const cleanedCategory =
-      partialAnalysis?.category &&
-      options?.categories &&
-      options?.categories.some(
-        (c) =>
-          c.title.trim().toLowerCase() ===
-          partialAnalysis.category?.title.trim().toLowerCase()
-      )
-        ? partialAnalysis.category
-        : null;
-    const category =
-      cleanedCategory && cleanedCategory.score > 0.8
-        ? cleanedCategory.title
-        : null;
     await prisma.message.update({
       where: { id: questionMessageId },
       data: {

@@ -1,8 +1,4 @@
-import type {
-  CategorySuggestion,
-  Message,
-  Scrape,
-} from "libs/prisma";
+import type { CategorySuggestion, Message, Prisma, Scrape } from "libs/prisma";
 import type { Route } from "./+types/messages";
 import { TbFolder, TbMessage, TbMessages, TbPointer } from "react-icons/tb";
 import { Page } from "~/components/page";
@@ -10,7 +6,12 @@ import { getAuthUser } from "~/auth/middleware";
 import { prisma } from "~/prisma";
 import { makeMessagePairs } from "./analyse";
 import { authoriseScrapeUser, getSessionScrapeId } from "~/scrapes/util";
-import { Outlet, Link as RouterLink } from "react-router";
+import {
+  Outlet,
+  Link as RouterLink,
+  useLocation,
+  useNavigate,
+} from "react-router";
 import { ViewSwitch } from "./view-switch";
 import { CountryFlag } from "./country-flag";
 import { Rating } from "./rating-badge";
@@ -21,25 +22,36 @@ import { getQueryString } from "libs/llm-message";
 import moment from "moment";
 import cn from "@meltdownjs/cn";
 import { makeMeta } from "~/meta";
+import { useEffect, useMemo, useState } from "react";
 
 export async function loader({ request }: Route.LoaderArgs) {
   const user = await getAuthUser(request);
   const scrapeId = await getSessionScrapeId(request);
   authoriseScrapeUser(user!.scrapeUsers, scrapeId);
 
+  const url = new URL(request.url);
+
   const scrape = await prisma.scrape.findFirstOrThrow({
     where: { id: scrapeId },
   });
 
   const ONE_WEEK_AGO = new Date(Date.now() - 1000 * 60 * 60 * 24 * 7);
+  const where: Prisma.MessageWhereInput = {
+    scrapeId,
+    createdAt: {
+      gte: ONE_WEEK_AGO,
+    },
+  };
+  if (url.searchParams.get("category")) {
+    where.analysis = {
+      is: {
+        category: url.searchParams.get("category"),
+      },
+    };
+  }
 
   const messages = await prisma.message.findMany({
-    where: {
-      scrapeId,
-      createdAt: {
-        gte: ONE_WEEK_AGO,
-      },
-    },
+    where,
     include: {
       thread: true,
     },
@@ -91,9 +103,43 @@ function CategorySuggestionCount({
 }
 
 export default function MessagesLayout({ loaderData }: Route.ComponentProps) {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const [category, setCategory] = useState<string>();
+
+  useEffect(() => {
+    const url = new URL(window.location.href);
+    setCategory(url.searchParams.get("category") ?? undefined);
+  }, [location.search]);
+
+  useEffect(() => {
+    if (category !== undefined) {
+      navigate(category ? `/messages?category=${category}` : `/messages`);
+    }
+  }, [category]);
+
   return (
     <Page title="Messages" icon={<TbMessage />} right={<ViewSwitch />}>
       <div className="flex flex-col gap-2 flex-1">
+        <div className="flex items-center gap-2 justify-between">
+          <div className="text-base-content/50">
+            Showing messages in last 7 days
+          </div>
+
+          <select
+            value={category ?? ""}
+            className="select w-fit"
+            onChange={(e) => setCategory(e.target.value)}
+          >
+            <option value="">All categories</option>
+            {loaderData.scrape.messageCategories.map((category, index) => (
+              <option key={index} value={category.title}>
+                {category.title}
+              </option>
+            ))}
+          </select>
+        </div>
+
         {loaderData.messagePairs.length === 0 && (
           <div className="flex flex-1 justify-center items-center">
             <EmptyState
@@ -105,10 +151,6 @@ export default function MessagesLayout({ loaderData }: Route.ComponentProps) {
         )}
         {loaderData.messagePairs.length > 0 && (
           <div className="flex flex-col gap-4">
-            <div className="text-base-content/50">
-              Showing messages in last 7 days
-            </div>
-
             {loaderData.messagePairs.length > 0 && (
               <div
                 className={cn(

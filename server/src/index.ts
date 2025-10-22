@@ -564,16 +564,16 @@ app.post("/resource/:scrapeId", authenticate, async (req, res) => {
 
   const chunks = await splitMarkdown(markdown);
 
-  if (
-    !(await hasEnoughCredits(scrape.userId, "scrapes", {
-      amount: chunks.length,
-      alert: {
-        scrapeId: scrape.id,
-        token: createToken(scrape.userId),
-      },
-    }))
-  ) {
-    res.status(400).json({ message: "Not enough credits" });
+  try {
+    await assertLimit(
+      new Date().toISOString(),
+      chunks.length,
+      scrape.id,
+      scrape.userId,
+      scrape.user.plan
+    );
+  } catch (error) {
+    res.status(400).json({ message: "Pages limit reached for the plan" });
     return;
   }
 

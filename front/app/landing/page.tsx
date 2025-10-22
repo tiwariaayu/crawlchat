@@ -1,6 +1,6 @@
 import type { Route } from "./+types/page";
 import type { PropsWithChildren, ReactNode } from "react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   TbArrowDown,
   TbArrowRight,
@@ -135,7 +135,7 @@ export async function loader() {
 export function Container({ children }: PropsWithChildren) {
   return (
     <div className="flex justify-center">
-      <div className="max-w-[1200px] w-full p-4 px-8 md:px-4">{children}</div>
+      <div className="max-w-[1200px] w-full p-8 md:p-10 md:py-4">{children}</div>
     </div>
   );
 }
@@ -1351,7 +1351,7 @@ function Hero() {
         )}
 
         <h1 className="font-radio-grotesk text-[42px] md:text-[58px] leading-[1.1]">
-          Make your technical docs answer the queries{" "}
+          Make your technical docs answer queries{" "}
           <span className="text-primary">instantly!</span>
         </h1>
 
@@ -1405,7 +1405,7 @@ function Hero() {
         </div>
       </div>
       <div className="flex-1 flex-col">
-        <div className="border border-base-300 rounded-box overflow-hidden">
+        <div className="border-2 border-primary rounded-box overflow-hidden shadow">
           <iframe src="/w/crawlchat" className="w-full h-[560px]" />
         </div>
         <div className="text-sm text-base-content/50 text-center mt-4">

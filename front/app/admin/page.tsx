@@ -433,7 +433,7 @@ function MessagesChart() {
           }}
         >
           <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="name" />
+          <XAxis dataKey="name" reversed />
           <YAxis />
           <Tooltip />
           <Legend />

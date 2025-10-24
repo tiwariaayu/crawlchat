@@ -5,6 +5,7 @@ import { prisma } from "libs/prisma";
 import { makeKbProcesser } from "./kb/factory";
 import { makeKbProcesserListener } from "./kb/listener";
 import { exit } from "process";
+import { cleanupMessages } from "./scripts/thread-cleanup";
 
 async function updateKnowledgeGroup(groupId: string) {
   console.log(`Updating knowledge group ${groupId}`);
@@ -71,8 +72,29 @@ async function updateKnowledgeBase() {
   exit(0);
 }
 
+function getCliArg(argName: string): string | null {
+  const args = process.argv;
+  const argIndex = args.indexOf(`--${argName}`);
+  
+  if (argIndex !== -1 && argIndex + 1 < args.length) {
+    return args[argIndex + 1];
+  }
+  
+  return null;
+}
+
 async function main() {
-  await updateKnowledgeBase();
+  const jobName = getCliArg('job-name');
+
+  if (jobName === 'update-knowledge-base') {
+    return await updateKnowledgeBase();
+  }
+  if (jobName === 'cleanup-messages') {
+    return await cleanupMessages();
+  }
+  
+  console.error('Invalid job name', jobName);
+  exit(1);
 }
 
 main();

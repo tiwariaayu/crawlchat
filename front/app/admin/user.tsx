@@ -4,6 +4,7 @@ import { redirect } from "react-router";
 import { getAuthUser } from "~/auth/middleware";
 import type { Route } from "./+types/user";
 import { DataList } from "~/components/data-list";
+import { makeMeta } from "~/meta";
 
 export async function loader({ request, params }: Route.LoaderArgs) {
   const loggedInUser = await getAuthUser(request);
@@ -12,7 +13,7 @@ export async function loader({ request, params }: Route.LoaderArgs) {
     throw redirect("/app");
   }
 
-  const user = await prisma.user.findUnique({
+  const user = await prisma.user.findFirstOrThrow({
     where: {
       id: params.userId,
     },
@@ -25,6 +26,12 @@ export async function loader({ request, params }: Route.LoaderArgs) {
   });
 
   return { user, scrapes };
+}
+
+export function meta() {
+  return makeMeta({
+    title: "User - Admin",
+  });
 }
 
 function CollectionsTable({ scrapes }: { scrapes: Scrape[] }) {

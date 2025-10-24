@@ -7,10 +7,24 @@ import type {
   Thread,
 } from "libs/prisma";
 import { getAuthUser } from "~/auth/middleware";
-import { Link, redirect } from "react-router";
+import { Link, redirect, useLoaderData } from "react-router";
 import { prisma } from "libs/prisma";
 import { MarkdownProse } from "~/widget/markdown-prose";
 import { getQueryString } from "libs/llm-message";
+import { TbCopy } from "react-icons/tb";
+import { toast, Toaster } from "react-hot-toast";
+import { makeMeta } from "~/meta";
+import cn from "@meltdownjs/cn";
+import {
+  Bar,
+  BarChart,
+  CartesianGrid,
+  Legend,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from "recharts";
+import { useEffect, useRef, useState } from "react";
 
 type UserDetail = {
   user: User;
@@ -94,10 +108,65 @@ export async function loader({ request }: Route.LoaderArgs) {
     })
   );
 
+  async function getMessagesCount(startDate: Date, endDate: Date) {
+    const messages = await prisma.message.findMany({
+      where: {
+        createdAt: {
+          gte: startDate,
+          lte: endDate,
+        },
+      },
+      select: {
+        scrape: {
+          select: {
+            id: true,
+            title: true,
+          },
+        },
+      },
+    });
+
+    const counts: Record<string, number> = {};
+    for (const message of messages) {
+      counts[message.scrape.id] = (counts[message.scrape.id] ?? 0) + 1;
+    }
+    const scrapes: Record<string, string> = {};
+    for (const message of messages) {
+      scrapes[message.scrape.id] = message.scrape.title ?? message.scrape.id;
+    }
+    const total = Object.values(counts).reduce((acc, count) => acc + count, 0);
+    return { counts, scrapes, total };
+  }
+
+  const DAY_MILLIS = 24 * 60 * 60 * 1000;
+  const dailyMessages = await Promise.all(
+    Array.from({ length: 30 }).map(async (_, index) => {
+      const endDate = new Date(Date.now() - index * DAY_MILLIS);
+      const startDate = new Date(Date.now() - (index + 1) * DAY_MILLIS);
+      const { counts, scrapes, total } = await getMessagesCount(
+        startDate,
+        endDate
+      );
+      return {
+        name: startDate.toISOString().split("T")[0],
+        counts,
+        scrapes,
+        total,
+      };
+    })
+  );
+
   return {
     userDetails,
     messageDetails,
+    dailyMessages,
   };
+}
+
+export function meta() {
+  return makeMeta({
+    title: "Admin - CrawlChat",
+  });
 }
 
 function UsersTable({ userDetails }: { userDetails: UserDetail[] }) {
@@ -143,7 +212,7 @@ function UsersTable({ userDetails }: { userDetails: UserDetail[] }) {
 }
 
 function Score({ message }: { message: Message }) {
-  if (message.links.length === 0) return null;
+  if (message.links.length === 0) return "NA";
   const min = Math.min(...message.links.map((l) => l.score ?? 0)).toFixed(2);
   const max = Math.max(...message.links.map((l) => l.score ?? 0)).toFixed(2);
   const avg = (
@@ -158,14 +227,19 @@ function MessagesTable({
 }: {
   messageDetails: MessageDetail[];
 }) {
+  function handleCopy(id: string) {
+    navigator.clipboard.writeText(id);
+    toast.success("Copied to clipboard");
+  }
+
   return (
     <div className="overflow-x-auto border border-base-300 rounded-box bg-base-200/50 shadow">
       <table className="table">
         <thead>
           <tr>
-            <th>Message</th>
             <th>Scrape</th>
             <th>User</th>
+            <th>Id</th>
             <th>Category</th>
             <th>Score</th>
             <th>Channel</th>
@@ -175,16 +249,11 @@ function MessagesTable({
           </tr>
         </thead>
         <tbody>
-          {messageDetails.map((messageDetail) => (
+          {messageDetails.map((messageDetail, index) => (
             <tr
               key={messageDetail.message.id}
               data-message-id={messageDetail.message.id}
             >
-              <td>
-                {getQueryString(
-                  (messageDetail.message.llmMessage as any).content
-                )}
-              </td>
               <td>{messageDetail.scrape.title}</td>
               <td>
                 <Link
@@ -194,14 +263,40 @@ function MessagesTable({
                   {messageDetail.user.email}
                 </Link>
               </td>
+              <td>
+                <div className="flex items-center gap-2">
+                  <div
+                    className={cn(
+                      "tooltip",
+                      index < 10 && "first:tooltip-bottom"
+                    )}
+                    data-tip={getQueryString(
+                      (messageDetail.message.llmMessage as any).content
+                    )}
+                  >
+                    {messageDetail.message.id.substring(
+                      messageDetail.message.id.length - 4
+                    )}
+                  </div>
+                  <button
+                    className="btn btn-xs btn-square"
+                    onClick={() => handleCopy(messageDetail.message.id)}
+                  >
+                    <TbCopy />
+                  </button>
+                </div>
+              </td>
               <td>{messageDetail.message.analysis?.category}</td>
               <td>
                 <Score message={messageDetail.message} />
               </td>
               <td>{messageDetail.message.channel ?? "chatbot"}</td>
-              <td>{`${messageDetail.message.llmModel ?? "-"}, ${
-                messageDetail.message.creditsUsed ?? "-"
-              }`}</td>
+              <td>
+                {`${messageDetail.message.llmModel ?? "-"}, ${
+                  messageDetail.message.creditsUsed ?? "-"
+                }`}
+              </td>
+
               <td>
                 {messageDetail.message.analysis?.dataGapTitle && (
                   <div className="dropdown dropdown-end">
@@ -231,13 +326,126 @@ function MessagesTable({
   );
 }
 
+const data = [
+  {
+    name: "Page A",
+    uv: 4000,
+    pv: 2400,
+    amt: 2400,
+  },
+  {
+    name: "Page B",
+    uv: 3000,
+    pv: 1398,
+    amt: 2210,
+  },
+  {
+    name: "Page C",
+    uv: 2000,
+    pv: 9800,
+    amt: 2290,
+  },
+  {
+    name: "Page D",
+    uv: 2780,
+    pv: 3908,
+    amt: 2000,
+  },
+  {
+    name: "Page E",
+    uv: 1890,
+    pv: 4800,
+    amt: 2181,
+  },
+  {
+    name: "Page F",
+    uv: 2390,
+    pv: 3800,
+    amt: 2500,
+  },
+  {
+    name: "Page G",
+    uv: 3490,
+    pv: 4300,
+    amt: 2100,
+  },
+];
+
+function MessagesChart() {
+  const dailyMessages = useLoaderData<typeof loader>().dailyMessages;
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [graph, setGraph] = useState<{
+    width: number;
+    scrapes: { id: string; name: string; color: string }[];
+  }>();
+
+  useEffect(() => {
+    if (containerRef.current) {
+      const scrapes: Record<string, string> = {};
+
+      for (const day of dailyMessages) {
+        for (const scrapeId in day.scrapes) {
+          scrapes[scrapeId] = day.scrapes[scrapeId];
+        }
+      }
+
+      setGraph({
+        width: containerRef.current.clientWidth - 50,
+        scrapes: Object.entries(scrapes).map(([id, name]) => ({
+          id,
+          name,
+          color: getRandomColor(),
+        })),
+      });
+    }
+  }, [containerRef]);
+
+  function getRandomColor() {
+    return `#${Math.floor(Math.random() * 16777215).toString(16)}`;
+  }
+
+  return (
+    <div ref={containerRef} className="w-full h-[400px]">
+      {graph && (
+        <BarChart
+          width={graph.width}
+          height={400}
+          data={dailyMessages}
+          margin={{
+            top: 20,
+            right: 0,
+            left: 0,
+            bottom: 5,
+          }}
+        >
+          <CartesianGrid strokeDasharray="3 3" />
+          <XAxis dataKey="name" />
+          <YAxis />
+          <Tooltip />
+          <Legend />
+          {graph.scrapes.map((scrape) => (
+            <Bar
+              dataKey={`counts.${scrape.id}`}
+              stackId="a"
+              fill={scrape.color}
+              name={scrape.name}
+            />
+          ))}
+        </BarChart>
+      )}
+    </div>
+  );
+}
+
 export default function Admin({ loaderData }: Route.ComponentProps) {
   return (
     <div className="flex flex-col gap-2 p-4">
+      <MessagesChart />
       <div className="text-2xl font-bold">Users</div>
       <UsersTable userDetails={loaderData.userDetails} />
       <div className="text-2xl font-bold mt-4">Messages</div>
       <MessagesTable messageDetails={loaderData.messageDetails} />
+      <Toaster />
     </div>
   );
 }

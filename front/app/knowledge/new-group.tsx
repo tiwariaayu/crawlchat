@@ -321,6 +321,24 @@ export function NewKnowledgeGroupForm({
           </p>
         ),
       },
+      {
+        title: "Custom",
+        value: "custom",
+        description: "Use API to add content",
+        icon: <TbBook2 />,
+        longDescription: (
+          <p>
+            Use API to add content to the knowledge base. Learn more about the API{" "}
+            <a
+              href="https://docs.crawlchat.app/api/add-page"
+              target="_blank"
+              className="link link-primary"
+            >
+              here
+            </a>
+          </p>
+        ),
+      },
     ];
 
     if (skip) {
@@ -537,6 +555,12 @@ export function NewKnowledgeGroupForm({
               required
             />
           </fieldset>
+        </>
+      )}
+
+      {type === "custom" && (
+        <>
+          <input type="hidden" name="url" value="https://none.com" />
         </>
       )}
     </>

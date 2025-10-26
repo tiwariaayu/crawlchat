@@ -449,22 +449,24 @@ export default function Ticket({ loaderData }: Route.ComponentProps) {
                 required
               />
               <div className="flex items-center gap-2 justify-end">
-                <div
-                  className="tooltip"
-                  data-tip="No email notifications will be sent"
-                >
-                  <button
-                    className="btn"
-                    onClick={handleClose}
-                    type="button"
-                    disabled={commentFetcher.state !== "idle"}
+                {loaderData.role === "agent" && (
+                  <div
+                    className="tooltip"
+                    data-tip="No email notifications will be sent"
                   >
-                    {commentFetcher.state !== "idle" && resolve && (
-                      <span className="loading loading-spinner loading-xs" />
-                    )}
-                    Close
-                  </button>
-                </div>
+                    <button
+                      className="btn"
+                      onClick={handleClose}
+                      type="button"
+                      disabled={commentFetcher.state !== "idle"}
+                    >
+                      {commentFetcher.state !== "idle" && resolve && (
+                        <span className="loading loading-spinner loading-xs" />
+                      )}
+                      Close
+                    </button>
+                  </div>
+                )}
                 <button
                   className="btn"
                   onClick={handleResolve}

@@ -105,10 +105,6 @@ export async function action({ params, request }: Route.ActionArgs) {
     const content = formData.get("content") as string;
     const role = getRole(thread, loggedInUser?.scrapeUsers);
     const resolve = formData.get("resolve") === "true";
-    const close = formData.get("close") === "true";
-
-    const shouldClose = close || resolve;
-    const shouldSendEmail = resolve;
 
     const message = await prisma.message.create({
       data: {
@@ -130,7 +126,7 @@ export async function action({ params, request }: Route.ActionArgs) {
       lastMessageAt: new Date(),
     };
 
-    if (shouldClose) {
+    if (resolve) {
       threadUpdate.ticketStatus = "closed";
       threadUpdate.ticketClosedAt = new Date();
     }
@@ -141,7 +137,6 @@ export async function action({ params, request }: Route.ActionArgs) {
     });
 
     if (
-      shouldSendEmail &&
       role === "agent" &&
       thread.ticketUserEmail &&
       thread.ticketNumber !== null &&
@@ -164,7 +159,6 @@ export async function action({ params, request }: Route.ActionArgs) {
     }
 
     if (
-      shouldSendEmail &&
       role === "user" &&
       thread.ticketUserEmail &&
       thread.ticketNumber !== null &&
@@ -193,6 +187,15 @@ export async function action({ params, request }: Route.ActionArgs) {
     }
 
     return { message };
+  }
+
+  if (intent === "close") {
+    await prisma.thread.update({
+      where: { id: thread.id },
+      data: { ticketStatus: "closed" },
+    });
+
+    return { success: true };
   }
 }
 
@@ -276,10 +279,9 @@ function Message({
 
 export default function Ticket({ loaderData }: Route.ComponentProps) {
   const commentFetcher = useFetcher();
-  const [resolve, setResolve] = useState(false);
-  const [close, setClose] = useState(false);
-  const commentSubmitRef = useRef<HTMLButtonElement>(null);
-  const commentRef = useRef<HTMLTextAreaElement>(null);
+  const closeFetcher = useFetcher();
+  const resolveFetcher = useFetcher();
+  const [comment, setComment] = useState("");
 
   const ticketMessages = useMemo<TicketMessage[]>(() => {
     if (!loaderData.thread) return [];
@@ -299,31 +301,35 @@ export default function Ticket({ loaderData }: Route.ComponentProps) {
   }, [ticketMessages]);
 
   useEffect(() => {
-    if (resolve && commentSubmitRef.current) {
-      commentSubmitRef.current.click();
-    }
-  }, [resolve]);
-
-  useEffect(() => {
-    if (close && commentSubmitRef.current) {
-      commentSubmitRef.current.click();
-    }
-  }, [close]);
-
-  useEffect(() => {
-    if (commentRef.current) {
-      commentRef.current.value = "";
-      setResolve(false);
-      setClose(false);
+    if (commentFetcher.data) {
+      setComment("");
     }
   }, [commentFetcher.data]);
 
   function handleResolve() {
-    setResolve(true);
+    resolveFetcher.submit(
+      {
+        intent: "comment",
+        resolve: "true",
+        content: comment,
+        key: loaderData.passedKey,
+      },
+      { method: "post" }
+    );
+  }
+
+  function handleComment() {
+    commentFetcher.submit(
+      { intent: "comment", content: comment, key: loaderData.passedKey },
+      { method: "post" }
+    );
   }
 
   function handleClose() {
-    setClose(true);
+    closeFetcher.submit(
+      { intent: "close", key: loaderData.passedKey },
+      { method: "post" }
+    );
   }
 
   function copyToClipboard(value: string) {
@@ -429,71 +435,59 @@ export default function Ticket({ loaderData }: Route.ComponentProps) {
         </div>
 
         {loaderData.thread.ticketStatus !== "closed" && (
-          <commentFetcher.Form method="post">
-            <div className="flex flex-col gap-2">
-              <input type="hidden" name="intent" value={"comment"} />
-              <input type="hidden" name="resolve" value={resolve.toString()} />
-              <input type="hidden" name="close" value={close.toString()} />
-              <input
-                type="hidden"
-                name="key"
-                value={loaderData.passedKey ?? ""}
-              />
-              <div className="font-medium">Add a message</div>
-              <textarea
-                className="textarea textarea-bordered w-full"
-                ref={commentRef}
-                name="content"
-                placeholder="Type your message here..."
-                rows={3}
-                required
-              />
-              <div className="flex items-center gap-2 justify-end">
-                {loaderData.role === "agent" && (
-                  <div
-                    className="tooltip"
-                    data-tip="No email notifications will be sent"
+          <div className="flex flex-col gap-2">
+            <div className="font-medium">Add a message</div>
+            <textarea
+              className="textarea textarea-bordered w-full"
+              value={comment}
+              onChange={(e) => setComment(e.target.value)}
+              placeholder="Type your message here..."
+              rows={3}
+            />
+            <div className="flex items-center gap-2 justify-end">
+              {loaderData.role === "agent" && (
+                <div
+                  className="tooltip"
+                  data-tip="No email notifications will be sent"
+                >
+                  <button
+                    className="btn"
+                    type="submit"
+                    disabled={closeFetcher.state !== "idle"}
+                    onClick={handleClose}
                   >
-                    <button
-                      className="btn"
-                      onClick={handleClose}
-                      type="button"
-                      disabled={commentFetcher.state !== "idle"}
-                    >
-                      {commentFetcher.state !== "idle" && resolve && (
-                        <span className="loading loading-spinner loading-xs" />
-                      )}
-                      Close
-                    </button>
-                  </div>
+                    {closeFetcher.state !== "idle" && (
+                      <span className="loading loading-spinner loading-xs" />
+                    )}
+                    Close
+                  </button>
+                </div>
+              )}
+              <button
+                className="btn"
+                onClick={handleResolve}
+                type="button"
+                disabled={!comment || resolveFetcher.state !== "idle"}
+              >
+                {resolveFetcher.state !== "idle" && (
+                  <span className="loading loading-spinner loading-xs" />
                 )}
-                <button
-                  className="btn"
-                  onClick={handleResolve}
-                  type="button"
-                  disabled={commentFetcher.state !== "idle"}
-                >
-                  {commentFetcher.state !== "idle" && resolve && (
-                    <span className="loading loading-spinner loading-xs" />
-                  )}
-                  Resolve
-                  <TbCheck />
-                </button>
-                <button
-                  className="btn btn-primary"
-                  ref={commentSubmitRef}
-                  type="submit"
-                  disabled={commentFetcher.state !== "idle"}
-                >
-                  {commentFetcher.state !== "idle" && !resolve && (
-                    <span className="loading loading-spinner loading-xs" />
-                  )}
-                  Comment
-                  <TbMessage />
-                </button>
-              </div>
+                Resolve
+                <TbCheck />
+              </button>
+              <button
+                className="btn btn-primary"
+                disabled={!comment || commentFetcher.state !== "idle"}
+                onClick={handleComment}
+              >
+                {commentFetcher.state !== "idle" && (
+                  <span className="loading loading-spinner loading-xs" />
+                )}
+                Comment
+                <TbMessage />
+              </button>
             </div>
-          </commentFetcher.Form>
+          </div>
         )}
       </div>
 

@@ -34,17 +34,24 @@ export function getMessagesSummary(messages: Message[]) {
   const ratingUpCount = messages.filter((m) => m.rating === "up").length;
   const ratingDownCount = messages.filter((m) => m.rating === "down").length;
 
-  const itemCounts: Record<string, number> = {};
+  const itemCounts: Record<
+    string,
+    { title: string; count: number; url: string }
+  > = {};
   for (const message of messages) {
     if (!message.links || message.links.length === 0) continue;
     for (const link of message.links) {
       if (!link.url) continue;
-      itemCounts[link.url] = (itemCounts[link.url] ?? 0) + 1;
+      itemCounts[link.url] = {
+        url: link.url,
+        title: link.title ?? link.url,
+        count: (itemCounts[link.url]?.count ?? 0) + 1,
+      };
     }
   }
 
-  const topItems = Object.entries(itemCounts)
-    .sort((a, b) => b[1] - a[1])
+  const topItems = Object.values(itemCounts)
+    .sort((a, b) => b.count - a.count)
     .slice(0, 5);
 
   const latestQuestions = messages
@@ -87,9 +94,9 @@ export function getMessagesSummary(messages: Message[]) {
       ? maxScores.reduce((acc, curr) => acc + curr, 0) / maxScores.length
       : null;
 
-  const helpfulAnswers = messages.filter((m) => m.rating === "up").length;
-  const notHelpfulAnswers = messages.filter((m) => m.rating === "down").length;
-  const questions = messages.filter((m) => (m.llmMessage as any)?.role === "user").length;
+  const questions = messages.filter(
+    (m) => (m.llmMessage as any)?.role === "user"
+  ).length;
 
   return {
     messagesCount: Object.values(dailyMessages).reduce(
@@ -105,8 +112,6 @@ export function getMessagesSummary(messages: Message[]) {
     latestQuestions,
     lowRatingQueries,
     avgScore,
-    helpfulAnswers,
-    notHelpfulAnswers,
     questions,
   };
 }

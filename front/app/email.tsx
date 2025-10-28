@@ -158,7 +158,9 @@ export const sendWeeklyUpdateEmail = async (
   to: string,
   scrapeTitle: string | null,
   summary: MessagesSummary,
-  categoriesSummary: { name: string; summary: MessagesSummary }[]
+  categoriesSummary: { name: string; summary: MessagesSummary }[],
+  startDate: Date,
+  endDate: Date
 ) => {
   await sendReactEmail(
     to,
@@ -167,8 +169,14 @@ export const sendWeeklyUpdateEmail = async (
       scrapeTitle={scrapeTitle}
       questions={summary.questions}
       avgScore={summary.avgScore}
-      helpfulAnswers={summary.helpfulAnswers}
-      notHelpfulAnswers={summary.notHelpfulAnswers}
+      helpfulAnswers={summary.ratingUpCount}
+      notHelpfulAnswers={summary.ratingDownCount}
+      topPages={summary.topItems.map((item) => ({
+        name: item.title,
+        count: item.count,
+      }))}
+      startDate={startDate}
+      endDate={endDate}
       topCategories={categoriesSummary
         .sort((a, b) => b.summary.questions - a.summary.questions)
         .slice(0, 5)

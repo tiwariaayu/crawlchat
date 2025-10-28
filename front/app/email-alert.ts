@@ -11,6 +11,7 @@ import {
   sendWeeklyUpdateEmail,
 } from "./email";
 import { getMessagesSummary, type MessagesSummary } from "./messages-summary";
+import moment from "moment";
 
 export async function action({ request }: Route.LoaderArgs) {
   const user = await getJwtAuthUser(request);
@@ -162,12 +163,13 @@ export async function action({ request }: Route.LoaderArgs) {
 
     authoriseScrapeUser(user!.scrapeUsers, scrape.id);
 
-    const ONE_WEEK = 1000 * 60 * 60 * 24 * 7;
-    const oneWeekAgo = new Date(Date.now() - ONE_WEEK);
+    const onWeekAgo = moment().subtract(1, "week");
+    const startDate = onWeekAgo.clone().startOf("day");
+    const endDate = moment().endOf("day");
     const messages = await prisma.message.findMany({
       where: {
         scrapeId: scrape.id,
-        createdAt: { gte: oneWeekAgo },
+        createdAt: { gte: startDate.toDate() },
       },
     });
     const summary = getMessagesSummary(messages);
@@ -190,7 +192,9 @@ export async function action({ request }: Route.LoaderArgs) {
           scrapeUser.user.email,
           scrape.title,
           summary,
-          categoriesSummary
+          categoriesSummary,
+          startDate.toDate(),
+          endDate.toDate()
         );
       }
     }

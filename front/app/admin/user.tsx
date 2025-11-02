@@ -5,6 +5,7 @@ import { getAuthUser } from "~/auth/middleware";
 import type { Route } from "./+types/user";
 import { DataList } from "~/components/data-list";
 import { makeMeta } from "~/meta";
+import { PLAN_FREE, planMap } from "libs/user-plan";
 
 export async function loader({ request, params }: Route.LoaderArgs) {
   const loggedInUser = await getAuthUser(request);
@@ -25,7 +26,9 @@ export async function loader({ request, params }: Route.LoaderArgs) {
     },
   });
 
-  return { user, scrapes };
+  const plan = planMap[user.plan?.planId ?? PLAN_FREE.id];
+
+  return { user, scrapes, plan };
 }
 
 export function meta() {
@@ -69,7 +72,9 @@ function CollectionsTable({ scrapes }: { scrapes: Scrape[] }) {
 }
 
 export default function User({ loaderData }: Route.ComponentProps) {
-  const { user, scrapes } = loaderData;
+  const { user, scrapes, plan } = loaderData;
+  const availableMessageCredits = user.plan?.credits?.messages ?? "-";
+  const totalMessageCredits = plan.credits.messages;
   return (
     <div className="p-4 flex flex-col gap-2">
       <div className="text-2xl font-bold">Details</div>
@@ -77,7 +82,10 @@ export default function User({ loaderData }: Route.ComponentProps) {
         data={[
           { label: "Email", value: user.email },
           { label: "Name", value: user.name },
-          { label: "Message credits", value: user.plan?.credits?.messages },
+          {
+            label: "Message credits",
+            value: `${availableMessageCredits} / ${totalMessageCredits}`,
+          },
           { label: "Created At", value: user.createdAt.toLocaleString() },
           { label: "Plan", value: user.plan?.planId },
           {

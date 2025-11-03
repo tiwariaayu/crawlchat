@@ -186,7 +186,7 @@ export const baseAnswerer: Answerer = async (
       key: "verify-email",
       payload: {},
       prompt: `Use this block to verify the email of the user for this thread. 
-Just use this block, don't ask the user to enter the email.`,
+Just use this block, don't ask the user to enter the email. Use it only if the tool asks for it.`,
     });
   }
 

@@ -102,16 +102,17 @@ export function makeRagTool(
       if (options?.queryContext) {
         options.queryContext.ragQueries.push(query);
       }
+      const context = JSON.stringify(
+        filtered.map((r, i) => ({
+          url: r.url,
+          content: r.content,
+          fetchUniqueId: r.fetchUniqueId,
+        }))
+      );
       return {
         content:
           filtered.length > 0
-            ? JSON.stringify(
-                filtered.map((r, i) => ({
-                  url: r.url,
-                  content: r.content,
-                  fetchUniqueId: r.fetchUniqueId,
-                }))
-              )
+            ? `<context>\n${context}\n</context>`
             : "No relevant information found. Don't answer the query. Inform that you don't know the answer.",
         customMessage: {
           result: processed,
@@ -633,6 +634,9 @@ export function makeFlow(
       "Don't use the RAG tool once you have the answer.",
       "Output should be very very short and under 200 words.",
       "Give the answer in human readable format with markdown.",
+
+      "The <context> you receive is to frame answers.",
+      "Don't respond that you performed some action on the bases of <context>.",
 
       "When the context is ambiguous, do more searches and get more context.",
       "Don't blindly answer unless you have strong context.",

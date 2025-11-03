@@ -704,7 +704,8 @@ function Toolbar() {
       className={cn(
         "flex h-[60px] gap-2 border-b border-base-300",
         "p-4 w-full justify-between bg-base-200 items-center",
-        "items-center"
+        "items-center",
+        scrape.widgetConfig?.applyColorsToChatbox && "border-0"
       )}
       style={{
         backgroundColor: bg ?? undefined,

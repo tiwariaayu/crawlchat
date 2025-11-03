@@ -269,7 +269,7 @@ export function SourceLink({
         "transition-all decoration-0 opacity-70",
         "hover:opacity-100 text-sm group",
         href && "cursor-pointer",
-        !href && "cursor-not-allowed"
+        !href && !internal && "cursor-not-allowed"
       )}
       href={href}
       target={internal ? undefined : "_blank"}

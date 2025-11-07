@@ -879,10 +879,24 @@ app.post("/ticket/:scrapeId", authenticate, async (req, res) => {
   const title = req.body.title as string;
   const message = req.body.message as string;
   const threadId = req.body.threadId as string;
+  const customTags = req.body.customTags as Record<string, string>;
 
   if (!userEmail || !title || !message) {
     res.status(400).json({ message: "Missing userEmail or title or message" });
     return;
+  }
+
+  if (customTags) {
+    for (const [key, value] of Object.entries(customTags)) {
+      if (!["string", "number", "boolean"].includes(typeof value)) {
+        res
+          .status(400)
+          .json({
+            message: "Custom tags must be strings, numbers, or booleans",
+          });
+        return;
+      }
+    }
   }
 
   const ticketKey = randomUUID().slice(0, 8);
@@ -899,6 +913,7 @@ app.post("/ticket/:scrapeId", authenticate, async (req, res) => {
         ticketStatus: "open",
         ticketUserEmail: userEmail,
         lastMessageAt: new Date(),
+        customTags,
       },
     });
   } else {
@@ -912,6 +927,7 @@ app.post("/ticket/:scrapeId", authenticate, async (req, res) => {
         ticketStatus: "open",
         ticketUserEmail: userEmail,
         lastMessageAt: new Date(),
+        customTags,
       },
     });
   }

@@ -140,11 +140,11 @@ function Ticket({ thread }: { thread: Thread }) {
           {moment(thread.lastMessageAt).format("MMM D, YYYY h:mm A")}
         </div>
       </div>
-      <div className="flex flex-col">
+      <div className="flex gap-2">
         {thread.customTags &&
           customTags.map((tag) => (
-            <div className="flex text-sm gap-2" key={tag.key}>
-              {tag.key}: {tag.value}
+            <div key={tag.key} className="tooltip" data-tip={tag.key}>
+              <div className="badge badge-soft">{tag.value}</div>
             </div>
           ))}
       </div>

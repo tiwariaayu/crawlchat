@@ -1,6 +1,7 @@
-import { Text, Markdown } from "@react-email/components";
+import { Text } from "@react-email/components";
 import { MailTemplate } from "./template";
 import { emailConfig } from "./config";
+import { TicketTags } from "./ticket-admin-create";
 
 export default function TicketAdminMessageEmail({
   scrapeTitle,
@@ -8,12 +9,14 @@ export default function TicketAdminMessageEmail({
   title,
   message,
   email,
+  customTags,
 }: {
   scrapeTitle: string;
   ticketNumber: number;
   title: string;
   message: string;
   email: string;
+  customTags?: Record<string, string | boolean | number> | null;
 }) {
   const url = `${emailConfig.baseUrl}/ticket/${ticketNumber}`;
   return (
@@ -39,6 +42,9 @@ export default function TicketAdminMessageEmail({
         {email ?? "user@example.com"}
         <br />
         <br />
+        {customTags && Object.keys(customTags).length > 0 && (
+          <TicketTags tags={customTags} />
+        )}
         <span style={{ opacity: 0.5 }}>Title</span>
         <br />
         {title ?? "Sample ticket title"}

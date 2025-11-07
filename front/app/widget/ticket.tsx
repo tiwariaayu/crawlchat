@@ -180,6 +180,12 @@ export async function action({ params, request }: Route.ActionArgs) {
               title={thread.title}
               message={content}
               email={thread.ticketUserEmail}
+              customTags={
+                thread.customTags as Record<
+                  string,
+                  string | boolean | number
+                > | null
+              }
             />
           );
         }
@@ -358,6 +364,7 @@ export default function Ticket({ loaderData }: Route.ComponentProps) {
               </span>{" "}
               {loaderData.thread.title}
             </h1>
+
             <div className="flex flex-col md:flex-row md:items-center gap-2">
               <div
                 className={cn(
@@ -388,6 +395,24 @@ export default function Ticket({ loaderData }: Route.ComponentProps) {
                 </div>
               )}
             </div>
+
+            {loaderData.role === "agent" &&
+              loaderData.thread.customTags &&
+              Object.keys(loaderData.thread.customTags).length > 0 && (
+                <div className="flex flex-wrap gap-2">
+                  {Object.keys(loaderData.thread.customTags).map((key) => (
+                    <div key={key} className="tooltip" data-tip={key}>
+                      <div className="badge badge-soft">
+                        {
+                          loaderData.thread!.customTags![
+                            key as keyof typeof loaderData.thread.customTags
+                          ]
+                        }
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
           </div>
         )}
         <div className="flex flex-col gap-4">

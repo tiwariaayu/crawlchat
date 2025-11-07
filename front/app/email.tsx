@@ -135,7 +135,8 @@ export const sendNewTicketAdminEmail = async (
   ticketNumber: number,
   title: string,
   message: string,
-  email: string
+  email: string,
+  customTags?: Record<string, string | boolean | number> | null
 ) => {
   await sendReactEmail(
     to,
@@ -146,6 +147,7 @@ export const sendNewTicketAdminEmail = async (
       title={title}
       message={message}
       email={email}
+      tags={customTags}
     />
   );
 };

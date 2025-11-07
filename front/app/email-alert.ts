@@ -129,7 +129,7 @@ export async function action({ request }: Route.LoaderArgs) {
       thread.scrape.title ?? "CrawlChat",
       thread.ticketNumber,
       thread.ticketKey,
-      thread.title
+      thread.title,
     );
 
     for (const scrapeUser of thread.scrape.scrapeUsers) {
@@ -143,7 +143,8 @@ export async function action({ request }: Route.LoaderArgs) {
           thread.ticketNumber,
           thread.title,
           message,
-          thread.ticketUserEmail
+          thread.ticketUserEmail,
+          thread.customTags as Record<string, string | boolean | number> | null
         );
       }
     }

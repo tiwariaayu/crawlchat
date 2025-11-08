@@ -11,7 +11,7 @@ import { Link, redirect, useLoaderData } from "react-router";
 import { prisma } from "libs/prisma";
 import { MarkdownProse } from "~/widget/markdown-prose";
 import { getQueryString } from "libs/llm-message";
-import { TbCopy } from "react-icons/tb";
+import { TbConfetti, TbCopy } from "react-icons/tb";
 import { toast, Toaster } from "react-hot-toast";
 import { makeMeta } from "~/meta";
 import cn from "@meltdownjs/cn";
@@ -311,7 +311,14 @@ function MessagesTable({
               </td>
               <td>{messageDetail.message.analysis?.category}</td>
               <td>
-                <Score message={messageDetail.message} />
+                <div className="flex items-center gap-2">
+                  {messageDetail.message.analysis?.resolved && (
+                    <div className="badge badge-primary badge-soft gap-1 px-2">
+                      <TbConfetti />
+                    </div>
+                  )}
+                  <Score message={messageDetail.message} />
+                </div>
               </td>
               <td>{messageDetail.message.channel ?? "chatbot"}</td>
               <td>

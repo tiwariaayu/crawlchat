@@ -45,17 +45,21 @@ export async function cleanupMessages() {
     },
     select: {
       id: true,
+      thread: true,
     },
   });
 
   console.log("Found", messages.length, "messages");
 
-  for (const ids of chunk(messages, 100)) {
-    console.log("Deleting chunk", ids.length, "messages");
+  for (const msgsChunk of chunk(messages, 100)) {
+    const filteredIds = msgsChunk
+      .filter((m) => !m.thread.ticketKey)
+      .map((m) => m.id);
+    console.log("Deleting chunk", filteredIds.length, "messages");
     await prisma.message.deleteMany({
       where: {
         id: {
-          in: ids.map((id) => id.id),
+          in: filteredIds,
         },
       },
     });

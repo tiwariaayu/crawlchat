@@ -1233,7 +1233,7 @@ export function Footer() {
 
 export function Nav({ user }: { user?: User | null }) {
   return (
-    <nav className="flex items-center justify-between gap-2 lg:py-6">
+    <nav className="flex items-center justify-between gap-2">
       <Link to="/">
         <Logo />
       </Link>
@@ -1336,7 +1336,7 @@ function Hero() {
 
   return (
     <div
-      className={cn("flex gap-10 md:gap-14 mb-10 flex-col md:flex-row py-4")}
+      className={cn("flex gap-10 md:gap-14 mb-10 flex-col md:flex-row py-2")}
     >
       <div className={cn("flex flex-col flex-[1.4]")}>
         {focusChangelog && (

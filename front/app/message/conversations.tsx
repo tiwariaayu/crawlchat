@@ -14,7 +14,7 @@ import { getAuthUser } from "~/auth/middleware";
 import { authoriseScrapeUser, getSessionScrapeId } from "~/scrapes/util";
 import { prisma } from "~/prisma";
 import { getMessagesScore } from "~/score";
-import { Link, redirect } from "react-router";
+import { Link, redirect, useLoaderData } from "react-router";
 import { ViewSwitch } from "./view-switch";
 import { CountryFlag } from "./country-flag";
 import { EmptyState } from "~/components/empty-state";
@@ -102,6 +102,39 @@ export function meta() {
   });
 }
 
+function Pagination() {
+  const { from, to, page, totalPages } = useLoaderData<typeof loader>();
+
+  return (
+    <div className="flex gap-2 items-center justify-end">
+      <Link
+        className="btn btn-square"
+        to={page > 1 ? `/messages/conversations?page=${page - 1}` : "#"}
+      >
+        <TbChevronLeft />
+      </Link>
+
+      <div className="flex items-center justify-center gap-4 text-sm">
+        <span>
+          {from} - {to}
+        </span>
+        <span>
+          [{page} / {totalPages}]
+        </span>
+      </div>
+
+      <Link
+        className="btn btn-square"
+        to={
+          page < totalPages ? `/messages/conversations?page=${page + 1}` : "#"
+        }
+      >
+        <TbChevronRight />
+      </Link>
+    </div>
+  );
+}
+
 export default function Conversations({ loaderData }: Route.ComponentProps) {
   const getThreadCategories = (messages: Message[]) => {
     const categories: Record<string, number> = {};
@@ -119,7 +152,16 @@ export default function Conversations({ loaderData }: Route.ComponentProps) {
   };
 
   return (
-    <Page title="Conversations" icon={<TbMessages />} right={<ViewSwitch />}>
+    <Page
+      title="Conversations"
+      icon={<TbMessages />}
+      right={
+        <div className="flex gap-2 items-center">
+          <Pagination />
+          <ViewSwitch />
+        </div>
+      }
+    >
       {loaderData.threads.length === 0 && (
         <div className="flex h-full w-full items-center justify-center">
           <EmptyState
@@ -131,149 +173,97 @@ export default function Conversations({ loaderData }: Route.ComponentProps) {
       )}
 
       {loaderData.threads.length > 0 && (
-        <div className="flex h-full gap-4">
-          <div
-            className={cn(
-              "flex flex-col w-full gap-4",
-              "h-full overflow-y-auto flex-1"
-            )}
-          >
+        <div
+          className={cn(
+            "bg-base-200 rounded-box border border-base-300",
+            "overflow-hidden"
+          )}
+        >
+          {loaderData.threads.map((thread) => (
             <div
+              key={thread.id}
               className={cn(
-                "bg-base-200 rounded-box border border-base-300",
-                "overflow-hidden"
+                "flex flex-col gap-1 px-4 py-2",
+                "border-b border-base-300",
+                "last:border-0"
               )}
             >
-              <div>
-                {loaderData.threads.map((thread) => (
-                  <div
-                    key={thread.id}
-                    className={cn(
-                      "flex flex-col gap-1 px-4 py-2",
-                      "border-b border-base-300",
-                      "last:border-0"
-                    )}
+              <div className="flex flex-col md:flex-row gap-2 md:items-center justify-between">
+                <div className="flex gap-2 items-center">
+                  {thread.location?.country && (
+                    <CountryFlag location={thread.location} />
+                  )}
+                  <Link
+                    to={`/messages/conversations/${thread.id}`}
+                    className="link link-primary link-hover line-clamp-1"
                   >
-                    <div className="flex flex-col md:flex-row gap-2 md:items-center justify-between">
-                      <div className="flex gap-2 items-center">
-                        {thread.location?.country && (
-                          <CountryFlag location={thread.location} />
-                        )}
-                        <Link
-                          to={`/messages/conversations/${thread.id}`}
-                          className="link link-primary link-hover line-clamp-1"
-                        >
-                          {thread.messages[0]?.llmMessage
-                            ? (thread.messages[0]?.llmMessage as any).content
-                            : thread.id.substring(thread.id.length - 4)}
-                        </Link>
-                      </div>
-                      <div className="flex gap-2 items-center">
-                        {thread.ticketStatus && (
-                          <div
-                            className="tooltip tooltip-left"
-                            data-tip="Ticket created"
-                          >
-                            <span className="badge badge-primary badge-soft px-1">
-                              <TbTicket />
-                            </span>
-                          </div>
-                        )}
-                        <ChannelBadge channel={thread.messages[0]?.channel} />
-                        {isResolved(thread.messages) && (
-                          <div
-                            className="tooltip tooltip-left"
-                            data-tip="Resolved"
-                          >
-                            <span className="badge badge-primary badge-soft">
-                              <TbConfetti />
-                            </span>
-                          </div>
-                        )}
-                        {Object.keys(getThreadCategories(thread.messages)).map(
-                          (category) => (
-                            <div
-                              key={category}
-                              className="tooltip"
-                              data-tip={category}
-                            >
-                              <span className="badge badge-accent badge-soft">
-                                <TbFolder />
-                                {category}
-                              </span>
-                            </div>
-                          )
-                        )}
-                        <div
-                          className="tooltip tooltip-left"
-                          data-tip="Avg score"
-                        >
-                          <ScoreBadge
-                            score={getMessagesScore(thread.messages)}
-                          />
-                        </div>
-                        <div
-                          className="tooltip tooltip-left"
-                          data-tip="Number of messages"
-                        >
-                          <span className="badge badge-primary badge-soft">
-                            <TbMessage />
-                            {thread.messages.length}
-                          </span>
-                        </div>
-                      </div>
+                    {thread.messages[0]?.llmMessage
+                      ? (thread.messages[0]?.llmMessage as any).content
+                      : thread.id.substring(thread.id.length - 4)}
+                  </Link>
+                </div>
+                <div className="flex gap-2 items-center">
+                  {thread.ticketStatus && (
+                    <div
+                      className="tooltip tooltip-left"
+                      data-tip="Ticket created"
+                    >
+                      <span className="badge badge-primary badge-soft px-1">
+                        <TbTicket />
+                      </span>
                     </div>
-                    <span className="text-base-content/50 text-sm">
-                      {moment(thread.createdAt).fromNow()}
-                    </span>
-                    <div className="flex flex-wrap gap-1">
-                      {thread.customTags &&
-                        Object.keys(thread.customTags).map((key) => (
-                          <div key={key} className="tooltip" data-tip={key}>
-                            <span className="badge badge-soft">
-                              {(thread.customTags as Record<string, any>)[key]}
-                            </span>
-                          </div>
-                        ))}
+                  )}
+                  <ChannelBadge channel={thread.messages[0]?.channel} />
+                  {isResolved(thread.messages) && (
+                    <div className="tooltip tooltip-left" data-tip="Resolved">
+                      <span className="badge badge-primary badge-soft">
+                        <TbConfetti />
+                      </span>
                     </div>
+                  )}
+                  {Object.keys(getThreadCategories(thread.messages)).map(
+                    (category) => (
+                      <div
+                        key={category}
+                        className="tooltip"
+                        data-tip={category}
+                      >
+                        <span className="badge badge-accent badge-soft">
+                          <TbFolder />
+                          {category}
+                        </span>
+                      </div>
+                    )
+                  )}
+                  <div className="tooltip tooltip-left" data-tip="Avg score">
+                    <ScoreBadge score={getMessagesScore(thread.messages)} />
                   </div>
-                ))}
+                  <div
+                    className="tooltip tooltip-left"
+                    data-tip="Number of messages"
+                  >
+                    <span className="badge badge-primary badge-soft">
+                      <TbMessage />
+                      {thread.messages.length}
+                    </span>
+                  </div>
+                </div>
+              </div>
+              <span className="text-base-content/50 text-sm">
+                {moment(thread.createdAt).fromNow()}
+              </span>
+              <div className="flex flex-wrap gap-1">
+                {thread.customTags &&
+                  Object.keys(thread.customTags).map((key) => (
+                    <div key={key} className="tooltip" data-tip={key}>
+                      <span className="badge badge-soft">
+                        {(thread.customTags as Record<string, any>)[key]}
+                      </span>
+                    </div>
+                  ))}
               </div>
             </div>
-
-            <div className="flex gap-2 items-center justify-end">
-              <Link
-                className="btn btn-square"
-                to={
-                  loaderData.page > 1
-                    ? `/messages/conversations?page=${loaderData.page - 1}`
-                    : "#"
-                }
-              >
-                <TbChevronLeft />
-              </Link>
-
-              <div className="flex items-center justify-center gap-4 text-sm">
-                <span>
-                  {loaderData.from} - {loaderData.to}
-                </span>
-                <span>
-                  [{loaderData.page} / {loaderData.totalPages}]
-                </span>
-              </div>
-
-              <Link
-                className="btn btn-square"
-                to={
-                  loaderData.page < loaderData.totalPages
-                    ? `/messages/conversations?page=${loaderData.page + 1}`
-                    : "#"
-                }
-              >
-                <TbChevronRight />
-              </Link>
-            </div>
-          </div>
+          ))}
         </div>
       )}
     </Page>

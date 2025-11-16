@@ -21,11 +21,36 @@ import { useEffect, useRef, useState } from "react";
 import { RadioCard } from "./components/radio-card";
 import cn from "@meltdownjs/cn";
 import toast from "react-hot-toast";
+import { prisma, type Message, type Thread } from "libs/prisma";
 
 export async function loader({ request }: Route.LoaderArgs) {
+  const user = await getAuthUser(request);
   const scrapeId = await getSessionScrapeId(request);
+  authoriseScrapeUser(user!.scrapeUsers, scrapeId);
+
+  const url = new URL(request.url);
+  const threadId = url.searchParams.get("threadId");
+  const text = url.searchParams.get("text");
+  const submit = url.searchParams.get("submit");
+  const format = url.searchParams.get("format");
+  let thread: (Thread & { messages: Message[] }) | null = null;
+
+  if (threadId) {
+    thread = await prisma.thread.findUnique({
+      where: { id: threadId },
+      include: {
+        messages: true,
+      },
+    });
+  }
+
   return {
+    user,
     scrapeId,
+    thread,
+    text,
+    submit,
+    format,
   };
 }
 
@@ -38,9 +63,24 @@ export async function action({ request }: Route.ActionArgs) {
   const intent = formData.get("intent");
 
   if (intent === "compose") {
-    const prompt = formData.get("prompt");
+    let prompt = formData.get("prompt");
     const messages = formData.get("messages");
     const formatText = formData.get("format-text");
+
+    const url = new URL(request.url);
+    const threadId = url.searchParams.get("threadId");
+    if (threadId) {
+      const thread = await prisma.thread.findUnique({
+        where: { id: threadId },
+        include: {
+          messages: true,
+        },
+      });
+
+      prompt += `\n\n<conversation>\n${thread?.messages
+        .map((m) => `${m.llmMessage?.role}: ${m.llmMessage?.content}`)
+        .join("\n")}\n</conversation>`;
+    }
 
     const token = createToken(user!.id);
     const response = await fetch(
@@ -73,10 +113,13 @@ type ComposeFormat = "markdown" | "email" | "tweet" | "linkedin-post";
 export default function Compose({ loaderData }: Route.ComponentProps) {
   const fetcher = useFetcher();
   const [state, setState] = useState<{ content: string; messages: any[] }>();
-  const [format, setFormat] = useState<ComposeFormat>("markdown");
+  const [format, setFormat] = useState<ComposeFormat>(
+    (loaderData.format as ComposeFormat) ?? "markdown"
+  );
   const [formatText, setFormatText] = useState<string>("");
   const [formatTextActive, setFormatTextActive] = useState<boolean>(false);
   const inputRef = useRef<HTMLInputElement>(null);
+  const submitRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     if (fetcher.data && inputRef.current) {
@@ -96,6 +139,7 @@ export default function Compose({ loaderData }: Route.ComponentProps) {
   useEffect(() => {
     if (
       loaderData.scrapeId &&
+      !loaderData.thread &&
       localStorage.getItem(`compose-state-${loaderData.scrapeId}`)
     ) {
       setState(
@@ -113,6 +157,12 @@ export default function Compose({ loaderData }: Route.ComponentProps) {
   useEffect(() => {
     localStorage.setItem(`compose-format-${format}`, formatText);
   }, [formatText]);
+
+  useEffect(() => {
+    if (loaderData.submit && submitRef.current) {
+      submitRef.current.click();
+    }
+  }, [loaderData.submit]);
 
   function handleCopy() {
     navigator.clipboard.writeText(state?.content ?? "");
@@ -154,6 +204,16 @@ export default function Compose({ loaderData }: Route.ComponentProps) {
         />
         <input type="hidden" name="format" value={format} />
 
+        {loaderData.thread && (
+          <div className="bg-base-200 p-4 rounded-box border border-base-300 shadow line-clamp-1">
+            Using conversation:{" "}
+            <span>
+              {loaderData.thread.title ??
+                (loaderData.thread.messages[0].llmMessage?.content as string)}
+            </span>
+          </div>
+        )}
+
         <div
           className={cn(
             "bg-base-200 p-4 rounded-box border border-base-300 shadow",
@@ -162,6 +222,7 @@ export default function Compose({ loaderData }: Route.ComponentProps) {
         >
           <input type="hidden" name="format" value={format} />
           <input type="hidden" name="format-text" value={formatText} />
+
           <RadioCard
             cols={2}
             options={[
@@ -226,11 +287,13 @@ export default function Compose({ loaderData }: Route.ComponentProps) {
             placeholder="What to update?"
             disabled={fetcher.state !== "idle"}
             ref={inputRef}
+            defaultValue={loaderData.text ?? ""}
           />
           <button
             type="submit"
             disabled={fetcher.state !== "idle"}
             className="btn btn-primary"
+            ref={submitRef}
           >
             {fetcher.state !== "idle" && (
               <span className="loading loading-spinner loading-xs" />

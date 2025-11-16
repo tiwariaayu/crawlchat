@@ -1,8 +1,13 @@
 import {
+  TbBrandTwitter,
+  TbChevronDown,
   TbConfetti,
+  TbMarkdown,
   TbMessage,
   TbMessages,
+  TbPencil,
   TbPointer,
+  TbShare,
   TbTrash,
 } from "react-icons/tb";
 import { Page } from "~/components/page";
@@ -19,6 +24,7 @@ import { useEffect, useMemo } from "react";
 import { extractCitations } from "libs/citation";
 import { MarkdownProse } from "~/widget/markdown-prose";
 import { SentimentBadge } from "./sentiment-badge";
+import { toast } from "react-hot-toast";
 
 export async function loader({ request, params }: Route.LoaderArgs) {
   const user = await getAuthUser(request);
@@ -112,26 +118,96 @@ export default function Conversation({ loaderData }: Route.ComponentProps) {
     );
   }
 
+  function handleShare() {
+    navigator.clipboard.writeText(
+      `${window.location.origin}/s/${loaderData.thread.id}`
+    );
+    toast.success("Share link copied to clipboard");
+  }
+
   return (
     <Page
       title="Conversation"
       icon={<TbMessages />}
       right={
-        <deleteFetcher.Form method="post">
-          <input type="hidden" name="intent" value="delete" />
+        <div className="flex items-center gap-2">
+          <div className="join">
+            <Link
+              to={`/compose?threadId=${loaderData.thread.id}&format=markdown&text=Summarise the conversation&submit=true`}
+              className="btn join-item"
+            >
+              Summarise
+            </Link>
+            <div className="dropdown dropdown-end">
+              <button
+                tabIndex={0}
+                className="btn btn-square join-item border-l-0"
+              >
+                <TbChevronDown />
+              </button>
+              <ul
+                className={cn(
+                  "menu dropdown-content bg-base-200 rounded-box z-1 w-52 p-2 shadow-sm",
+                  "mt-1"
+                )}
+              >
+                <li>
+                  <Link
+                    to={`/compose?threadId=${loaderData.thread.id}&format=tweet&text=Make a viral tweet about this conversation&submit=true`}
+                  >
+                    <TbBrandTwitter />
+                    <span>Make a tweet</span>
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    to={`/compose?threadId=${loaderData.thread.id}&format=markdown&text=Make a blog post about this conversation&submit=true`}
+                  >
+                    <TbMarkdown />
+                    <span>Make a blog post</span>
+                  </Link>
+                </li>
+              </ul>
+            </div>
+          </div>
+          {/* <Link
+              to={`/compose?threadId=${loaderData.thread.id}`}
+              className="btn btn-accent btn-soft btn-square"
+            >
+              <TbPencil />
+            </Link> */}
+
           <div
             className="tooltip tooltip-left"
-            data-tip="Delete the conversation"
+            data-tip="Share the conversation"
           >
-            <button className="btn btn-error btn-soft btn-square" type="submit">
-              {deleteFetcher.state === "submitting" ? (
-                <span className="loading loading-spinner loading-sm" />
-              ) : (
-                <TbTrash />
-              )}
+            <button
+              className="btn btn-accent btn-soft btn-square"
+              onClick={handleShare}
+            >
+              <TbShare />
             </button>
           </div>
-        </deleteFetcher.Form>
+
+          <deleteFetcher.Form method="post">
+            <input type="hidden" name="intent" value="delete" />
+            <div
+              className="tooltip tooltip-left"
+              data-tip="Delete the conversation"
+            >
+              <button
+                className="btn btn-error btn-soft btn-square"
+                type="submit"
+              >
+                {deleteFetcher.state === "submitting" ? (
+                  <span className="loading loading-spinner loading-sm" />
+                ) : (
+                  <TbTrash />
+                )}
+              </button>
+            </div>
+          </deleteFetcher.Form>
+        </div>
       }
     >
       <div

@@ -335,6 +335,7 @@ expressWs.app.ws("/", (ws: any, req) => {
                   scrapeId: scrape.id,
                   llmMessage: { role: "user", content: event.query },
                   ownerUserId: scrape.userId,
+                  channel: "widget",
                 },
               });
               await updateLastMessageAt(threadId);
@@ -374,6 +375,7 @@ expressWs.app.ws("/", (ws: any, req) => {
                   questionId: questionMessage?.id ?? null,
                   llmModel: scrape.llmModel,
                   creditsUsed: event.creditsUsed,
+                  channel: "widget"
                 },
               });
               await updateLastMessageAt(threadId);

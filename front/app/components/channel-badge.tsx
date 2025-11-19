@@ -22,6 +22,7 @@ export function ChannelBadge({
     if (channel === "slack") return "Slack";
     if (channel === "mcp") return "MCP";
     if (channel === "api") return "API";
+    if (channel === "widget") return "Chatbot";
     return channel;
   }, [channel]);
 
@@ -34,7 +35,8 @@ export function ChannelBadge({
           channel === "discord" && "badge-info",
           channel === "slack" && "badge-error",
           channel === "mcp" && "badge-success",
-          channel === "api" && "badge-neutral"
+          channel === "api" && "badge-neutral",
+          channel === "widget" && "badge-primary"
         )}
       >
         {!channel && <TbMessage />}
@@ -42,6 +44,7 @@ export function ChannelBadge({
         {channel === "slack" && <TbBrandSlack />}
         {channel === "mcp" && <TbRobotFace />}
         {channel === "api" && <TbCode />}
+        {channel === "widget" && <TbMessage />}
 
         {!onlyIcon && channelName}
       </span>

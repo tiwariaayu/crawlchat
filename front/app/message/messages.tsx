@@ -2,6 +2,7 @@ import type { CategorySuggestion, Message, Prisma, Scrape } from "libs/prisma";
 import type { Route } from "./+types/messages";
 import {
   TbConfetti,
+  TbFilter,
   TbFolder,
   TbMessage,
   TbMessages,
@@ -16,6 +17,7 @@ import { authoriseScrapeUser, getSessionScrapeId } from "~/scrapes/util";
 import {
   Outlet,
   Link as RouterLink,
+  useLoaderData,
   useLocation,
   useNavigate,
 } from "react-router";
@@ -32,6 +34,16 @@ import { makeMeta } from "~/meta";
 import { useEffect, useMemo, useState } from "react";
 import { CreditsUsedBadge } from "./credits-used-badge";
 import { SentimentBadge } from "./sentiment-badge";
+
+function isLowRating(message: Message) {
+  if (message.links.length === 0) return false;
+
+  if (message.rating === "down") return true;
+
+  const maxScore = Math.max(...message.links.map((l) => l.score ?? 0));
+
+  return maxScore < 0.5;
+}
 
 export async function loader({ request }: Route.LoaderArgs) {
   const user = await getAuthUser(request);
@@ -50,6 +62,18 @@ export async function loader({ request }: Route.LoaderArgs) {
     createdAt: {
       gte: ONE_WEEK_AGO,
     },
+    OR: [
+      {
+        channel: {
+          not: "mcp",
+        },
+      },
+      {
+        channel: {
+          isSet: false,
+        },
+      },
+    ],
   };
   if (url.searchParams.get("category")) {
     where.analysis = {
@@ -57,6 +81,9 @@ export async function loader({ request }: Route.LoaderArgs) {
         category: url.searchParams.get("category"),
       },
     };
+  }
+  if (url.searchParams.get("showMcp")) {
+    delete where.OR;
   }
 
   const messages = await prisma.message.findMany({
@@ -69,7 +96,14 @@ export async function loader({ request }: Route.LoaderArgs) {
     },
   });
 
-  return { messagePairs: makeMessagePairs(messages), scrape };
+  let messagePairs = makeMessagePairs(messages);
+  if (url.searchParams.get("showOnlyLowRatings")) {
+    messagePairs = messagePairs.filter((pair) =>
+      isLowRating(pair.responseMessage)
+    );
+  }
+
+  return { messagePairs, scrape };
 }
 
 export function meta() {
@@ -111,10 +145,92 @@ function CategorySuggestionCount({
   );
 }
 
+function Filters({
+  category,
+  showMcp,
+  setCategory,
+  setShowMcp,
+  showOnlyLowRatings,
+  setShowOnlyLowRatings,
+}: {
+  category?: string;
+  showMcp: boolean;
+  showOnlyLowRatings: boolean;
+  setShowMcp: (showMcp: boolean) => void;
+  setCategory: (category: string) => void;
+  setShowOnlyLowRatings: (showOnlyLowRatings: boolean) => void;
+}) {
+  const { scrape } = useLoaderData<typeof loader>();
+  const filtersCount = useMemo(() => {
+    return [category, showMcp, showOnlyLowRatings].filter(Boolean).length;
+  }, [category, showMcp, showOnlyLowRatings]);
+
+  return (
+    <div className="dropdown dropdown-end">
+      <div
+        tabIndex={0}
+        role="button"
+        className={cn(
+          "btn",
+          filtersCount > 0 && "btn-primary btn-soft",
+          filtersCount === 0 && "btn-square"
+        )}
+      >
+        <TbFilter />
+        {filtersCount > 0 && (
+          <span className="badge badge-secondary badge-sm">{filtersCount}</span>
+        )}
+      </div>
+      <div
+        tabIndex={-1}
+        className={cn(
+          "dropdown-content menu bg-base-200 rounded-box z-1 w-52",
+          "p-3 px-4 shadow-sm mt-1 flex flex-col gap-2"
+        )}
+      >
+        <label className="label justify-between">
+          <span>Show MCP</span>
+          <input
+            type="checkbox"
+            className="checkbox"
+            checked={showMcp}
+            onChange={(e) => setShowMcp(e.target.checked)}
+          />
+        </label>
+
+        <label className="label justify-between">
+          <span>Only low ratings</span>
+          <input
+            type="checkbox"
+            className="checkbox"
+            checked={showOnlyLowRatings}
+            onChange={(e) => setShowOnlyLowRatings(e.target.checked)}
+          />
+        </label>
+
+        <select
+          value={category ?? ""}
+          className="select w-full hidden md:block"
+          onChange={(e) => setCategory(e.target.value)}
+        >
+          <option value="">All categories</option>
+          {scrape.messageCategories.map((category, index) => (
+            <option key={index} value={category.title}>
+              {category.title}
+            </option>
+          ))}
+        </select>
+      </div>
+    </div>
+  );
+}
+
 export default function MessagesLayout({ loaderData }: Route.ComponentProps) {
   const navigate = useNavigate();
   const location = useLocation();
   const [category, setCategory] = useState<string>();
+  const [showMcp, setShowMcp] = useState(false);
+  const [showOnlyLowRatings, setShowOnlyLowRatings] = useState(false);
 
   useEffect(() => {
     const url = new URL(window.location.href);
@@ -122,10 +238,18 @@ export default function MessagesLayout({ loaderData }: Route.ComponentProps) {
   }, [location.search]);
 
   useEffect(() => {
+    const params = new URLSearchParams();
     if (category !== undefined) {
-      navigate(category ? `/questions?category=${category}` : `/questions`);
+      params.set("category", category);
     }
-  }, [category]);
+    if (showMcp) {
+      params.set("showMcp", "true");
+    }
+    if (showOnlyLowRatings) {
+      params.set("showOnlyLowRatings", "true");
+    }
+    navigate(`/questions?${params.toString()}`);
+  }, [category, showMcp, showOnlyLowRatings]);
 
   return (
     <Page
@@ -134,18 +258,14 @@ export default function MessagesLayout({ loaderData }: Route.ComponentProps) {
       icon={<TbMessage />}
       right={
         <div className="flex gap-2 items-center">
-          <select
-            value={category ?? ""}
-            className="select w-fit hidden md:block"
-            onChange={(e) => setCategory(e.target.value)}
-          >
-            <option value="">All categories</option>
-            {loaderData.scrape.messageCategories.map((category, index) => (
-              <option key={index} value={category.title}>
-                {category.title}
-              </option>
-            ))}
-          </select>
+          <Filters
+            category={category}
+            setCategory={setCategory}
+            showMcp={showMcp}
+            setShowMcp={setShowMcp}
+            showOnlyLowRatings={showOnlyLowRatings}
+            setShowOnlyLowRatings={setShowOnlyLowRatings}
+          />
 
           <ViewSwitch />
         </div>
@@ -225,7 +345,8 @@ export default function MessagesLayout({ loaderData }: Route.ComponentProps) {
 
                             <SentimentBadge
                               sentiment={
-                                pair.responseMessage?.analysis?.questionSentiment
+                                pair.responseMessage?.analysis
+                                  ?.questionSentiment
                               }
                             />
 

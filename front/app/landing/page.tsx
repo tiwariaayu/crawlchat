@@ -102,6 +102,9 @@ export async function loader() {
         createdAt: {
           gte: startOfWeek,
         },
+        llmMessage: {
+          role: "user",
+        },
       },
     });
 
@@ -110,6 +113,9 @@ export async function loader() {
         createdAt: {
           gte: startOfDay,
         },
+        llmMessage: {
+          role: "user",
+        },
       },
     });
 
@@ -117,6 +123,9 @@ export async function loader() {
       where: {
         createdAt: {
           gte: startOfMonth,
+        },
+        llmMessage: {
+          role: "user",
         },
       },
     });
@@ -536,7 +545,12 @@ function FeaturesWithImage({
   }
 
   return (
-    <div className={cn("flex flex-col md:flex-row gap-10", reverse && "md:flex-row-reverse")}>
+    <div
+      className={cn(
+        "flex flex-col md:flex-row gap-10",
+        reverse && "md:flex-row-reverse"
+      )}
+    >
       <div className="flex-1 flex flex-col gap-4">
         {features.map((feature) => (
           <ClickableFeature

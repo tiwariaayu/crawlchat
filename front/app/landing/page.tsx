@@ -16,6 +16,7 @@ import {
   TbChartBar,
   TbChartBarOff,
   TbChartLine,
+  TbCheck,
   TbChevronDown,
   TbChevronRight,
   TbChevronUp,
@@ -512,6 +513,7 @@ function FeaturesWithImage({
   trackName,
   features,
   left,
+  reverse,
 }: {
   trackName: string;
   features: {
@@ -522,6 +524,7 @@ function FeaturesWithImage({
     icon?: ReactNode;
   }[];
   left?: ReactNode;
+  reverse?: boolean;
 }) {
   const [activeTab, setActiveTab] = useState(features[0].key);
 
@@ -533,7 +536,7 @@ function FeaturesWithImage({
   }
 
   return (
-    <div className="flex flex-col md:flex-row gap-10">
+    <div className={cn("flex flex-col md:flex-row gap-10", reverse && "md:flex-row-reverse")}>
       <div className="flex-1 flex flex-col gap-4">
         {features.map((feature) => (
           <ClickableFeature
@@ -567,14 +570,15 @@ function ChannelWidget() {
   return (
     <div className="mt-32">
       <Heading>
-        <HeadingHighlight>24x7 assistant</HeadingHighlight> on your docs
+        Be on top with <HeadingHighlight>AI powered</HeadingHighlight> technical
+        docs
       </Heading>
 
       <HeadingDescription>
-        When you are running a global community with a lot of documentation to
-        go through, you need to provide a 24x7 assistant to your community so
-        that they can get the answers they need without waiting for you to
-        respond.
+        Don't fall behind by making your users go through hundreds of pages to
+        find the answers they need. Add CrawlChat to your documentation and let
+        your users find answers for their questions instantly right where they
+        are!
       </HeadingDescription>
 
       <FeaturesWithImage
@@ -699,6 +703,55 @@ function ChannelMCP() {
             img: "https://slickwid-public.s3.us-east-1.amazonaws.com/crawlchat/channels/7-min.png",
             key: "code",
             icon: <TbCode />,
+          },
+        ]}
+      />
+    </div>
+  );
+}
+
+function DashboardFeatures() {
+  return (
+    <div className="mt-32">
+      <Heading>
+        Get <HeadingHighlight>360° visibility</HeadingHighlight> into your docs
+        and community
+      </Heading>
+
+      <HeadingDescription>
+        People are already using ChatGPT to find answers? You are missing out
+        hugely on the insights you can get from your docs and community.
+        CrawlChat provides you insights on questions asked, categories, data
+        gaps, scores, and more.
+      </HeadingDescription>
+
+      <FeaturesWithImage
+        reverse
+        trackName="analytics-dashboard"
+        features={[
+          {
+            title: "Useful analytics",
+            description:
+              "CrawlChat provides a lot of useful information about your docs and questions being asked by your users. You can see the daily messages, score distribution, data gaps, hot knowledge pages, categories, sentiment analysis and more.",
+            img: "https://slickwid-public.s3.us-east-1.amazonaws.com/crawlchat/channels/dashboard-analytics.png",
+            key: "useful-analytics",
+            icon: <TbChartBar />,
+          },
+          {
+            title: "View questions",
+            description:
+              "View the questions being asked by your users, find those questions that don't have answers in the documentation and improve your docs accordingly. You can group the questions into categores, view the channels for better understanding.",
+            img: "https://slickwid-public.s3.us-east-1.amazonaws.com/crawlchat/channels/dashboard-questions.png",
+            key: "view-questions",
+            icon: <TbColorSwatch />,
+          },
+          {
+            title: "Teams",
+            description:
+              "We understand that you might have multiple teams working on your documentation. CrawlChat allows you to bring your team to the app and work together to improve your docs and support your users.",
+            img: "https://slickwid-public.s3.us-east-1.amazonaws.com/crawlchat/channels/dashboard-team.png",
+            key: "teams",
+            icon: <TbUsers />,
           },
         ]}
       />
@@ -1324,15 +1377,15 @@ function Hero() {
 
   const features = [
     {
-      text: "Embed on web",
-      icon: <TbWorld />,
+      text: "Embed on Discord, Slack, MCP and API",
+      icon: <TbCode />,
     },
     {
-      text: "Discord, Slack, MCP and API integrations",
+      text: "Fallback to human support with support tickets",
       icon: <TbRobotFace />,
     },
     {
-      text: "Analytics and observability",
+      text: "Analytics and observability to improve your docs",
       icon: <TbChartBar />,
     },
   ];
@@ -1383,19 +1436,19 @@ function Hero() {
         )}
 
         <h1 className="font-radio-grotesk text-[42px] md:text-[58px] leading-[1.1]">
-          <span className="text-primary">AI Assistant</span> for your
-          documentation that answers the queries!
+          Power up your tech documentation with{" "}
+          <span className="text-accent whitespace-nowrap">AI assistant!</span>
         </h1>
 
         <p className="text-xl mt-6 text-base-content/60">
-          Add Ask AI to your documentation and let your users find answers for
-          their questions instantly!
+          Add CrawlChat to your documentation and let your users find answers
+          for their questions instantly right where they are!
           <ul className="mt-4 flex flex-col gap-2">
             {features.map((feature, index) => (
-              <li key={index} className="flex items-center gap-2">
-                <div className="text-primary/60 rounded-full p-1 text">
-                  {feature.icon}
-                </div>{" "}
+              <li key={index} className="flex gap-2">
+                <div className="text-primary rounded-full p-1 text">
+                  <TbCheck />
+                </div>
                 <span>{feature.text}</span>
               </li>
             ))}
@@ -1414,7 +1467,7 @@ function Hero() {
           </button> */}
 
           <a className={ctaClassNames(true)} href="/login">
-            Try it out now
+            Integrate now
             <TbArrowRight />
           </a>
         </div>
@@ -2537,18 +2590,8 @@ export default function Landing({ loaderData }: Route.ComponentProps) {
       <CustomTestimonials />
 
       <Container>
-        <Stats
-          messagesThisWeek={loaderData.messagesThisWeek}
-          messagesDay={loaderData.messagesDay}
-          messagesMonth={loaderData.messagesMonth}
-        />
-      </Container>
-
-      <Container>
         <Works />
       </Container>
-
-      <SourcesChannels />
 
       {/* <Container>
         <Flow />
@@ -2559,16 +2602,28 @@ export default function Landing({ loaderData }: Route.ComponentProps) {
       </Container>
 
       <Container>
-        <ChannelDiscord />
+        <DashboardFeatures />
       </Container>
 
       <Container>
-        <ChannelMCP />
+        <ChannelDiscord />
       </Container>
+
+      {/* <Container>
+        <ChannelMCP />
+      </Container> */}
 
       {/* <Container>
         <Tools />
       </Container> */}
+
+      <Container>
+        <Stats
+          messagesThisWeek={loaderData.messagesThisWeek}
+          messagesDay={loaderData.messagesDay}
+          messagesMonth={loaderData.messagesMonth}
+        />
+      </Container>
 
       <Container>
         <Pricing />
@@ -2577,6 +2632,8 @@ export default function Landing({ loaderData }: Route.ComponentProps) {
       <Container>
         <SecondaryCTAs />
       </Container>
+
+      <SourcesChannels />
 
       <Container>
         <FAQ />

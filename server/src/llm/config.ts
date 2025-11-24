@@ -88,7 +88,7 @@ export const getConfig = (model?: LlmModel | null): LlmConfig => {
       model: "openai/gpt-5",
       apiKey: process.env.OPENROUTER_API_KEY!,
       ragTopN: 4,
-      creditsPerMessage: 2,
+      creditsPerMessage: 4,
       supportsImages: true,
       baseURL: "https://openrouter.ai/api/v1",
     };
@@ -98,7 +98,7 @@ export const getConfig = (model?: LlmModel | null): LlmConfig => {
       model: "anthropic/claude-sonnet-4.5",
       apiKey: process.env.OPENROUTER_API_KEY!,
       ragTopN: 4,
-      creditsPerMessage: 4,
+      creditsPerMessage: 6,
       baseURL: "https://openrouter.ai/api/v1",
       supportsImages: true,
     };

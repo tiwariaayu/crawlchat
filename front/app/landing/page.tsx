@@ -2218,6 +2218,11 @@ function GalleryVideo({
 function Gallery() {
   const steps = [
     {
+      title: "Dashboard",
+      img: "https://slickwid-public.s3.us-east-1.amazonaws.com/crawlchat/gallery/dashboard-v2.png",
+      icon: <TbDashboard />,
+    },
+    {
       title: "Intro",
       icon: <TbVideo />,
       video:
@@ -2236,13 +2241,8 @@ function Gallery() {
     //   icon: <TbVideo />,
     // },
     {
-      title: "Dashboard",
-      img: "https://slickwid-public.s3.us-east-1.amazonaws.com/crawlchat/gallery/dashboard.png",
-      icon: <TbDashboard />,
-    },
-    {
       title: "Add your docs",
-      img: "https://slickwid-public.s3.us-east-1.amazonaws.com/crawlchat/gallery/add-knowledge-group.png",
+      img: "https://slickwid-public.s3.us-east-1.amazonaws.com/crawlchat/gallery/add-knowledge-group-v2.png",
       icon: <TbBook />,
     },
     {

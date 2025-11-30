@@ -1,7 +1,9 @@
 import { Prisma, prisma } from "libs/prisma";
-import { PLAN_FREE } from "libs/user-plan";
+import { PLAN_FREE, activatePlan } from "libs/user-plan";
 import { sendTeamJoinEmail, sendWelcomeEmail } from "~/email";
 import { Resend } from "resend";
+import { DodoPayments } from "dodopayments";
+import { productIdPlanMap } from "~/payment/gateway-dodo";
 
 export async function signUpNewUser(
   email: string,
@@ -97,6 +99,41 @@ export async function signUpNewUser(
       where: { id: user.id },
       data: update,
     });
+  }
+
+  try {
+    const client = new DodoPayments({
+      bearerToken: process.env.DODO_API_KEY!,
+      environment: "live_mode",
+    });
+
+    const customerList = await client.customers.list({
+      email: email,
+    });
+    const customer = customerList.items[0];
+
+    if (customer) {
+      const subscriptions = await client.subscriptions.list({
+        customer_id: customer.customer_id,
+      });
+
+      const activeSubscription = subscriptions.items.find(
+        (sub) => sub.status === "active"
+      );
+
+      if (activeSubscription && activeSubscription.product_id) {
+        const plan = productIdPlanMap[activeSubscription.product_id];
+
+        if (plan) {
+          await activatePlan(user.id, plan, {
+            provider: "DODO",
+            subscriptionId: activeSubscription.subscription_id,
+          });
+        }
+      }
+    }
+  } catch (e) {
+    console.error("Error checking DodoPayments subscription", e);
   }
 
   return user;

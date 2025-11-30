@@ -17,7 +17,7 @@ async function validateRequest(headers: Headers, body: string) {
   return true;
 }
 
-const productIdPlanMap: Record<string, Plan> = {
+export const productIdPlanMap: Record<string, Plan> = {
   pdt_IcrpqSx48qoCenz4lnLi1: PLAN_HOBBY,
   pdt_vgCVfRAaCT99LM1Dfk5qF: PLAN_STARTER,
   pdt_P68hLo9a0At8cgn4WbzBe: PLAN_PRO,

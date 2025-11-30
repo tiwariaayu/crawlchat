@@ -20,7 +20,7 @@ import { SiConfluence, SiLinear } from "react-icons/si";
 export function meta() {
   return makeMeta({
     title: "Empower GTM teams - CrawlChat",
-    description: "Make your technical docs answer the queries instantly!",
+    description: "Empower your GTM teams with instant access to comprehensive product knowledge through AI powered documentation.",
   });
 }
 
@@ -31,12 +31,11 @@ export default function CommunitySupport() {
         <UseCaseHero
           title={
             <>
-              Make your <span className="text-primary">GTM teams</span> to have
-              full <span className="text-primary">context</span> about your
-              product
+              Give your <span className="text-primary">GTM teams</span> full{" "}
+              <span className="text-primary">context</span> about your product
             </>
           }
-          description="GTM teams need to know everything about your product to be able to take your product to market with better positioning, communication and drive better growth. CrawlChat lets your GTM teams ask any question about your product so that they plan better strategies."
+          description="GTM teams need comprehensive product knowledge to position effectively, communicate clearly, and drive growth. CrawlChat enables your GTM teams to ask any question about your product, helping them plan better strategies."
         />
       </Container>
 
@@ -45,10 +44,10 @@ export default function CommunitySupport() {
           issues={[
             {
               question:
-                "There are so many teams with their own docs, how to have a centralized knowledge base?",
-              shortAnswer: "Make a unified knowledge base for your product",
+                "How do I create a centralized knowledge base when multiple teams have their own documentation?",
+              shortAnswer: "Create a unified knowledge base for your product",
               answer:
-                "Often times the teams of your company have their own docs and knowledge base. It is very hard for teams like marketing, sales, support, etc. that are part of the GTM, to have up to date information about your product. CrawlChat makes sure your any team can ask any question about your product and it answers it instantly referring docs from all the teams.",
+                "Companies often have documentation scattered across multiple teams. It's challenging for GTM teams like marketing, sales, and support to stay current with product information. CrawlChat creates a unified knowledge base, enabling any team to ask questions and get instant answers referencing documentation from all teams.",
               image: "/use-case/group-types.png",
               features: [
                 {
@@ -62,10 +61,10 @@ export default function CommunitySupport() {
               ],
             },
             {
-              question: "How to make sure that the docs are internal?",
-              shortAnswer: "Make private answering assistant",
+              question: "How do I ensure documentation remains internal and private?",
+              shortAnswer: "Create a private answering assistant",
               answer:
-                "CrawlChat lets you make the chat assistant purely private. That means, you can connect the docs that are hosted on private content systems and integrate the assistant only on private channels such as Slack, Discord or private links. The docs are securely stored on CrawlChat's servers and shared with LLMs while answering the questions. You can also configure auto sync of the docs so that the assistant is always up to date.",
+                "CrawlChat enables you to create a fully private chat assistant. Connect documentation from private content systems and integrate the assistant exclusively on private channels like Slack, Discord, or private links. Documentation is securely stored on CrawlChat's servers and shared with LLMs only when answering questions. Configure automatic synchronization to keep the assistant always up to date.",
               image: "/use-case/visibility-type.png",
               features: [
                 {
@@ -83,10 +82,10 @@ export default function CommunitySupport() {
               ],
             },
             {
-              question: "But how to get well researched answers?",
-              shortAnswer: "Best LLMs to research and answer the questions",
+              question: "How do I ensure answers are well researched and accurate?",
+              shortAnswer: "Advanced LLMs for research and accurate answers",
               answer:
-                "It is known that the docs collected from different teams would be very complicated and should be well researched before answering the questions. CrawlChat uses the best LLMs to research and answer the questions. It uses the best LLMs from OpenAI, Anthropic, Google, and Gemini to answer the questions and also follows best practices in the RAG process to make sure that the LLMs refer the documents accurately.",
+                "Documentation collected from different teams can be complex and requires thorough research before answering. CrawlChat uses advanced LLMs from OpenAI, Anthropic, Google, and Gemini to research and answer questions. It follows best practices in the RAG process to ensure LLMs accurately reference source documents.",
               image: "/use-case/llm-models.png",
               features: [
                 {
@@ -136,7 +135,7 @@ export default function CommunitySupport() {
               Connect your <HeadingHighlight>internal docs</HeadingHighlight>
             </>
           }
-          description="CrawlChat respects the privacy of your internal docs and provides you the connectors to add the docs directly to the knowledge base. Following are the connectors that you can use to add your internal docs to the knowledge base."
+          description="CrawlChat respects the privacy of your internal documentation and provides connectors to add docs directly to the knowledge base. Use these connectors to import your internal documentation securely."
         />
       </Container>
 
@@ -165,7 +164,7 @@ export default function CommunitySupport() {
               <HeadingHighlight>community</HeadingHighlight>
             </>
           }
-          description="You can deliver your docs to your community where they are so that there is less friction in getting the answers. You can embed the chat assistant to your community on the following platforms."
+          description="Deliver your documentation to your teams where they already work, reducing friction in accessing answers. Embed the chat assistant on these platforms to reach your internal teams effectively."
         />
       </Container>
     </>

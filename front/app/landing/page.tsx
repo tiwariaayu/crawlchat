@@ -75,7 +75,7 @@ export function meta() {
   return makeMeta({
     title: "CrawlChat - Power up your tech documentation with AI",
     description:
-      "Make your technical docs answer queries instantly from your community. Embed it in your website, Discord, or Slack.",
+      "Transform your technical documentation into an AI powered knowledge base. Get instant answers for your community via your website, Discord, or Slack.",
   });
 }
 
@@ -263,7 +263,7 @@ export function UsedBy() {
   return (
     <div className="flex flex-col gap-8">
       <h3 className="text-center text-xl font-medium opacity-50">
-        Already used by awesome companies!
+        Trusted by leading companies
       </h3>
 
       <div className="flex flex-col md:flex-row justify-center items-center gap-8 md:gap-16">
@@ -402,8 +402,7 @@ function Works() {
       </Heading>
 
       <HeadingDescription>
-        CrawlChat has a very simple workflow at its core. You can turn your docs
-        into LLM ready for your community in three simple steps.
+        CrawlChat features a streamlined workflow. Transform your documentation into an AI-ready knowledge base for your community in three simple steps.
       </HeadingDescription>
 
       <div className="flex flex-col md:flex-row gap-16 items-center md:items-start">
@@ -411,8 +410,7 @@ function Works() {
           img="/new-landing/knowledge-base.png"
           title="Make knowledge base"
         >
-          Add your existing documents or web pages as knowledge base. You can
-          import your docs from multiple{" "}
+          Add your existing documents or web pages to create your knowledge base. Import documentation from multiple{" "}
           <span
             className={cn(
               stepHighlightClassNames(),
@@ -432,11 +430,10 @@ function Works() {
             <TbFile />
             public
           </span>{" "}
-          sources within few minutes.
+          sources in minutes.
         </WorksStep>
         <WorksStep img="/new-landing/integrate-chatbot.png" title="Integrate">
-          You can embed the Ask AI widget to your website, Discord server, or
-          Slack workspace. You can customise the bot UI and{" "}
+          Embed the Ask AI widget on your website, Discord server, or Slack workspace. Customize the bot's UI and{" "}
           <span
             className={cn(
               stepHighlightClassNames(),
@@ -452,8 +449,7 @@ function Works() {
           img="/new-landing/analyse-performance.png"
           title="Analyse performance"
         >
-          View all the messages and conversations that the bot has had. You get
-          to see the performance,{" "}
+          Monitor all messages and conversations. Track performance{" "}
           <span
             className={cn(
               stepHighlightClassNames(),
@@ -463,7 +459,7 @@ function Works() {
             <TbScoreboard />
             scores
           </span>
-          , and{" "}
+          ,{" "}
           <span
             className={cn(
               stepHighlightClassNames(),
@@ -472,8 +468,8 @@ function Works() {
           >
             <TbDatabase />
             data gaps
-          </span>{" "}
-          as well.
+          </span>
+          , and more.
         </WorksStep>
       </div>
     </div>
@@ -596,10 +592,7 @@ function ChannelWidget() {
       </Heading>
 
       <HeadingDescription>
-        Don't fall behind by making your users go through hundreds of pages to
-        find the answers they need. Add CrawlChat to your documentation and let
-        your users find answers for their questions instantly right where they
-        are!
+        Stop making users search through hundreds of pages. Add CrawlChat to your documentation and let users find instant answers right where they need them.
       </HeadingDescription>
 
       <FeaturesWithImage
@@ -608,7 +601,7 @@ function ChannelWidget() {
           {
             title: "Embed on your website",
             description:
-              "You can embed the Ask AI widget on your website under few minutes. You need to copy the embed code that CrawlChat provides and paste it on your website. You instantly get an AI assistant on your website that can handle most of your support queries.",
+              "Embed the Ask AI widget on your website in minutes. Copy the embed code from CrawlChat and paste it into your site. Instantly deploy an AI assistant that handles most support queries.",
             img: "https://slickwid-public.s3.us-east-1.amazonaws.com/crawlchat/channels/4-min.png",
             key: "embed",
             icon: <TbPlug />,
@@ -616,7 +609,7 @@ function ChannelWidget() {
           {
             title: "Customise",
             description:
-              "You can customise the widget look and feel, and also the tone of the responses to match your brand and support style. You can add your own colors, logo of your brand, labels on the widget, and you can customise the behaviour of the AI using the prompts.",
+              "Customize the widget's appearance and response tone to match your brand. Add your colors, logo, labels, and customize AI behavior using custom prompts.",
             img: "https://slickwid-public.s3.us-east-1.amazonaws.com/crawlchat/channels/5-min.png",
             key: "customise",
             icon: <TbColorSwatch />,
@@ -624,7 +617,7 @@ function ChannelWidget() {
           {
             title: "Human support",
             description:
-              "CrawlChat respects the user and understands that it might not have answers for all the support queries. Your users can always reach out to you via the support tickets. The widget itself prompts the user that it does not have answer and asks to create a support ticket by providing email right from the chat screen.",
+              "CrawlChat recognizes when it doesn't have an answer. Users can seamlessly escalate to human support via tickets. The widget automatically prompts users to create a support ticket with their email directly from the chat interface.",
             img: "https://slickwid-public.s3.us-east-1.amazonaws.com/crawlchat/channels/6-min.png",
             key: "human-support",
             icon: <TbUserHeart />,
@@ -644,11 +637,7 @@ function ChannelDiscord() {
       </Heading>
 
       <HeadingDescription>
-        It is quite common for most of the tech companies to have a lot of
-        internal documentation produced by multiple teams. It is very difficult
-        deliver these docs to multiple teams. You can import your docs from
-        Notion, Confluence, or upload files and connect them to your Discord or
-        Slack workspaces.
+        Tech companies often have extensive internal documentation across multiple teams. Delivering these docs efficiently is challenging. Import from Notion, Confluence, or upload files, then connect them to your Discord or Slack workspaces.
       </HeadingDescription>
 
       <FeaturesWithImage
@@ -657,7 +646,7 @@ function ChannelDiscord() {
           {
             title: "Tag the bot",
             description:
-              "Once you add the CrawlChat bot to your Discord server, anyone on the Discord server can resolve their queries by just tagging the bot @crawlchat. It uses the same knowledge base you would have in the collection. On the admin side, all the discord messages are tagged with Discord channel.",
+              "Add the CrawlChat bot to your Discord server, and anyone can resolve queries by tagging @crawlchat. It uses the same knowledge base from your collection. All Discord messages are automatically tagged with their channel for admin tracking.",
             img: "https://slickwid-public.s3.us-east-1.amazonaws.com/crawlchat/channels/1-min.png",
             key: "tag",
             icon: <TbBrandDiscord />,
@@ -665,7 +654,7 @@ function ChannelDiscord() {
           {
             title: "Sources",
             description:
-              "The bot attaches the sources it uses to answer the question so that the users can find more help from your documentation. This works the same for the Web widget and the Slack bot as well. You can also configure it to reply the answers as a thread for clutter free channels.",
+              "The bot includes source citations with every answer, helping users dive deeper into your documentation. This works across the Web widget and Slack bot. Configure threaded replies to keep channels organized.",
             img: "https://slickwid-public.s3.us-east-1.amazonaws.com/crawlchat/channels/2-min.png",
             key: "sources",
             icon: <TbBook />,
@@ -673,7 +662,7 @@ function ChannelDiscord() {
           {
             title: "Learn & Rate",
             description:
-              "It is evident that the bot might get wrong at times and the moderators might give correct answers. You can make the bot learn these correct answers from the Discord server itself. You can react to the correct messages with 🧩 to make the bot learn the message. You users can also react with 👍 and 👎 to rate the message that you can view from the dashboard and take necessary actions.",
+              "When moderators provide correct answers, train the bot directly from Discord. React with 🧩 to teach the bot correct responses. Users can rate answers with 👍 or 👎, and you can view all ratings in the dashboard to take action.",
             img: "https://slickwid-public.s3.us-east-1.amazonaws.com/crawlchat/channels/3-min.png",
             key: "learn",
             icon: <TbThumbUp />,
@@ -696,14 +685,12 @@ function ChannelMCP() {
   return (
     <div className="mt-32">
       <Heading>
-        You docs on AI apps as an <HeadingHighlight>MCP</HeadingHighlight>{" "}
+        Your docs on AI apps as an <HeadingHighlight>MCP</HeadingHighlight>{" "}
         server
       </Heading>
 
       <HeadingDescription>
-        The chat widget comes with all tools required. Your community finds the
-        perfect answers right from your docs website from one click exactly what
-        they want
+        The chat widget includes all necessary tools. Your community finds precise answers from your documentation with a single click.
       </HeadingDescription>
 
       <FeaturesWithImage
@@ -712,7 +699,7 @@ function ChannelMCP() {
           {
             title: "Distribute",
             description:
-              "Any AI model would have a cut off date and most probably would not know about your documentation. It is important to provide the docs as context for AI apps such as Cursor, Claude Code, Windsurf etc. You can share the MCP server with your community that provides tools to search through your docs by eht AI apps. This increase the accuracy of the AI apps significantly.",
+              "AI models have knowledge cutoffs and won't know about your documentation. Provide your docs as context for AI apps like Cursor, Claude Code, and Windsurf. Share the MCP server with your community to enable AI powered search through your docs, significantly improving accuracy.",
             img: "https://slickwid-public.s3.us-east-1.amazonaws.com/crawlchat/channels/8-min.png",
             key: "sources",
             icon: <TbShare />,
@@ -720,7 +707,7 @@ function ChannelMCP() {
           {
             title: "Happy developers",
             description:
-              "Developers these days spend more time asking AI than finding required help browsing through hunders of pages. MCP server makes it even better that they get the help from their favorite AI app without leaving their workspace. CrawlChat enables you to improve your developers efficiency significantly.",
+              "Developers spend more time asking AI than browsing documentation. MCP servers let them get help from their preferred AI app without leaving their workspace. CrawlChat significantly improves developer efficiency.",
             img: "https://slickwid-public.s3.us-east-1.amazonaws.com/crawlchat/channels/7-min.png",
             key: "code",
             icon: <TbCode />,
@@ -740,10 +727,7 @@ function DashboardFeatures() {
       </Heading>
 
       <HeadingDescription>
-        People are already using ChatGPT to find answers? You are missing out
-        hugely on the insights you can get from your docs and community.
-        CrawlChat provides you insights on questions asked, categories, data
-        gaps, scores, and more.
+        While users turn to ChatGPT for answers, you're missing valuable insights from your docs and community. CrawlChat provides comprehensive insights on questions asked, categories, data gaps, scores, and more.
       </HeadingDescription>
 
       <FeaturesWithImage
@@ -753,7 +737,7 @@ function DashboardFeatures() {
           {
             title: "Useful analytics",
             description:
-              "CrawlChat provides a lot of useful information about your docs and questions being asked by your users. You can see the daily messages, score distribution, data gaps, hot knowledge pages, categories, sentiment analysis and more.",
+              "CrawlChat delivers comprehensive insights about your documentation and user questions. Track daily messages, score distribution, data gaps, popular knowledge pages, categories, sentiment analysis, and more.",
             img: "https://slickwid-public.s3.us-east-1.amazonaws.com/crawlchat/channels/dashboard-analytics.png",
             key: "useful-analytics",
             icon: <TbChartBar />,
@@ -761,7 +745,7 @@ function DashboardFeatures() {
           {
             title: "View questions",
             description:
-              "View the questions being asked by your users, find those questions that don't have answers in the documentation and improve your docs accordingly. You can group the questions into categores, view the channels for better understanding.",
+              "Review user questions, identify gaps in your documentation, and improve accordingly. Group questions into categories and view channels for deeper insights.",
             img: "https://slickwid-public.s3.us-east-1.amazonaws.com/crawlchat/channels/dashboard-questions.png",
             key: "view-questions",
             icon: <TbColorSwatch />,
@@ -769,7 +753,7 @@ function DashboardFeatures() {
           {
             title: "Teams",
             description:
-              "We understand that you might have multiple teams working on your documentation. CrawlChat allows you to bring your team to the app and work together to improve your docs and support your users.",
+              "Collaborate with multiple teams on your documentation. CrawlChat enables team collaboration to improve docs and support users effectively.",
             img: "https://slickwid-public.s3.us-east-1.amazonaws.com/crawlchat/channels/dashboard-team.png",
             key: "teams",
             icon: <TbUsers />,
@@ -831,41 +815,39 @@ function Tools() {
       </Heading>
 
       <HeadingDescription>
-        CrawlChat cuts technical queries by letting users instantly chat with
-        your docs, getting answers without needing human help right from your
-        website, Discord, or Slack.
+        CrawlChat reduces technical support load by enabling instant AI powered conversations with your documentation directly from your website, Discord, or Slack.
       </HeadingDescription>
 
       <div className="bg-base-100 rounded-2xl border border-base-300">
         <ToolsRow>
           <ToolItem
             title="Instant answers"
-            description="CrawlChat lets users ask questions and get immediate answers from your docs, guides, or FAQs, no searching or waiting. This reduces basic support requests and improves self-service."
+            description="Users get immediate answers from your docs, guides, and FAQs—no searching or waiting. Reduces support requests and improves self-service."
             icon={<TbMessage />}
           />
           <ToolItem
             title="Less Repetitive Questions"
-            description="CrawlChat answers frequent questions directly from your documentation, reducing the need for users to contact support for the same issues and letting your team focus on complex tasks."
+            description="Answers frequent questions directly from your documentation, reducing repetitive support requests and freeing your team to focus on complex issues."
             icon={<TbArrowsShuffle />}
           />
           <ToolItem
             title="24/7 Availability"
-            description="CrawlChat is always active, helping users anytime—day or night—so they don’t have to wait for support teams, reducing off-hour ticket volume."
+            description="Always available, helping users 24/7 day or night without waiting for support teams, reducing off hour ticket volume."
             icon={<TbClock />}
           />
           <ToolItem
             title="Analytics"
-            description="You get a wide range of analytics for your docs and community. The daily messages chart, score distribution and many more that give your more visibility into your docs and the community"
+            description="Comprehensive analytics for your docs and community. Track daily messages, score distribution, and more to gain deeper visibility into documentation performance and community engagement."
             icon={<TbChartBar />}
           />
           <ToolItem
             title="Discord & Slack bots"
-            description="CrawlChat works inside Discord and Slack, letting users ask questions and get instant answers from your docs—just by tagging the bot. It’s like support, right in chat."
+            description="Works seamlessly in Discord and Slack. Users tag the bot to get instant answers from your docs—support delivered directly in chat."
             icon={<TbBrandDiscord />}
           />
           <ToolItem
             title="Customisation"
-            description="CrawlChat lets you customize the chat widget’s look and tone. With custom prompts, you guide how the AI responds—tailoring answers to fit your brand and support needs."
+            description="Customize the chat widget's appearance and tone. Use custom prompts to guide AI responses, tailoring answers to match your brand and support style."
             icon={<TbSettings />}
           />
         </ToolsRow>
@@ -1089,8 +1071,7 @@ export function Pricing() {
       </Heading>
 
       <HeadingDescription>
-        Choose the plan that best fits your needs. You can avail of the free
-        trial for 7 days and cancel anytime.
+        Choose the plan that best fits your needs. Start with a 7-day free trial and cancel anytime.
       </HeadingDescription>
 
       <div className="flex flex-col md:flex-row md:gap-6 gap-10 mt-20">
@@ -1116,7 +1097,7 @@ export function CTA({ text }: { text?: string }) {
           )}
         >
           {text ||
-            "Deliver your tech doc with AI to your community and internal teams now!"}
+            "Deliver AI powered technical documentation to your community and internal teams today!"}
         </h2>
 
         <div className="flex justify-center mt-8">
@@ -1539,8 +1520,7 @@ function Hero() {
         </h1>
 
         <p className="text-xl mt-6 text-base-content/60">
-          Add CrawlChat to your documentation and let your users find answers
-          for their questions instantly right where they are!
+          Add CrawlChat to your documentation and let users find instant answers right where they need them.
           <ul className="mt-4 flex flex-col gap-2">
             {features.map((feature, index) => (
               <li key={index} className="flex gap-2">
@@ -1572,8 +1552,7 @@ function Hero() {
 
         <div className="flex flex-col gap-4">
           <div className="text-sm text-base-content/50 italic max-w-md">
-            CrawlChat now powers "Ask AI" widget on site, MCP server for docs,
-            Discord bot for community. Smarter docs. Better support.
+            CrawlChat powers the "Ask AI" widget on sites, MCP servers for docs, and Discord bots for communities. Smarter docs. Better support.
           </div>
 
           <div className="flex items-center gap-2">
@@ -1714,13 +1693,11 @@ export function Flow() {
   return (
     <div className="mt-32">
       <Heading>
-        A workfow for <HeadingHighlight>AI powered</HeadingHighlight> docs
+        A workflow for <HeadingHighlight>AI powered</HeadingHighlight> docs
       </Heading>
 
       <HeadingDescription>
-        CrawlChat is a simple yet powerful, AI tool for your technical
-        documentation. You can configure it in few minutes and provides you
-        useful analytics to improve your docs.
+        CrawlChat is a simple yet powerful AI tool for technical documentation. Configure it in minutes and gain actionable analytics to improve your docs.
       </HeadingDescription>
 
       <div
@@ -1730,28 +1707,28 @@ export function Flow() {
       >
         <FlowCard
           title="Knowledge base with your documentation"
-          description="It all starts with turning your documentation into a knowledge base for the AI chatbot. You can just pass your online documentation URL or upload files as the knowledge base."
+          description="Transform your documentation into an AI powered knowledge base. Simply provide your documentation URL or upload files to get started."
           img="/new-landing/flow-knowledge.png"
           cols={2}
           rows={1}
         />
         <FlowCard
           title="First level AI support"
-          description="Let the AI chatbot answer the basic and repetitive questions so that your support time is reduced drastically."
+          description="Let the AI chatbot handle basic and repetitive questions, dramatically reducing support workload."
           img="/new-landing/flow-chatbot.png"
           cols={1}
           rows={1}
         />
         <FlowCard
           title="Escalate to human support"
-          description="CrawlChat has a simple yet powerful AI driven support ticket system. The chatbot will create a ticket if query is not resolved by AI."
+          description="CrawlChat features a powerful AI driven support ticket system. The chatbot automatically creates tickets when queries can't be resolved by AI."
           img="/new-landing/flow-support-ticket.png"
           cols={1}
           rows={1}
         />
         <FlowCard
           title="Analyse and improve"
-          description="You get a detailed report of the chatbot's performance and the knowledge base against the queries your customers ask. You can find out the knowledge gaps on the basis of the scroes CrawlChat provides and improve your docs eventually."
+          description="Receive detailed reports on chatbot performance and knowledge base effectiveness. Identify knowledge gaps using CrawlChat's scoring system and continuously improve your documentation."
           img="/new-landing/flow-analyse.png"
           cols={2}
           rows={1}
@@ -1916,7 +1893,7 @@ export function FAQ() {
       ),
     },
     {
-      question: "I already user other chatbot, why do I switch?",
+      question: "I already use other chatbots, why do I switch?",
       answer: (
         <div>
           CrawlChat shines in three areas:
@@ -1926,8 +1903,7 @@ export function FAQ() {
               for your customer queries.
             </li>
             <li>
-              It comes with a support ticket system that is makes sure that the
-              queries reaches your if the documentation is not enough.
+              It comes with a support ticket system that ensures queries reach you when documentation isn't sufficient.
             </li>
             <li>
               It provides all the necessary analytics required to monitor the
@@ -1951,7 +1927,7 @@ export function FAQ() {
       question: "Does it support other languages?",
       answer: (
         <p>
-          Absolutely. That's is the advantage of using AI based chatbots. The
+          Absolutely. That's the advantage of using AI based chatbots. The
           LLMs/AI models are capable of answering your customer or client's
           queries in their own language out of the box. This includes all major
           32 languages like English, Spanish, French, German, Italian,
@@ -1984,7 +1960,7 @@ export function FAQ() {
       ),
     },
     {
-      question: "How can integrate it with Slack or Discord?",
+          question: "How can I integrate it with Slack or Discord?",
       answer: (
         <p>
           Yes! CrawlChat provides a Discord bot and a Slack app that can be
@@ -2008,7 +1984,7 @@ export function FAQ() {
             CrawlChat gives rating to each answer based on the relevance of the
             answer to the question. The more the score is, the better the answer
             and the documentation was for the given query. CrawlChat provides
-            charts over time, distribution of the score and per messange &
+            charts over time, distribution of the score and per message &
             conversation scores as well. They help you to monitor the
             performance of the chatbot and the knowledge base.
           </p>
@@ -2018,7 +1994,7 @@ export function FAQ() {
             improve your documentation.
           </p>
           <p>
-            Apart from that, you can also what knowledge groups are being used
+            Apart from that, you can also see what knowledge groups are being used
             the most to answer the questions.
           </p>
         </div>
@@ -2030,7 +2006,7 @@ export function FAQ() {
         <p>
           The message credits are reset every month whenever the subscription is
           renewed. Whereas the pages is the number of unique pages (maxed to a
-          set of charecters) you have at any given point of time. Choose the
+          set of characters) you have at any given point of time. Choose the
           plan that best suits your needs. You can topup your message credits by
           sending an email to support.
         </p>
@@ -2555,8 +2531,7 @@ function SourcesChannels() {
       </Heading>
 
       <HeadingDescription>
-        CrawlChat supports a wide range of sources for tech documentations and
-        useful channels where you can deliver your documentation with AI.
+        CrawlChat supports a wide range of documentation sources and delivery channels, enabling AI powered documentation across your entire ecosystem.
       </HeadingDescription>
 
       <p className="text-base-content/20 text-center">Sources</p>

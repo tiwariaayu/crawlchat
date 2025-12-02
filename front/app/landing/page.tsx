@@ -788,6 +788,35 @@ function PricingBox({
   );
 }
 
+function CreditsPopover() {
+  return (
+    <div className="dropdown dropdown-top dropdown-center">
+      <div
+        tabIndex={0}
+        role="button"
+        className="btn btn-xs btn-square btn-soft opacity-50"
+      >
+        <TbInfoCircleFilled />
+      </div>
+      <div
+        tabIndex={-1}
+        className={cn(
+          "dropdown-content menu bg-base-200 rounded-box z-1 w-52 p-2 shadow-sm",
+          "mb-2"
+        )}
+      >
+        <p>
+          The net messages you get depends on the AI model you use.{" "}
+          <a href="/ai-models" className="link link-primary link-hover">
+            Click here
+          </a>{" "}
+          for more details.
+        </p>
+      </div>
+    </div>
+  );
+}
+
 export function PricingBoxes({
   starterPlan,
   proPlan,
@@ -814,9 +843,13 @@ export function PricingBoxes({
           items={[
             { text: `${starterYearlyPlan.limits.pages} pages` },
             {
-              text: `${
-                starterYearlyPlan.credits.messages / 12
-              } message credits/month`,
+              text: (
+                <div className="flex items-center gap-2">
+                  {starterYearlyPlan.credits.messages / 12} message
+                  credits/month
+                  <CreditsPopover />
+                </div>
+              ),
             },
             { text: `${starterYearlyPlan.limits.scrapes} collections` },
             { text: `${starterYearlyPlan.limits.teamMembers} team members` },
@@ -846,9 +879,12 @@ export function PricingBoxes({
           items={[
             { text: `${proYearlyPlan.limits.pages} pages` },
             {
-              text: `${
-                proYearlyPlan.credits.messages / 12
-              } message credits/month`,
+              text: (
+                <div className="flex items-center gap-2">
+                  {proYearlyPlan.credits.messages / 12} message credits/month
+                  <CreditsPopover />
+                </div>
+              ),
             },
             { text: `${proYearlyPlan.limits.scrapes} collections` },
             { text: `${proYearlyPlan.limits.teamMembers} team members` },
@@ -880,7 +916,14 @@ export function PricingBoxes({
         price={`$${starterPlan.price}`}
         items={[
           { text: `${starterPlan.limits.pages} pages` },
-          { text: `${starterPlan.credits.messages} message credits/month` },
+          {
+            text: (
+              <div className="flex items-center gap-2">
+                {starterPlan.credits.messages} message credits/month
+                <CreditsPopover />
+              </div>
+            ),
+          },
           { text: `${starterPlan.limits.scrapes} collections` },
           { text: `${starterPlan.limits.teamMembers} team members` },
           {
@@ -907,7 +950,14 @@ export function PricingBoxes({
         price={`$${proPlan.price}`}
         items={[
           { text: `${proPlan.limits.pages} pages` },
-          { text: `${proPlan.credits.messages} message credits/month` },
+          {
+            text: (
+              <div className="flex items-center gap-2">
+                {proPlan.credits.messages} message credits/month
+                <CreditsPopover />
+              </div>
+            ),
+          },
           { text: `${proPlan.limits.scrapes} collections` },
           { text: `${proPlan.limits.teamMembers} team members` },
           {

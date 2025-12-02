@@ -1359,10 +1359,10 @@ export function Nav({ user }: { user?: User | null }) {
                 </div>
               )}
               {user && (
-                <Link to="/app" className="btn btn-primary">
+                <a href="/app" className="btn btn-primary">
                   Dashboard
                   <TbArrowRight />
-                </Link>
+                </a>
               )}
             </div>
             <div className="dropdown dropdown-end md:hidden">

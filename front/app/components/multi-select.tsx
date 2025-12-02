@@ -53,6 +53,7 @@ export function MultiSelect({
           >
             <span className="text-sm">{getTitle(value)}</span>
             <button
+              type="button"
               className="btn btn-xs btn-soft btn-square"
               onClick={() => handleRemove(index)}
             >
@@ -90,7 +91,8 @@ export function MultiSelect({
           />
         )}
         <button
-          className="btn btn-neutral"
+          type="button"
+          className="btn btn-neutral btn-square"
           disabled={!inputValue && !selectedValue}
           onClick={handleAdd}
         >

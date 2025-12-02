@@ -47,13 +47,12 @@ const RichCreateTicket = ({
   return (
     <div
       className={cn(
-        "flex flex-col gap-2 border-4 border-base-300",
-        "p-4 rounded-2xl max-w-[400px] w-full my-8"
+        "flex flex-col gap-2 border border-base-300",
+        "p-4 rounded-box w-full my-8 shadow"
       )}
     >
       {!loading && (
         <>
-          <div className="text-lg font-bold">Create a support ticket</div>
           <input
             className="input w-full"
             placeholder="Title"
@@ -76,7 +75,10 @@ const RichCreateTicket = ({
             onChange={(e) => setEmail(e.target.value)}
             disabled={disabled || !!customerEmail}
           />
-          <div className="flex justify-end">
+          <div className="flex justify-between items-center">
+            <div className="text-sm text-base-content/50">
+              Create a support ticket
+            </div>
             <button
               className="btn"
               onClick={handleSubmit}

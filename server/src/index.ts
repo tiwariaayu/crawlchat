@@ -53,6 +53,7 @@ import { getConfig } from "./llm/config";
 import { getNextNumber } from "libs/mongo-counter";
 import { randomUUID } from "crypto";
 import { extractSiteUseCase } from "./site-use-case";
+import { title } from "process";
 
 const app: Express = express();
 const expressWs = ws(app);
@@ -1400,7 +1401,15 @@ app.get("/api/messages", authenticate, async (req, res) => {
   });
 
   res.json({
-    messages,
+    messages: messages.map((m) => ({
+      id: m.id,
+      createdAt: m.createdAt,
+      content: m.llmMessage?.content,
+      role: m.llmMessage?.role,
+      channel: m.channel,
+      attachments: m.attachments,
+      links: m.links,
+    })),
     total: totalMessages,
     page,
     pageSize,

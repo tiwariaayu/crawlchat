@@ -23,6 +23,7 @@ import { makeMeta } from "~/meta";
 import { UpgradeModal } from "./upgrade-modal";
 import { showModal } from "~/components/daisy-utils";
 import { createToken } from "libs/jwt";
+import { ChatModal } from "./chat-modal";
 
 export function meta() {
   return makeMeta({
@@ -167,7 +168,6 @@ export default function DashboardPage({ loaderData }: Route.ComponentProps) {
               dataGapMessages={loaderData.dataGapMessages.length}
               scrape={loaderData.scrape}
               usedPages={loaderData.usedPages}
-              token={loaderData.token}
             />
           </div>
         </div>
@@ -179,6 +179,7 @@ export default function DashboardPage({ loaderData }: Route.ComponentProps) {
         starterYearlyPlan={loaderData.starterYearlyPlan}
         proYearlyPlan={loaderData.proYearlyPlan}
       />
+      <ChatModal token={loaderData.token} />
     </AppContext.Provider>
   );
 }

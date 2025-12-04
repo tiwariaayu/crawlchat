@@ -10,14 +10,12 @@ import {
   TbChevronDown,
   TbChevronUp,
   TbCreditCard,
-  TbHome,
   TbKey,
   TbLogout,
   TbMessage,
   TbPencil,
   TbPlug,
   TbPointer,
-  TbRobot,
   TbRobotFace,
   TbSettings,
   TbTicket,
@@ -195,21 +193,7 @@ function SetupProgress({ scrapeId }: { scrapeId: string }) {
   );
 }
 
-function ChatModal({ token }: { token: string }) {
-  return (
-    <dialog id="chat-modal" className="modal">
-      <div className="modal-box p-0 w-1/2 max-w-5xl">
-        <iframe
-          src={`/w/crawlchat-internal?secret=${token}&embed=true`}
-          style={{width: "100%", height: "500px" }}
-        />
-      </div>
-      <form method="dialog" className="modal-backdrop">
-        <button>close</button>
-      </form>
-    </dialog>
-  );
-}
+
 
 export function SideMenu({
   scrapeOwner,
@@ -223,7 +207,6 @@ export function SideMenu({
   scrape,
   dataGapMessages,
   usedPages,
-  token,
 }: {
   scrapeOwner: User;
   loggedInUser: User;
@@ -237,7 +220,6 @@ export function SideMenu({
   scrape?: Scrape;
   dataGapMessages: number;
   usedPages: number;
-  token: string;
 }) {
   const links = useMemo(() => {
     const links = [
@@ -528,7 +510,6 @@ export function SideMenu({
           </div>
         </div>
       </div>
-      <ChatModal token={token} />
     </div>
   );
 }

@@ -38,7 +38,7 @@ export async function loader({ request, params }: Route.LoaderArgs) {
   }
 
   const knowledgeGroup = await prisma.knowledgeGroup.findUnique({
-    where: { id: params.groupId },
+    where: { id: params.groupId, scrapeId },
   });
 
   if (!knowledgeGroup) {
@@ -76,7 +76,7 @@ export async function action({ request, params }: Route.ActionArgs) {
     }
 
     await prisma.knowledgeGroup.update({
-      where: { id: knowledgeGroupId },
+      where: { id: knowledgeGroupId, scrapeId },
       data: { status: "processing", fetchError: null },
     });
 
@@ -104,7 +104,7 @@ export async function action({ request, params }: Route.ActionArgs) {
     }
 
     await prisma.knowledgeGroup.update({
-      where: { id: knowledgeGroupId },
+      where: { id: knowledgeGroupId, scrapeId },
       data: { status: "done" },
     });
 

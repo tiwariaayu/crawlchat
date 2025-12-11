@@ -23,7 +23,7 @@ export async function loader({ request, params }: Route.LoaderArgs) {
   }
 
   const knowledgeGroup = await prisma.knowledgeGroup.findUnique({
-    where: { id: params.groupId },
+    where: { id: params.groupId, scrapeId },
   });
 
   if (!knowledgeGroup) {

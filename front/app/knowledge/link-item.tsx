@@ -22,7 +22,7 @@ export async function loader({ params, request }: Route.LoaderArgs) {
   authoriseScrapeUser(user!.scrapeUsers, scrapeId);
 
   const item = await prisma.scrapeItem.findUnique({
-    where: { id: params.itemId },
+    where: { id: params.itemId, scrapeId },
     include: {
       knowledgeGroup: true,
     },
@@ -46,7 +46,7 @@ export async function action({ params, request }: Route.ActionArgs) {
 
   if (request.method === "DELETE") {
     const scrapeItem = await prisma.scrapeItem.findUnique({
-      where: { id: params.itemId },
+      where: { id: params.itemId, scrapeId },
     });
 
     if (!scrapeItem) {
@@ -70,7 +70,7 @@ export async function action({ params, request }: Route.ActionArgs) {
 
   if (intent === "refresh") {
     const scrapeItem = await prisma.scrapeItem.findUnique({
-      where: { id: params.itemId },
+      where: { id: params.itemId, scrapeId },
     });
 
     if (!scrapeItem) {
@@ -78,7 +78,7 @@ export async function action({ params, request }: Route.ActionArgs) {
     }
 
     await prisma.knowledgeGroup.update({
-      where: { id: scrapeItem.knowledgeGroupId },
+      where: { id: scrapeItem.knowledgeGroupId, scrapeId },
       data: { status: "processing" },
     });
 
@@ -109,7 +109,7 @@ export async function action({ params, request }: Route.ActionArgs) {
     }
 
     await prisma.scrapeItem.update({
-      where: { id: params.itemId },
+      where: { id: params.itemId, scrapeId },
       data: update,
     });
 
@@ -228,7 +228,10 @@ export default function ScrapeItem({ loaderData }: Route.ComponentProps) {
               data-tip={deleteActive ? "Are you sure?" : "Delete"}
             >
               <button
-                className={cn("btn btn-error btn-square", !deleteActive && "btn-soft")}
+                className={cn(
+                  "btn btn-error btn-square",
+                  !deleteActive && "btn-soft"
+                )}
                 type={deleteActive ? "submit" : "button"}
                 onClick={handleDelete}
                 disabled={deleteFetcher.state !== "idle"}

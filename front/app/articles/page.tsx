@@ -1,4 +1,4 @@
-import { TbBook2, TbCheck } from "react-icons/tb";
+import { TbBook2, TbCheck, TbTrash } from "react-icons/tb";
 import { getAuthUser } from "~/auth/middleware";
 import { Page } from "~/components/page";
 import { prisma } from "~/prisma";
@@ -54,6 +54,16 @@ export async function action({ request, params }: Route.ActionArgs) {
 
     throw redirect(`/article/${params.id}`);
   }
+
+  if (intent === "delete") {
+    await prisma.article.delete({
+      where: {
+        id: params.id,
+      },
+    });
+
+    throw redirect(`/articles`);
+  }
 }
 
 export default function Article({ loaderData }: Route.ComponentProps) {
@@ -71,32 +81,54 @@ export default function Article({ loaderData }: Route.ComponentProps) {
   });
 
   const saveFetcher = useFetcher();
+  const deleteFetcher = useFetcher();
 
   return (
     <Page
       title={loaderData.article.title || "Article"}
       icon={<TbBook2 />}
       right={
-        <saveFetcher.Form method="post">
-          <input type="hidden" name="intent" value="save" />
-          <input type="hidden" name="content" value={composer.state.slate} />
-          <input
-            type="hidden"
-            name="title"
-            value={composer.state.title ?? ""}
-          />
-          <button
-            type="submit"
-            className="btn btn-primary"
-            disabled={saveFetcher.state !== "idle"}
-          >
-            {saveFetcher.state !== "idle" && (
-              <span className="loading loading-spinner loading-xs" />
-            )}
-            Save
-            <TbCheck />
-          </button>
-        </saveFetcher.Form>
+        <div className="flex gap-2 items-center">
+          <deleteFetcher.Form method="post">
+            <input type="hidden" name="intent" value="delete" />
+            <div
+              className="tooltip tooltip-left"
+              data-tip="Delete article"
+            >
+              <button
+                className="btn btn-error btn-soft btn-square"
+                type="submit"
+                disabled={deleteFetcher.state !== "idle"}
+              >
+                {deleteFetcher.state === "submitting" ? (
+                  <span className="loading loading-spinner loading-sm" />
+                ) : (
+                  <TbTrash />
+                )}
+              </button>
+            </div>
+          </deleteFetcher.Form>
+          <saveFetcher.Form method="post">
+            <input type="hidden" name="intent" value="save" />
+            <input type="hidden" name="content" value={composer.state.slate} />
+            <input
+              type="hidden"
+              name="title"
+              value={composer.state.title ?? ""}
+            />
+            <button
+              type="submit"
+              className="btn btn-primary"
+              disabled={saveFetcher.state !== "idle"}
+            >
+              {saveFetcher.state !== "idle" && (
+                <span className="loading loading-spinner loading-xs" />
+              )}
+              Save
+              <TbCheck />
+            </button>
+          </saveFetcher.Form>
+        </div>
       }
     >
       <ComposerSection composer={composer} />

@@ -1518,25 +1518,25 @@ export function Nav({ user }: { user?: User | null }) {
                 )}
                 {!user && (
                   <li>
-                    <Link to="/login">Login</Link>
+                    <a href="/login">Login</a>
                   </li>
                 )}
                 {user && (
                   <li>
-                    <Link to="/app">Dashboard</Link>
+                    <a href="/app">Dashboard</a>
                   </li>
                 )}
                 <li>
-                  <Link to="/pricing">Pricing</Link>
+                  <a href="/pricing">Pricing</a>
                 </li>
                 <li>
-                  <Link to="/changelog">Changelog</Link>
+                  <a href="/changelog">Changelog</a>
                 </li>
                 <li>
-                  <Link to="/blog">Blog</Link>
+                  <a href="/blog">Blog</a>
                 </li>
                 <li>
-                  <Link to="/public-bots">Public bots</Link>
+                  <a href="/public-bots">Public bots</a>
                 </li>
               </ul>
             </div>

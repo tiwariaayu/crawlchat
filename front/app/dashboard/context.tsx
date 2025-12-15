@@ -27,6 +27,9 @@ export const useApp = ({
   );
   const [closedReleaseKey, setClosedReleaseKey] = useState<string | null>();
   const shouldUpgrade = useMemo(() => {
+    if (user.plan?.subscriptionId) {
+      return false;
+    }
     return !scrapeUsers.find((su) => su.scrape.user.plan?.subscriptionId);
   }, [scrapeUsers]);
 

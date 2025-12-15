@@ -891,240 +891,276 @@ app.post("/answer/:scrapeId", authenticate, async (req, res) => {
 app.post("/google-chat/answer/:scrapeId", async (req, res) => {
   console.log("Google Chat request for", req.params.scrapeId);
 
-  res
-    .header({
-      "Content-Type": "application/json",
-    })
-    .status(200)
-    .json({
-      text: "Hello, world!",
+  wsRateLimiter.check();
+
+  const apiKey = req.query.apiKey as string;
+  if (!apiKey) {
+    res.status(401).json({ error: "API key required in query params" });
+    return;
+  }
+
+  const apiKeyRecord = await prisma.apiKey.findFirst({
+    where: { key: apiKey },
+    include: {
+      user: {
+        include: {
+          scrapeUsers: true,
+        },
+      },
+    },
+  });
+
+  if (!apiKeyRecord?.user) {
+    res.status(401).json({ error: "Invalid API key" });
+    return;
+  }
+
+  const user = apiKeyRecord.user;
+
+  const scrape = await prisma.scrape.findFirst({
+    where: { id: req.params.scrapeId },
+  });
+  if (!scrape) {
+    res.status(404).json({
+      actionResponse: {
+        type: "NEW_MESSAGE",
+      },
+      text: "Collection not found",
     });
-  return;
+    return;
+  }
 
-  // wsRateLimiter.check();
+  authoriseScrapeUser(user.scrapeUsers, scrape.id, res);
 
-  // const apiKey = req.query.apiKey as string;
-  // if (!apiKey) {
-  //   res.status(401).json({ error: "API key required in query params" });
-  //   return;
-  // }
+  if (
+    !(await hasEnoughCredits(scrape.userId, "messages", {
+      alert: {
+        scrapeId: scrape.id,
+        token: createToken(scrape.userId),
+      },
+    }))
+  ) {
+    res.status(400).json({
+      actionResponse: {
+        type: "NEW_MESSAGE",
+      },
+      text: "Not enough credits",
+    });
+    return;
+  }
 
-  // const apiKeyRecord = await prisma.apiKey.findFirst({
-  //   where: { key: apiKey },
-  //   include: {
-  //     user: {
-  //       include: {
-  //         scrapeUsers: true,
-  //       },
-  //     },
-  //   },
-  // });
+  const googleChatEvent = req.body;
 
-  // if (!apiKeyRecord?.user) {
-  //   res.status(401).json({ error: "Invalid API key" });
-  //   return;
-  // }
+  const messagePayload = googleChatEvent.chat?.messagePayload?.message;
+  if (!messagePayload) {
+    res.json({
+      actionResponse: {
+        type: "NEW_MESSAGE",
+      },
+      text: "No message payload found",
+    });
+    return;
+  }
 
-  // const user = apiKeyRecord.user;
+  const annotations = messagePayload.annotations || [];
+  const isBotMentioned = annotations.some(
+    (annotation: any) =>
+      annotation.type === "USER_MENTION" &&
+      annotation.userMention?.user?.type === "BOT"
+  );
 
-  // const scrape = await prisma.scrape.findFirst({
-  //   where: { id: req.params.scrapeId },
-  // });
-  // if (!scrape) {
-  //   res.status(404).json({
-  //     actionResponse: {
-  //       type: "NEW_MESSAGE",
-  //     },
-  //     text: "Collection not found",
-  //   });
-  //   return;
-  // }
+  if (!isBotMentioned) {
+    res.json({
+      actionResponse: {
+        type: "NEW_MESSAGE",
+      },
+      text: "",
+    });
+    return;
+  }
 
-  // authoriseScrapeUser(user.scrapeUsers, scrape.id, res);
+  const messageText = messagePayload.argumentText || messagePayload.text || "";
 
-  // if (
-  //   !(await hasEnoughCredits(scrape.userId, "messages", {
-  //     alert: {
-  //       scrapeId: scrape.id,
-  //       token: createToken(scrape.userId),
-  //     },
-  //   }))
-  // ) {
-  //   res.status(400).json({
-  //     actionResponse: {
-  //       type: "NEW_MESSAGE",
-  //     },
-  //     text: "Not enough credits",
-  //   });
-  //   return;
-  // }
+  if (!messageText.trim()) {
+    res.status(400).json({
+      actionResponse: {
+        type: "NEW_MESSAGE",
+      },
+      text: "No message text found",
+    });
+    return;
+  }
 
-  // const googleChatEvent = req.body;
+  if (messageText.length > 3000) {
+    res.status(400).json({
+      actionResponse: {
+        type: "NEW_MESSAGE",
+      },
+      text: "Question too long",
+    });
+    return;
+  }
 
-  // console.log("Google Chat event", JSON.stringify(googleChatEvent, null, 2));
+  const threadKey = messagePayload.thread?.name || messagePayload.space?.name;
+  let thread = await prisma.thread.findFirst({
+    where: { scrapeId: scrape.id, isDefault: true },
+  });
+  if (threadKey) {
+    thread = await prisma.thread.findFirst({
+      where: { clientThreadId: threadKey },
+    });
+  }
+  if (!thread) {
+    thread = await prisma.thread.create({
+      data: {
+        scrapeId: scrape.id,
+        isDefault: !threadKey,
+        clientThreadId: threadKey || undefined,
+      },
+    });
+  }
 
-  // const messagePayload = googleChatEvent.chat?.messagePayload?.message;
-  // if (!messagePayload) {
-  //   res.json({
-  //     actionResponse: {
-  //       type: "NEW_MESSAGE",
-  //     },
-  //     text: "No message payload found",
-  //   });
-  //   return;
-  // }
+  const prompt = scrape.chatPrompt ?? "";
 
-  // const annotations = messagePayload.annotations || [];
-  // const isBotMentioned = annotations.some(
-  //   (annotation: any) =>
-  //     annotation.type === "USER_MENTION" &&
-  //     annotation.userMention?.user?.type === "BOT"
-  // );
+  const questionMessage = await prisma.message.create({
+    data: {
+      threadId: thread.id,
+      scrapeId: scrape.id,
+      llmMessage: { role: "user", content: messageText },
+      ownerUserId: scrape.userId,
+      channel: "google_chat",
+      fingerprint: googleChatEvent.chat.user.email,
+    },
+  });
+  await updateLastMessageAt(thread.id);
 
-  // if (!isBotMentioned) {
-  //   res.json({
-  //     actionResponse: {
-  //       type: "NEW_MESSAGE",
-  //     },
-  //     text: "",
-  //   });
-  //   return;
-  // }
+  const actions = await prisma.apiAction.findMany({
+    where: {
+      scrapeId: scrape.id,
+    },
+  });
 
-  // const messageText = messagePayload.argumentText || messagePayload.text || "";
+  const threadMessages = await prisma.message.findMany({
+    where: { threadId: thread.id },
+    orderBy: { createdAt: "asc" },
+    take: 40,
+  });
 
-  // if (!messageText.trim()) {
-  //   res.status(400).json({
-  //     actionResponse: {
-  //       type: "NEW_MESSAGE",
-  //     },
-  //     text: "No message text found",
-  //   });
-  //   return;
-  // }
+  const recentMessages = threadMessages.map((m) => ({
+    llmMessage: m.llmMessage as any,
+  }));
 
-  // if (messageText.length > 3000) {
-  //   res.status(400).json({
-  //     actionResponse: {
-  //       type: "NEW_MESSAGE",
-  //     },
-  //     text: "Question too long",
-  //   });
-  //   return;
-  // }
+  const answer = await baseAnswerer(
+    scrape,
+    thread,
+    messageText,
+    recentMessages,
+    {
+      prompt,
+      actions,
+    }
+  );
 
-  // const threadKey =
-  //   messagePayload.thread?.name || messagePayload.space?.name;
-  // let thread = await prisma.thread.findFirst({
-  //   where: { scrapeId: scrape.id, isDefault: true },
-  // });
-  // if (threadKey) {
-  //   thread = await prisma.thread.findFirst({
-  //     where: { clientThreadId: threadKey },
-  //   });
-  // }
-  // if (!thread) {
-  //   thread = await prisma.thread.create({
-  //     data: {
-  //       scrapeId: scrape.id,
-  //       isDefault: !threadKey,
-  //       clientThreadId: threadKey || undefined,
-  //     },
-  //   });
-  // }
+  await consumeCredits(scrape.userId, "messages", answer!.creditsUsed);
+  const newAnswerMessage = await prisma.message.create({
+    data: {
+      threadId: thread.id,
+      scrapeId: scrape.id,
+      llmMessage: { role: "assistant", content: answer!.content },
+      links: answer!.sources,
+      ownerUserId: scrape.userId,
+      channel: "google_chat",
+      apiActionCalls: answer!.actionCalls as any,
+      llmModel: scrape.llmModel,
+      creditsUsed: answer!.creditsUsed,
+      questionId: questionMessage.id,
+      fingerprint: googleChatEvent.chat.user.email,
+    },
+  });
+  await updateLastMessageAt(thread.id);
 
-  // const prompt = scrape.chatPrompt ?? "";
+  if (scrape.analyseMessage) {
+    fillMessageAnalysis(
+      newAnswerMessage.id,
+      questionMessage.id,
+      messageText,
+      answer!.content,
+      answer!.sources,
+      answer!.context,
+      {
+        categories: scrape.messageCategories,
+      }
+    );
+  }
 
-  // const questionMessage = await prisma.message.create({
-  //   data: {
-  //     threadId: thread.id,
-  //     scrapeId: scrape.id,
-  //     llmMessage: { role: "user", content: messageText },
-  //     ownerUserId: scrape.userId,
-  //     channel: "google_chat",
-  //   },
-  // });
-  // await updateLastMessageAt(thread.id);
+  if (!answer) {
+    res.status(400).json({
+      actionResponse: {
+        type: "NEW_MESSAGE",
+      },
+      text: "Failed to answer",
+    });
+    return;
+  }
 
-  // const actions = await prisma.apiAction.findMany({
-  //   where: {
-  //     scrapeId: scrape.id,
-  //   },
-  // });
+  const citation = extractCitations(answer.content, answer.sources, {
+    cleanCitations: true,
+    addSourcesToMessage: false,
+  });
 
-  // const threadMessages = await prisma.message.findMany({
-  //   where: { threadId: thread.id },
-  //   orderBy: { createdAt: "asc" },
-  //   take: 40,
-  // });
+  const citedLinks = Object.values(citation.citedLinks);
+  const sourceButtons = citedLinks.map((link, index) => ({
+    text: link.title || link.url || `Source ${index + 1}`,
+    onClick: {
+      openLink: {
+        url: link.url || "",
+      },
+    },
+  }));
 
-  // const recentMessages = threadMessages.map((m) => ({
-  //   llmMessage: m.llmMessage as any,
-  // }));
+  const cardSections: any[] = [
+    {
+      widgets: [
+        {
+          textParagraph: {
+            text: citation.content,
+          },
+        },
+      ],
+    },
+  ];
 
-  // const answer = await baseAnswerer(
-  //   scrape,
-  //   thread,
-  //   messageText,
-  //   recentMessages,
-  //   {
-  //     prompt,
-  //     actions,
-  //   }
-  // );
+  if (citedLinks.length > 0) {
+    cardSections.push({
+      header: "Sources",
+      widgets: [
+        {
+          buttonList: {
+            buttons: sourceButtons,
+          },
+        },
+      ],
+    });
+  }
 
-  // await consumeCredits(scrape.userId, "messages", answer!.creditsUsed);
-  // const newAnswerMessage = await prisma.message.create({
-  //   data: {
-  //     threadId: thread.id,
-  //     scrapeId: scrape.id,
-  //     llmMessage: { role: "assistant", content: answer!.content },
-  //     links: answer!.sources,
-  //     ownerUserId: scrape.userId,
-  //     channel: "google_chat",
-  //     apiActionCalls: answer!.actionCalls as any,
-  //     llmModel: scrape.llmModel,
-  //     creditsUsed: answer!.creditsUsed,
-  //     questionId: questionMessage.id,
-  //   },
-  // });
-  // await updateLastMessageAt(thread.id);
-
-  // if (scrape.analyseMessage) {
-  //   fillMessageAnalysis(
-  //     newAnswerMessage.id,
-  //     questionMessage.id,
-  //     messageText,
-  //     answer!.content,
-  //     answer!.sources,
-  //     answer!.context,
-  //     {
-  //       categories: scrape.messageCategories,
-  //     }
-  //   );
-  // }
-
-  // if (!answer) {
-  //   res.status(400).json({
-  //     actionResponse: {
-  //       type: "NEW_MESSAGE",
-  //     },
-  //     text: "Failed to answer",
-  //   });
-  //   return;
-  // }
-
-  // const citation = extractCitations(answer.content, answer.sources, {
-  //   cleanCitations: true,
-  //   addSourcesToMessage: true,
-  // });
-
-  // res.json({
-  //   actionResponse: {
-  //     type: "NEW_MESSAGE",
-  //   },
-  //   text: citation.content,
-  // });
+  res.json({
+    hostAppDataAction: {
+      chatDataAction: {
+        createMessageAction: {
+          message: {
+            cardsV2: [
+              {
+                cardId: "answer-card",
+                card: {
+                  sections: cardSections,
+                },
+              },
+            ],
+          },
+        },
+      },
+    },
+  });
 });
 
 app.post("/ticket/:scrapeId", authenticate, async (req, res) => {

@@ -11,14 +11,12 @@ import {
   TbArrowUp,
   TbHelp,
   TbMessage,
-  TbRefresh,
   TbRobotFace,
   TbPointer,
   TbThumbUp,
   TbThumbDown,
   TbShare2,
   TbX,
-  TbArrowRight,
   TbTrash,
   TbFileDescription,
   TbChevronDown,
@@ -215,7 +213,7 @@ function ChatInput() {
         <div
           className={cn(
             "bg-base-200 p-2 px-4 border-t border-base-300",
-            sidePanel && "px-2"
+            sidePanel && "px-2 border-b border-base-300"
           )}
         >
           <ChatInputBadge tooltip={"Asking about this page"}>
@@ -228,7 +226,7 @@ function ChatInput() {
         className={cn(
           "flex gap-2 border-t border-base-300 justify-between p-3 px-4",
           "transition-all",
-          sidePanel && "m-2 border rounded-2xl p-2 pl-4"
+          sidePanel && "m-2 border rounded-box p-2 pl-4"
         )}
       >
         <div className="flex-1 flex items-center">

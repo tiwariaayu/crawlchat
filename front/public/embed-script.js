@@ -167,10 +167,7 @@ class CrawlChatEmbed {
     if (data.type === "embed-ready") {
       this.widgetConfig = data.widgetConfig;
       await this.showAskAIButton();
-      if (
-        window.location.href.includes("crawlchat.app") ||
-        window.location.href.includes("localhost")
-      ) {
+      if (this.widgetConfig.currentPageContext) {
         this.watchNavigation();
       }
     }

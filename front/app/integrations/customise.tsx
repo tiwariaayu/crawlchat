@@ -14,13 +14,7 @@ import { authoriseScrapeUser, getSessionScrapeId } from "../scrapes/util";
 import { useEffect, useMemo, useState } from "react";
 import { ChatBoxProvider } from "~/widget/use-chat-box";
 import ChatBox, { ChatboxContainer } from "~/widget/chat-box";
-import {
-  TbHome,
-  TbMessage,
-  TbPlus,
-  TbTrash,
-  TbX,
-} from "react-icons/tb";
+import { TbHome, TbMessage, TbPlus, TbTrash, TbX } from "react-icons/tb";
 import cn from "@meltdownjs/cn";
 import { makeMeta } from "~/meta";
 
@@ -85,6 +79,7 @@ export async function action({ request }: Route.ActionArgs) {
     applyColorsToChatbox: null,
     title: null,
     hideBranding: null,
+    currentPageContext: null,
   };
 
   if (size) {
@@ -142,6 +137,9 @@ export async function action({ request }: Route.ActionArgs) {
     }
     update.hideBranding = formData.get("hideBranding") === "on";
   }
+  if (formData.has("from-current-page-context")) {
+    update.currentPageContext = formData.get("currentPageContext") === "on";
+  }
 
   await prisma.scrape.update({
     where: {
@@ -181,6 +179,7 @@ const DEFAULT_MESSAGE: Message = {
   creditsUsed: 0,
   attachments: [],
   fingerprint: "test",
+  url: null,
 };
 
 function AskAIButton({
@@ -240,11 +239,16 @@ function ColorPicker({
 
 export default function ScrapeCustomise({ loaderData }: Route.ComponentProps) {
   const widgetConfigFetcher = useFetcher();
+  const sizeFetcher = useFetcher();
   const questionsFetcher = useFetcher();
   const welcomeMessageFetcher = useFetcher();
   const mcpSetupFetcher = useFetcher();
   const textInputPlaceholderFetcher = useFetcher();
   const hideBrandingFetcher = useFetcher();
+  const currentPageContextFetcher = useFetcher();
+  const [size, setSize] = useState<WidgetSize>(
+    loaderData.scrape?.widgetConfig?.size ?? "small"
+  );
   const [questions, setQuestions] = useState<WidgetQuestion[]>(
     loaderData.scrape?.widgetConfig?.questions ?? []
   );
@@ -283,6 +287,9 @@ export default function ScrapeCustomise({ loaderData }: Route.ComponentProps) {
   const [hideBranding, setHideBranding] = useState(
     loaderData.scrape?.widgetConfig?.hideBranding ?? false
   );
+  const [currentPageContext, setCurrentPageContext] = useState(
+    loaderData.scrape?.widgetConfig?.currentPageContext ?? false
+  );
   const [previewType, setPreviewType] = useState<"home" | "chat">("home");
 
   const canHideBranding = useMemo(() => {
@@ -293,11 +300,16 @@ export default function ScrapeCustomise({ loaderData }: Route.ComponentProps) {
     setQuestions(loaderData.scrape?.widgetConfig?.questions ?? []);
   }, [loaderData.scrape?.widgetConfig?.questions]);
 
+  useEffect(() => {
+    setSize(loaderData.scrape?.widgetConfig?.size ?? "small");
+  }, [loaderData.scrape?.widgetConfig?.size]);
+
   const liveScrape = useMemo(() => {
     return {
       ...loaderData.scrape!,
       widgetConfig: {
         ...loaderData.scrape?.widgetConfig,
+        size,
         primaryColor,
         buttonTextColor,
         buttonText,
@@ -311,10 +323,12 @@ export default function ScrapeCustomise({ loaderData }: Route.ComponentProps) {
         applyColorsToChatbox,
         title,
         hideBranding,
+        currentPageContext,
       },
     };
   }, [
     loaderData.scrape,
+    size,
     primaryColor,
     buttonTextColor,
     buttonText,
@@ -328,6 +342,7 @@ export default function ScrapeCustomise({ loaderData }: Route.ComponentProps) {
     applyColorsToChatbox,
     title,
     hideBranding,
+    currentPageContext,
   ]);
 
   function addQuestion() {
@@ -428,6 +443,23 @@ export default function ScrapeCustomise({ loaderData }: Route.ComponentProps) {
         </SettingsSection>
 
         <SettingsSection
+          id="widget-size"
+          title="Widget size"
+          description="Set the size of the widget to be when it's embedded on your website"
+          fetcher={sizeFetcher}
+        >
+          <select
+            className="select w-full max-w-xs"
+            name="size"
+            value={size}
+            onChange={(e) => setSize(e.target.value as WidgetSize)}
+          >
+            <option value="small">Small</option>
+            <option value="large">Large</option>
+          </select>
+        </SettingsSection>
+
+        <SettingsSection
           id="welcome-message"
           title="Welcome message"
           description="Add your custom welcome message to the widget. Supports markdown."
@@ -513,6 +545,29 @@ export default function ScrapeCustomise({ loaderData }: Route.ComponentProps) {
               onChange={(e) => setShowMcpSetup(e.target.checked)}
             />
             Show it
+          </label>
+        </SettingsSection>
+
+        <SettingsSection
+          id="current-page-context"
+          title="Current page context"
+          description="Include the current page in the context of the conversation"
+          fetcher={currentPageContextFetcher}
+        >
+          <input
+            type="hidden"
+            name="from-current-page-context"
+            value={"true"}
+          />
+          <label className="label">
+            <input
+              type="checkbox"
+              className="toggle"
+              name="currentPageContext"
+              checked={currentPageContext}
+              onChange={(e) => setCurrentPageContext(e.target.checked)}
+            />
+            Enable
           </label>
         </SettingsSection>
 

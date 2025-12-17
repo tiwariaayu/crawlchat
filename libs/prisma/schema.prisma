@@ -76,6 +76,7 @@ type WidgetConfig {
   applyColorsToChatbox  Boolean?
   title                 String?
   hideBranding          Boolean?
+  currentPageContext    Boolean?
 }
 
 type ScrapeAnalyticsCategoryMessageId {

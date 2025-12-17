@@ -27,6 +27,7 @@ import {
   TbCheck,
   TbMenu2,
   TbChartBar,
+  TbFile,
 } from "react-icons/tb";
 import { MarkdownProse } from "~/widget/markdown-prose";
 import { track } from "~/track";
@@ -87,9 +88,8 @@ function ChatInputBadge({
     <div className="tooltip tooltip-right" data-tip={tooltip}>
       <div
         className={cn(
-          "bg-base-100 p-1 px-2 border border-base-300 text-xs",
           "w-fit rounded-box text-base-content/70 hover:text-base-content",
-          "transition-all"
+          "transition-all text-sm flex items-center gap-1"
         )}
       >
         {children}
@@ -212,15 +212,21 @@ function ChatInput() {
   return (
     <div>
       {currentPage && (
-        <div className="bg-base-200 p-1 border-t border-base-300">
+        <div
+          className={cn(
+            "bg-base-200 p-2 px-4 border-t border-base-300",
+            sidePanel && "px-2"
+          )}
+        >
           <ChatInputBadge tooltip={"Asking about this page"}>
+            <TbFile />
             {currentPage.title}
           </ChatInputBadge>
         </div>
       )}
       <div
         className={cn(
-          "flex gap-2 border-t border-base-300 justify-between p-4",
+          "flex gap-2 border-t border-base-300 justify-between p-3 px-4",
           "transition-all",
           sidePanel && "m-2 border rounded-2xl p-2 pl-4"
         )}

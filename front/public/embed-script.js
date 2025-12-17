@@ -167,7 +167,6 @@ class CrawlChatEmbed {
     if (data.type === "embed-ready") {
       this.widgetConfig = data.widgetConfig;
       await this.showAskAIButton();
-      console.log("should watch navigation", window.location.href);
       if (
         window.location.href.includes("crawlchat.app") ||
         window.location.href.includes("localhost")
@@ -584,7 +583,6 @@ class CrawlChatEmbed {
   }
 
   watchNavigation() {
-    console.log("watching navigation");
     const notify = async (url) => {
       const iframe = document.getElementById(this.iframeId);
       await new Promise((resolve) => setTimeout(resolve, 100));

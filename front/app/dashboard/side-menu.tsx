@@ -469,7 +469,7 @@ export function SideMenu({
                 badge={getMenuBadge(link.label)}
               />
             ) : (
-              <WithSubMenuItems item={link} pathname={pathname} />
+              <WithSubMenuItems key={index} item={link} pathname={pathname} />
             )
           )}
           {/* <div

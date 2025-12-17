@@ -3,6 +3,8 @@ import type { MessageChannel } from "libs/prisma";
 import { useMemo } from "react";
 import {
   TbBrandDiscord,
+  TbBrandGoogle,
+  TbBrandGoogleFilled,
   TbBrandSlack,
   TbCode,
   TbMessage,
@@ -23,6 +25,7 @@ export function ChannelBadge({
     if (channel === "mcp") return "MCP";
     if (channel === "api") return "API";
     if (channel === "widget") return "Chatbot";
+    if (channel === "google_chat") return "Google Chat";
     return channel;
   }, [channel]);
 
@@ -36,7 +39,8 @@ export function ChannelBadge({
           channel === "slack" && "badge-error",
           channel === "mcp" && "badge-success",
           channel === "api" && "badge-neutral",
-          channel === "widget" && "badge-primary"
+          channel === "widget" && "badge-primary",
+          channel === "google_chat" && "badge-info",
         )}
       >
         {!channel && <TbMessage />}
@@ -45,6 +49,7 @@ export function ChannelBadge({
         {channel === "mcp" && <TbRobotFace />}
         {channel === "api" && <TbCode />}
         {channel === "widget" && <TbMessage />}
+        {channel === "google_chat" && <TbBrandGoogleFilled />}
 
         {!onlyIcon && channelName}
       </span>

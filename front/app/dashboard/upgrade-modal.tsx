@@ -3,21 +3,7 @@ import { useEffect, useState } from "react";
 import { useFetcher } from "react-router";
 import { PricingBoxes, PricingSwitch } from "~/landing/page";
 
-export function UpgradeModal({
-  starterPlan,
-  proPlan,
-  starterYearlyPlan,
-  proYearlyPlan,
-  hobbyPlan,
-  hobbyYearlyPlan,
-}: {
-  starterPlan: Plan;
-  proPlan: Plan;
-  starterYearlyPlan: Plan;
-  proYearlyPlan: Plan;
-  hobbyPlan: Plan;
-  hobbyYearlyPlan: Plan;
-}) {
+export function UpgradeModal({ plans }: { plans: Plan[] }) {
   const paymentFetcher = useFetcher();
   const [yearly, setYearly] = useState(false);
 
@@ -35,15 +21,7 @@ export function UpgradeModal({
       >
         <PricingSwitch yearly={yearly} setYearly={setYearly} />
         <div className="flex flex-col md:flex-row gap-4">
-          <PricingBoxes
-            starterPlan={starterPlan}
-            proPlan={proPlan}
-            starterYearlyPlan={starterYearlyPlan}
-            proYearlyPlan={proYearlyPlan}
-            yearly={yearly}
-            hobbyPlan={hobbyPlan}
-            hobbyYearlyPlan={hobbyYearlyPlan}
-          />
+          <PricingBoxes plans={plans} yearly={yearly} />
         </div>
       </div>
       <form method="dialog" className="modal-backdrop">

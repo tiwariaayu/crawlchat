@@ -58,14 +58,8 @@ import { prisma } from "libs/prisma";
 import type { User } from "libs/prisma";
 import { track } from "~/track";
 import {
-  PLAN_FREE,
-  PLAN_PRO,
-  PLAN_STARTER,
-  PLAN_HOBBY,
-  PLAN_HOBBY_YEARLY,
   type Plan,
-  PLAN_STARTER_YEARLY,
-  PLAN_PRO_YEARLY,
+  allActivePlans,
 } from "libs/user-plan";
 import { Link, useLoaderData } from "react-router";
 import { cache as changelogCache } from "~/changelog/fetch";
@@ -154,14 +148,8 @@ export async function loader() {
     messagesThisWeek: cache.messagesThisWeek,
     messagesDay: cache.messagesDay,
     messagesMonth: cache.messagesMonth,
-    freePlan: PLAN_FREE,
-    starterPlan: PLAN_STARTER,
-    proPlan: PLAN_PRO,
-    hobbyPlan: PLAN_HOBBY,
-    hobbyYearlyPlan: PLAN_HOBBY_YEARLY,
+    plans: allActivePlans,
     focusChangelog,
-    starterYearlyPlan: PLAN_STARTER_YEARLY,
-    proYearlyPlan: PLAN_PRO_YEARLY,
   };
 }
 
@@ -870,239 +858,44 @@ function CreditsPopover() {
   );
 }
 
-export function PricingBoxes({
-  hobbyPlan,
-  hobbyYearlyPlan,
-  starterPlan,
-  proPlan,
-  starterYearlyPlan,
-  proYearlyPlan,
-  yearly,
-  onClick,
-}: {
-  hobbyPlan: Plan;
-  hobbyYearlyPlan: Plan;
-  starterPlan: Plan;
-  proPlan: Plan;
-  starterYearlyPlan: Plan;
-  proYearlyPlan: Plan;
-  yearly?: boolean;
-  onClick?: (planId: string) => void;
-}) {
-  if (yearly) {
-    return (
-      <>
-        <PricingBox
-          period="year"
-          title="Hobby"
-          description="Perfect for personal projects"
-          price={`$${hobbyYearlyPlan.price}`}
-          items={[
-            { text: `${hobbyYearlyPlan.limits.pages} pages` },
-            {
-              text: (
-                <div>
-                  {hobbyYearlyPlan.credits.messages / 12} message credits/month
-                  <CreditsPopover />
-                </div>
-              ),
-            },
-            { text: `${hobbyYearlyPlan.limits.scrapes} collections` },
-            { text: `${hobbyYearlyPlan.limits.teamMembers} team members` },
-            {
-              text: (
-                <span>
-                  <a href="/ai-models" className="link link-primary link-hover">
-                    Smart AI
-                  </a>{" "}
-                  models
-                </span>
-              ),
-            },
-          ]}
-          href={
-            "https://checkout.dodopayments.com/buy/pdt_boJZHUL9XLprkefonKtuT?quantity=1&redirect_url=https://crawlchat.app%2Fprofile%23billing"
-          }
-          onClick={onClick ? () => onClick?.(hobbyYearlyPlan.id) : undefined}
-          payLabel="Start free trial"
-        />
-        <PricingBox
-          period="year"
-          title="Starter"
-          description="Start your journey with CrawlChat"
-          price={`$${starterYearlyPlan.price}`}
-          items={[
-            { text: `${starterYearlyPlan.limits.pages} pages` },
-            {
-              text: (
-                <div>
-                  {starterYearlyPlan.credits.messages / 12} message
-                  credits/month
-                  <CreditsPopover />
-                </div>
-              ),
-            },
-            { text: `${starterYearlyPlan.limits.scrapes} collections` },
-            { text: `${starterYearlyPlan.limits.teamMembers} team members` },
-            {
-              text: (
-                <span>
-                  <a href="/ai-models" className="link link-primary link-hover">
-                    Smart AI
-                  </a>{" "}
-                  models
-                </span>
-              ),
-            },
-          ]}
-          href={
-            "https://checkout.dodopayments.com/buy/pdt_uAHyWAsgys9afUnn9NjAM?quantity=1&redirect_url=https://crawlchat.app%2Fprofile%23billing"
-          }
-          onClick={onClick ? () => onClick?.(starterYearlyPlan.id) : undefined}
-          payLabel="Start free trial"
-        />
-        <PricingBox
-          period="year"
-          title="Pro"
-          description="For power users and teams"
-          popular
-          price={`$${proYearlyPlan.price}`}
-          items={[
-            { text: `${proYearlyPlan.limits.pages} pages` },
-            {
-              text: (
-                <div>
-                  {proYearlyPlan.credits.messages / 12} message credits/month
-                  <CreditsPopover />
-                </div>
-              ),
-            },
-            { text: `${proYearlyPlan.limits.scrapes} collections` },
-            { text: `${proYearlyPlan.limits.teamMembers} team members` },
-            {
-              text: (
-                <span>
-                  <a href="/ai-models" className="link link-primary link-hover">
-                    Best AI
-                  </a>{" "}
-                  models
-                </span>
-              ),
-            },
-          ]}
-          href={
-            "https://checkout.dodopayments.com/buy/pdt_5dCrGhvBslGdT2fIxQjuy?quantity=1&redirect_url=https://crawlchat.app%2Fprofile%23billing"
-          }
-          onClick={onClick ? () => onClick?.(proYearlyPlan.id) : undefined}
-          payLabel="Start free trial"
-        />
-      </>
-    );
-  }
+function PlanBox({ plan }: { plan: Plan }) {
   return (
-    <>
-      <PricingBox
-        title="Hobby"
-        description="Perfect for personal projects"
-        price={`$${hobbyPlan.price}`}
-        items={[
-          { text: `${hobbyPlan.limits.pages} pages` },
-          {
-            text: (
-              <div>
-                {hobbyPlan.credits.messages} message credits/month
-                <CreditsPopover />
-              </div>
-            ),
-          },
-          { text: `${hobbyPlan.limits.scrapes} collections` },
-          { text: `${hobbyPlan.limits.teamMembers} team members` },
-          {
-            text: (
-              <span>
-                <a href="/ai-models" className="link link-primary link-hover">
-                  Smart AI
-                </a>{" "}
-                models
-              </span>
-            ),
-          },
-        ]}
-        href={
-          "https://checkout.dodopayments.com/buy/pdt_IcrpqSx48qoCenz4lnLi1?quantity=1&redirect_url=https://crawlchat.app%2Fprofile%23billing"
-        }
-        onClick={onClick ? () => onClick?.(hobbyPlan.id) : undefined}
-        payLabel="Start free trial"
-      />
-      <PricingBox
-        title="Starter"
-        description="Start your journey with CrawlChat"
-        price={`$${starterPlan.price}`}
-        items={[
-          { text: `${starterPlan.limits.pages} pages` },
-          {
-            text: (
-              <div>
-                {starterPlan.credits.messages} message credits/month
-                <CreditsPopover />
-              </div>
-            ),
-          },
-          { text: `${starterPlan.limits.scrapes} collections` },
-          { text: `${starterPlan.limits.teamMembers} team members` },
-          {
-            text: (
-              <span>
-                <a href="/ai-models" className="link link-primary link-hover">
-                  Smart AI
-                </a>{" "}
-                models
-              </span>
-            ),
-          },
-        ]}
-        href={
-          "https://checkout.dodopayments.com/buy/pdt_vgCVfRAaCT99LM1Dfk5qF?quantity=1&redirect_url=https://crawlchat.app%2Fprofile%23billing"
-        }
-        onClick={onClick ? () => onClick?.(starterPlan.id) : undefined}
-        payLabel="Start free trial"
-      />
-      <PricingBox
-        title="Pro"
-        description="For power users and teams"
-        popular
-        price={`$${proPlan.price}`}
-        items={[
-          { text: `${proPlan.limits.pages} pages` },
-          {
-            text: (
-              <div>
-                {proPlan.credits.messages} message credits/month
-                <CreditsPopover />
-              </div>
-            ),
-          },
-          { text: `${proPlan.limits.scrapes} collections` },
-          { text: `${proPlan.limits.teamMembers} team members` },
-          {
-            text: (
-              <span>
-                <a href="/ai-models" className="link link-primary link-hover">
-                  Best AI
-                </a>{" "}
-                models
-              </span>
-            ),
-          },
-        ]}
-        href={
-          "https://checkout.dodopayments.com/buy/pdt_P68hLo9a0At8cgn4WbzBe?quantity=1&redirect_url=https://crawlchat.app%2Fprofile%23billing"
-        }
-        onClick={onClick ? () => onClick?.(proPlan.id) : undefined}
-        payLabel="Start free trial"
-      />
-    </>
+    <PricingBox
+      period={plan.resetType === "monthly" ? "month" : "year"}
+      title={plan.name}
+      description={plan.description ?? "Get started with CrawlChat"}
+      price={`$${plan.price}`}
+      items={[
+        { text: `${plan.limits.pages} pages` },
+        {
+          text: (
+            <div>
+              {plan.credits.messages} message credits/
+              {plan.resetType === "monthly" ? "month" : "year"}
+              <CreditsPopover />
+            </div>
+          ),
+        },
+        { text: `${plan.limits.scrapes} collections` },
+        { text: `${plan.limits.teamMembers} team members` },
+      ]}
+      href={plan.checkoutLink}
+      payLabel="Start free trial"
+    />
   );
+}
+
+export function PricingBoxes({
+  plans,
+  yearly,
+}: {
+  plans: Plan[];
+  yearly: boolean;
+}) {
+  const resetType = yearly ? "yearly" : "monthly";
+  return plans
+    .filter((plan) => plan.resetType === resetType)
+    .map((plan) => <PlanBox key={plan.id} plan={plan} />);
 }
 
 export function PricingSwitch({
@@ -1150,14 +943,7 @@ export function PricingSwitch({
 }
 
 export function Pricing({ noMarginTop }: { noMarginTop?: boolean }) {
-  const {
-    hobbyPlan,
-    hobbyYearlyPlan,
-    starterPlan,
-    proPlan,
-    starterYearlyPlan,
-    proYearlyPlan,
-  } = useLoaderData<typeof loader>();
+  const { plans } = useLoaderData<typeof loader>();
   const [isYearly, setIsYearly] = useState(false);
 
   return (
@@ -1174,15 +960,7 @@ export function Pricing({ noMarginTop }: { noMarginTop?: boolean }) {
       <PricingSwitch yearly={isYearly} setYearly={setIsYearly} />
 
       <div className="flex flex-col md:flex-row md:gap-6 gap-10 mt-20">
-        <PricingBoxes
-          hobbyPlan={hobbyPlan}
-          hobbyYearlyPlan={hobbyYearlyPlan}
-          starterPlan={starterPlan}
-          proPlan={proPlan}
-          starterYearlyPlan={starterYearlyPlan}
-          proYearlyPlan={proYearlyPlan}
-          yearly={isYearly}
-        />
+        <PricingBoxes plans={plans} yearly={isYearly} />
       </div>
     </div>
   );

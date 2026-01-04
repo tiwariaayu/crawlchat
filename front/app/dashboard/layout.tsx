@@ -3,17 +3,8 @@ import { Outlet, useFetcher } from "react-router";
 import { AppContext, useApp } from "./context";
 import { getAuthUser } from "~/auth/middleware";
 import { SideMenu } from "./side-menu";
-import { useEffect, useMemo } from "react";
-import {
-  getPagesCount,
-  PLAN_FREE,
-  PLAN_HOBBY,
-  PLAN_HOBBY_YEARLY,
-  PLAN_PRO,
-  PLAN_PRO_YEARLY,
-  PLAN_STARTER,
-  PLAN_STARTER_YEARLY,
-} from "libs/user-plan";
+import { useEffect } from "react";
+import { getPagesCount, PLAN_FREE, allActivePlans } from "libs/user-plan";
 import { planMap } from "libs/user-plan";
 import { prisma } from "libs/prisma";
 import { getSession } from "~/session";
@@ -95,12 +86,7 @@ export async function loader({ request }: Route.LoaderArgs) {
     openTickets,
     scrape,
     dataGapMessages,
-    starterPlan: PLAN_STARTER,
-    proPlan: PLAN_PRO,
-    hobbyPlan: PLAN_HOBBY,
-    starterYearlyPlan: PLAN_STARTER_YEARLY,
-    proYearlyPlan: PLAN_PRO_YEARLY,
-    hobbyYearlyPlan: PLAN_HOBBY_YEARLY,
+    plans: allActivePlans,
     usedPages,
     scrapeUsers,
     token,
@@ -180,14 +166,7 @@ export default function DashboardPage({ loaderData }: Route.ComponentProps) {
         </div>
       </div>
       <Toaster position="bottom-right" />
-      <UpgradeModal
-        starterPlan={loaderData.starterPlan}
-        proPlan={loaderData.proPlan}
-        starterYearlyPlan={loaderData.starterYearlyPlan}
-        proYearlyPlan={loaderData.proYearlyPlan}
-        hobbyPlan={loaderData.hobbyPlan}
-        hobbyYearlyPlan={loaderData.hobbyYearlyPlan}
-      />
+      <UpgradeModal plans={loaderData.plans} />
       {/* <ChatModal token={loaderData.token} /> */}
     </AppContext.Provider>
   );

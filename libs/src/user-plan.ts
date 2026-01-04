@@ -20,6 +20,8 @@ export type Plan = {
   credits: PlanCredits;
   resetType: PlanResetType;
   limits: PlanLimits;
+  description?: string;
+  checkoutLink?: string;
 };
 
 export const PLAN_FREE: Plan = {
@@ -148,6 +150,132 @@ export const PLAN_HOBBY_YEARLY: Plan = {
   category: "BASE",
 };
 
+export const PLAN_LAUNCH: Plan = {
+  id: "launch",
+  name: "Launch",
+  price: 29,
+  type: "SUBSCRIPTION",
+  credits: {
+    scrapes: 0,
+    messages: 800,
+  },
+  limits: {
+    scrapes: 1,
+    teamMembers: 1,
+    pages: 2000,
+  },
+  resetType: "monthly",
+  category: "BASE",
+  description: "Get started with CrawlChat",
+  checkoutLink:
+    "https://checkout.dodopayments.com/buy/pdt_0NVYGTDXnMxIdEJ8TCPQR?quantity=1&redirect_url=https://crawlchat.app%2Fprofile%23billing",
+};
+
+export const PLAN_LAUNCH_YEARLY: Plan = {
+  id: "launch-yearly",
+  name: "Launch",
+  price: 290,
+  type: "SUBSCRIPTION",
+  credits: {
+    scrapes: 0,
+    messages: 800 * 12,
+  },
+  limits: {
+    scrapes: 1,
+    teamMembers: 1,
+    pages: 2000,
+  },
+  resetType: "yearly",
+  category: "BASE",
+  description: "Get started with CrawlChat",
+  checkoutLink:
+    "https://checkout.dodopayments.com/buy/pdt_0NVYGgRC1GaW0ogaIngH7?quantity=1&redirect_url=https://crawlchat.app%2Fprofile%23billing",
+};
+
+export const PLAN_GROW: Plan = {
+  id: "grow",
+  name: "Grow",
+  price: 69,
+  type: "SUBSCRIPTION",
+  credits: {
+    scrapes: 0,
+    messages: 2000,
+  },
+  limits: {
+    scrapes: 2,
+    teamMembers: 2,
+    pages: 5000,
+  },
+  resetType: "monthly",
+  category: "BASE",
+  description: "For growing teams and projects",
+  checkoutLink:
+    "https://checkout.dodopayments.com/buy/pdt_0NVYGpvQOVQSs6XD7nWFg?quantity=1&redirect_url=https://crawlchat.app%2Fprofile%23billing",
+};
+
+export const PLAN_GROW_YEARLY: Plan = {
+  id: "grow-yearly",
+  name: "Grow",
+  price: 690,
+  type: "SUBSCRIPTION",
+  credits: {
+    scrapes: 0,
+    messages: 2000 * 12,
+  },
+  limits: {
+    scrapes: 2,
+    teamMembers: 2,
+    pages: 5000,
+  },
+  resetType: "yearly",
+  category: "BASE",
+  description: "For growing teams and projects",
+  checkoutLink:
+    "https://checkout.dodopayments.com/buy/pdt_0NVYGypdaV3R7ZKvSkJvd?quantity=1&redirect_url=https://crawlchat.app%2Fprofile%23billing",
+};
+
+export const PLAN_ACCELERATE: Plan = {
+  id: "accelerate",
+  name: "Accelerate",
+  price: 229,
+  type: "SUBSCRIPTION",
+  credits: {
+    scrapes: 0,
+    messages: 7000,
+  },
+  limits: {
+    scrapes: 3,
+    teamMembers: 5,
+    pages: 14000,
+  },
+  resetType: "monthly",
+  category: "BASE",
+  description: "For teams that need more power",
+  checkoutLink:
+    "https://checkout.dodopayments.com/buy/pdt_0NVYHBbhSr7JUmQtMcTiV?quantity=1&redirect_url=https://crawlchat.app%2Fprofile%23billing",
+};
+
+export const PLAN_ACCELERATE_YEARLY: Plan = {
+  id: "accelerate-yearly",
+  name: "Accelerate",
+  price: 2290,
+  type: "SUBSCRIPTION",
+  credits: {
+    scrapes: 0,
+    messages: 7000 * 12,
+  },
+  limits: {
+    scrapes: 3,
+    teamMembers: 5,
+    pages: 14000,
+  },
+  resetType: "yearly",
+  category: "BASE",
+  description: "For teams that need more power",
+  checkoutLink:
+    "https://checkout.dodopayments.com/buy/pdt_0NVYHOktAtrFNDT4qYVhb?quantity=1&redirect_url=https://crawlchat.app%2Fprofile%23billing",
+};
+
 export const planMap: Record<string, Plan> = {
   [PLAN_FREE.id]: PLAN_FREE,
   [PLAN_STARTER.id]: PLAN_STARTER,
@@ -156,7 +284,23 @@ export const planMap: Record<string, Plan> = {
   [PLAN_STARTER_YEARLY.id]: PLAN_STARTER_YEARLY,
   [PLAN_PRO_YEARLY.id]: PLAN_PRO_YEARLY,
   [PLAN_HOBBY_YEARLY.id]: PLAN_HOBBY_YEARLY,
+
+  [PLAN_LAUNCH.id]: PLAN_LAUNCH,
+  [PLAN_LAUNCH_YEARLY.id]: PLAN_LAUNCH_YEARLY,
+  [PLAN_GROW.id]: PLAN_GROW,
+  [PLAN_GROW_YEARLY.id]: PLAN_GROW_YEARLY,
+  [PLAN_ACCELERATE.id]: PLAN_ACCELERATE,
+  [PLAN_ACCELERATE_YEARLY.id]: PLAN_ACCELERATE_YEARLY,
 };
+
+export const allActivePlans: Plan[] = [
+  PLAN_LAUNCH,
+  PLAN_LAUNCH_YEARLY,
+  PLAN_GROW,
+  PLAN_GROW_YEARLY,
+  PLAN_ACCELERATE,
+  PLAN_ACCELERATE_YEARLY,
+];
 
 export const activatePlan = async (
   userId: string,

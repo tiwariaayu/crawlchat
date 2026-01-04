@@ -1,12 +1,4 @@
-import {
-  PLAN_FREE,
-  PLAN_HOBBY,
-  PLAN_HOBBY_YEARLY,
-  PLAN_PRO,
-  PLAN_PRO_YEARLY,
-  PLAN_STARTER,
-  PLAN_STARTER_YEARLY,
-} from "libs/user-plan";
+import { allActivePlans } from "libs/user-plan";
 import {
   Container,
   CustomTestimonials,
@@ -26,13 +18,7 @@ export function meta() {
 
 export async function loader() {
   return {
-    freePlan: PLAN_FREE,
-    starterPlan: PLAN_STARTER,
-    proPlan: PLAN_PRO,
-    hobbyPlan: PLAN_HOBBY,
-    starterYearlyPlan: PLAN_STARTER_YEARLY,
-    proYearlyPlan: PLAN_PRO_YEARLY,
-    hobbyYearlyPlan: PLAN_HOBBY_YEARLY,
+    plans: allActivePlans,
   };
 }
 

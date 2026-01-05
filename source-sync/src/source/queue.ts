@@ -20,6 +20,7 @@ export type GroupData = {
 
 export type ItemWebData = {
   scrapeItemId: string;
+  knowledgeGroupId: string;
   processId: string;
   justThis?: boolean;
 };

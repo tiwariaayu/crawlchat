@@ -33,11 +33,48 @@ async function checkCompletion(knowledgeGroupId: string) {
       data: { status: "done" },
     });
   }
+
+  const knowledgeGroup = await prisma.knowledgeGroup.findFirst({
+    where: { id: knowledgeGroupId },
+  });
+
+  if (!knowledgeGroup) {
+    return;
+  }
+
+  if (knowledgeGroup.status !== "processing") {
+    await prisma.scrapeItem.deleteMany({
+      where: {
+        knowledgeGroupId,
+        status: "pending",
+      },
+    });
+
+    await prisma.scrapeItem.updateMany({
+      where: {
+        knowledgeGroupId,
+        willUpdate: true,
+      },
+      data: {
+        willUpdate: false,
+      },
+    });
+
+    const jobs = await itemQueue.getJobs(["delayed", "waiting"]);
+    for (const job of jobs) {
+      if (job.data.knowledgeGroupId === knowledgeGroupId) {
+        console.log(`Removing job ${job.id} of type ${job.name}`);
+        job.remove().catch(console.error);
+      }
+    }
+  }
 }
 
 itemEvents.on("failed", async ({ jobId, failedReason }) => {
   const job = await itemQueue.getJob(jobId);
   if (job && job.failedReason && "scrapeItemId" in job.data) {
+    await checkCompletion(job.data.knowledgeGroupId);
+
     const item = await prisma.scrapeItem.findFirst({
       where: { id: job.data.scrapeItemId },
     });
@@ -54,23 +91,13 @@ itemEvents.on("failed", async ({ jobId, failedReason }) => {
         willUpdate: false,
       },
     });
-
-    await checkCompletion(item.knowledgeGroupId);
   }
 });
 
 itemEvents.on("completed", async ({ jobId }) => {
   const job = await itemQueue.getJob(jobId);
-  if (job && job.data && "scrapeItemId" in job.data) {
-    const item = await prisma.scrapeItem.findFirst({
-      where: { id: job.data.scrapeItemId },
-    });
-
-    if (!item) {
-      return;
-    }
-
-    await checkCompletion(item.knowledgeGroupId);
+  if (job) {
+    await checkCompletion(job.data.knowledgeGroupId);
   }
 });
 
@@ -98,6 +125,7 @@ const groupWorker = new Worker<GroupData>(
       await itemQueue.add("item", {
         scrapeItemId: itemId,
         processId: data.processId,
+        knowledgeGroupId: data.knowledgeGroupId,
       });
     }
   },
@@ -195,6 +223,7 @@ const itemWorker = new Worker<ItemWebData>(
         await itemQueue.add("item", {
           scrapeItemId: itemId,
           processId: data.processId,
+          knowledgeGroupId: data.knowledgeGroupId,
         });
       }
     }

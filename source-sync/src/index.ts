@@ -66,6 +66,7 @@ app.post(
       scrapeItemId: scrapeItem.id,
       processId: uuidv4(),
       justThis: true,
+      knowledgeGroupId: scrapeItem.knowledgeGroupId,
     });
 
     res.json({ message: "ok" });
@@ -81,23 +82,6 @@ app.post(
     });
 
     authoriseScrapeUser(req.user!.scrapeUsers, scrapeItem.scrapeId, res);
-
-    await prisma.scrapeItem.deleteMany({
-      where: {
-        knowledgeGroupId: req.body.knowledgeGroupId,
-        status: "pending",
-      },
-    });
-
-    await prisma.scrapeItem.updateMany({
-      where: {
-        knowledgeGroupId: req.body.knowledgeGroupId,
-        willUpdate: true,
-      },
-      data: {
-        willUpdate: false,
-      },
-    });
 
     res.json({ message: "ok" });
   }

@@ -5,8 +5,8 @@ export const redis = new Redis(process.env.REDIS_URL!, {
   maxRetriesPerRequest: null,
 });
 
-export const GROUP_QUEUE_NAME = "group";
-export const ITEM_QUEUE_NAME = "item";
+export const GROUP_QUEUE_NAME = process.env.GROUP_QUEUE_NAME!;
+export const ITEM_QUEUE_NAME = process.env.ITEM_QUEUE_NAME!;
 
 export type GroupData = {
   knowledgeGroupId: string;
@@ -32,16 +32,13 @@ export const groupQueue = new Queue<GroupData>(GROUP_QUEUE_NAME, {
   },
 });
 
-export const itemQueue = new Queue<ItemWebData>(
-  ITEM_QUEUE_NAME,
-  {
-    connection: redis,
-    defaultJobOptions: {
-      attempts: 3,
-      backoff: {
-        type: "exponential",
-        delay: 2000,
-      },
+export const itemQueue = new Queue<ItemWebData>(ITEM_QUEUE_NAME, {
+  connection: redis,
+  defaultJobOptions: {
+    attempts: 3,
+    backoff: {
+      type: "exponential",
+      delay: 2000,
     },
-  }
-);
+  },
+});

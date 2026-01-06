@@ -6,103 +6,71 @@ import {
   GROUP_QUEUE_NAME,
   GroupData,
   itemQueue,
-  ItemWebData,
+  ItemData,
   redis,
 } from "./source/queue";
-import { upsertItem } from "./source/upsert-item";
+import { upsertFailedItem, upsertItem } from "./source/upsert-item";
+import {
+  decrementPendingUrls,
+  getPendingUrls,
+  scheduleGroup,
+} from "./source/schedule";
 
 const itemEvents = new QueueEvents(ITEM_QUEUE_NAME, {
   connection: redis,
 });
 
-async function checkCompletion(knowledgeGroupId: string) {
-  const pendingItems = await prisma.scrapeItem.findMany({
-    where: {
-      knowledgeGroupId,
-      willUpdate: true,
-    },
-  });
+const groupEvents = new QueueEvents(GROUP_QUEUE_NAME, {
+  connection: redis,
+});
 
-  if (pendingItems.length === 0) {
+groupEvents.on("added", async ({ jobId }) => {
+  console.log(`Group job added: ${jobId}`);
+});
+
+groupEvents.on("failed", async ({ jobId, failedReason }) => {
+  console.log(`Group job failed: ${jobId}, failed reason: ${failedReason}`);
+});
+
+async function checkGroupCompletion(job: Job<ItemData>) {
+  await decrementPendingUrls(job.data.processId);
+  const pendingUrls = await getPendingUrls(job.data.processId);
+
+  if (pendingUrls === 0) {
     await prisma.knowledgeGroup.update({
-      where: { id: knowledgeGroupId },
+      where: { id: job.data.knowledgeGroupId },
       data: { status: "done" },
     });
-    console.log(`Knowledge group ${knowledgeGroupId} completed`);
-  }
-
-  const knowledgeGroup = await prisma.knowledgeGroup.findFirst({
-    where: { id: knowledgeGroupId },
-  });
-
-  if (!knowledgeGroup) {
-    return;
-  }
-
-  if (knowledgeGroup.status !== "processing") {
-    await prisma.scrapeItem.deleteMany({
-      where: {
-        knowledgeGroupId,
-        status: "pending",
-      },
-    });
-
-    await prisma.scrapeItem.updateMany({
-      where: {
-        knowledgeGroupId,
-        willUpdate: true,
-      },
-      data: {
-        willUpdate: false,
-      },
-    });
-
-    const jobs = await itemQueue.getJobs(["delayed", "waiting"]);
-    for (const job of jobs) {
-      if (job.data.knowledgeGroupId === knowledgeGroupId) {
-        console.log(`Removing job ${job.id} of type ${job.name}`);
-        job.remove().catch(console.error);
-      }
-    }
+    console.log(`Knowledge group ${job.data.knowledgeGroupId} completed`);
   }
 }
 
+itemEvents.on("added", async ({ jobId }) => {
+  console.log(`Item job added: ${jobId}`);
+});
+
 itemEvents.on("failed", async ({ jobId, failedReason }) => {
   const job = await itemQueue.getJob(jobId);
-  if (job && job.failedReason && "scrapeItemId" in job.data) {
-    const item = await prisma.scrapeItem.findFirst({
-      where: { id: job.data.scrapeItemId },
-    });
-
-    if (!item) {
-      return;
-    }
-
-    await prisma.scrapeItem.update({
-      where: { id: item.id },
-      data: {
-        status: "failed",
-        error: failedReason,
-        willUpdate: false,
-      },
-    });
-
-    await checkCompletion(job.data.knowledgeGroupId);
+  if (job) {
+    await upsertFailedItem(
+      job.data.knowledgeGroupId,
+      job.data.url,
+      failedReason
+    );
+    await checkGroupCompletion(job);
   }
 });
 
 itemEvents.on("completed", async ({ jobId }) => {
   const job = await itemQueue.getJob(jobId);
   if (job) {
-    await checkCompletion(job.data.knowledgeGroupId);
+    await checkGroupCompletion(job);
   }
 });
 
 const groupWorker = new Worker<GroupData>(
   GROUP_QUEUE_NAME,
   async (job: Job<GroupData>) => {
-    console.log(`Processing job ${job.id} of type ${job.name}`);
-
     const data = job.data;
 
     const knowledgeGroup = await prisma.knowledgeGroup.findFirstOrThrow({
@@ -116,33 +84,12 @@ const groupWorker = new Worker<GroupData>(
       },
     });
 
+    if (knowledgeGroup.updateProcessId !== data.processId) {
+      return;
+    }
+
     const source = makeSource(knowledgeGroup.type);
-    const { itemIds, pages } = await source.updateGroup(knowledgeGroup, data);
-
-    if (pages && pages.length > 0) {
-      for (const page of pages) {
-        await upsertItem(
-          knowledgeGroup.scrape,
-          knowledgeGroup,
-          knowledgeGroup.scrape.user.plan,
-          page.url,
-          page.title,
-          page.text
-        );
-      }
-    }
-
-    for (const itemId of itemIds) {
-      await itemQueue.add(
-        "item",
-        {
-          scrapeItemId: itemId,
-          processId: data.processId,
-          knowledgeGroupId: data.knowledgeGroupId,
-        },
-        { delay: source.getDelay() }
-      );
-    }
+    await source.updateGroup(data, knowledgeGroup);
   },
   {
     connection: redis,
@@ -150,61 +97,45 @@ const groupWorker = new Worker<GroupData>(
   }
 );
 
-const itemWorker = new Worker<ItemWebData>(
+const itemWorker = new Worker<ItemData>(
   ITEM_QUEUE_NAME,
-  async (job: Job<ItemWebData>) => {
-    console.log(`Processing job ${job.id} of type ${job.name}`);
-
+  async (job: Job<ItemData>) => {
     const data = job.data;
 
-    const item = await prisma.scrapeItem.findFirstOrThrow({
-      where: { id: data.scrapeItemId },
+    const knowledgeGroup = await prisma.knowledgeGroup.findFirstOrThrow({
+      where: { id: data.knowledgeGroupId },
       include: {
-        knowledgeGroup: {
+        scrape: {
           include: {
-            scrape: {
-              include: {
-                user: true,
-              },
-            },
+            user: true,
           },
         },
       },
     });
 
-    if (!item.knowledgeGroup) {
-      throw new Error("Item has no knowledge group");
-    }
-    if (!item.url) {
-      throw new Error("Item has no url");
+    if (knowledgeGroup.updateProcessId !== data.processId) {
+      return;
     }
 
-    const source = makeSource(item.knowledgeGroup.type);
-    const { itemIds, page } = await source.updateItem(item, data);
+    const source = makeSource(knowledgeGroup.type);
+    const { page } = await source.updateItem(data, knowledgeGroup);
+
+    if (job.data.cursor) {
+      await scheduleGroup(knowledgeGroup, job.data.processId, {
+        cursor: job.data.cursor,
+      });
+    }
 
     if (page) {
       await upsertItem(
-        item.knowledgeGroup.scrape,
-        item.knowledgeGroup,
-        item.knowledgeGroup.scrape.user.plan,
-        item.url,
+        knowledgeGroup.scrape,
+        knowledgeGroup,
+        knowledgeGroup.scrape.user.plan,
+        data.url,
+        data.sourcePageId,
         page.title,
         page.text
       );
-    }
-
-    if (itemIds && !data.justThis && itemIds.length > 0) {
-      for (const itemId of itemIds) {
-        await itemQueue.add(
-          "item",
-          {
-            scrapeItemId: itemId,
-            processId: data.processId,
-            knowledgeGroupId: data.knowledgeGroupId,
-          },
-          { delay: source.getDelay() }
-        );
-      }
     }
   },
   {
@@ -213,10 +144,10 @@ const itemWorker = new Worker<ItemWebData>(
   }
 );
 
-console.log("KB Worker started, waiting for jobs...");
+console.log("sync-worker started");
 
 process.on("SIGTERM", async () => {
-  console.log("SIGTERM received, closing worker...");
+  console.log("sync-worker shutting down");
   await groupWorker.close();
   await itemWorker.close();
   await itemEvents.close();

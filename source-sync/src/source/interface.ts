@@ -1,19 +1,13 @@
 import { Prisma } from "libs/dist/prisma";
-import { GroupData, ItemWebData } from "src/source/queue";
+import { GroupData, ItemData } from "src/source/queue";
 
 export type PageContent = {
   title: string;
   text: string;
 };
 
-export type ScrapeItemResponse = {
+export type UpdateItemResponse = {
   page?: PageContent;
-  itemIds?: string[];
-};
-
-export type GroupStartReponse = {
-  itemIds: string[];
-  pages?: Array<PageContent & { url: string }>;
 };
 
 export type GroupForSource = Prisma.KnowledgeGroupGetPayload<{
@@ -42,12 +36,11 @@ export type ItemForSource = Prisma.ScrapeItemGetPayload<{
 
 export interface Source {
   updateGroup: (
+    jobData: GroupData,
     group: GroupForSource,
-    jobData: GroupData
-  ) => Promise<GroupStartReponse>;
+  ) => Promise<void>;
   updateItem: (
-    item: ItemForSource,
-    jobData: ItemWebData
-  ) => Promise<ScrapeItemResponse>;
-  getDelay: () => number;
+    jobData: ItemData,
+    group: GroupForSource,
+  ) => Promise<UpdateItemResponse>;
 }

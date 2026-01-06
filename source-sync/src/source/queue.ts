@@ -16,13 +16,21 @@ export type GroupData = {
   scrapeId: string;
   userId: string;
   processId: string;
+  cursor?: string;
 };
 
-export type ItemWebData = {
-  scrapeItemId: string;
+export type ItemData = {
   knowledgeGroupId: string;
   processId: string;
+  url: string;
+  sourcePageId: string;
+
   justThis?: boolean;
+  textPage?: {
+    title: string;
+    text: string;
+  };
+  cursor?: string;
 };
 
 export const groupQueue = new Queue<GroupData>(GROUP_QUEUE_NAME, {
@@ -36,7 +44,7 @@ export const groupQueue = new Queue<GroupData>(GROUP_QUEUE_NAME, {
   },
 });
 
-export const itemQueue = new Queue<ItemWebData>(ITEM_QUEUE_NAME, {
+export const itemQueue = new Queue<ItemData>(ITEM_QUEUE_NAME, {
   connection: redis,
   defaultJobOptions: {
     attempts: 3,

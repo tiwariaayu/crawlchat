@@ -6,8 +6,8 @@ import type { Express, Request, Response } from "express";
 import { authenticate, AuthMode, authoriseScrapeUser } from "libs/express-auth";
 import "./worker";
 import { Prisma, prisma } from "libs/dist/prisma";
-import { groupQueue, itemQueue } from "./source/queue";
 import { v4 as uuidv4 } from "uuid";
+import { scheduleGroup, scheduleUrl } from "./source/schedule";
 
 declare global {
   namespace Express {
@@ -37,16 +37,25 @@ app.post(
   async function (req: Request, res: Response) {
     const knowledgeGroup = await prisma.knowledgeGroup.findFirstOrThrow({
       where: { id: req.body.knowledgeGroupId },
+      include: {
+        scrape: {
+          include: {
+            user: true,
+          },
+        },
+      },
     });
 
     authoriseScrapeUser(req.user!.scrapeUsers, knowledgeGroup.scrapeId, res);
 
-    groupQueue.add("group", {
-      scrapeId: knowledgeGroup.scrapeId,
-      knowledgeGroupId: knowledgeGroup.id,
-      userId: knowledgeGroup.userId,
-      processId: uuidv4(),
+    const processId = uuidv4();
+
+    await prisma.knowledgeGroup.update({
+      where: { id: knowledgeGroup.id },
+      data: { updateProcessId: processId },
     });
+
+    await scheduleGroup(knowledgeGroup, processId);
 
     res.json({ message: "ok" });
   }
@@ -58,16 +67,42 @@ app.post(
   async function (req: Request, res: Response) {
     const scrapeItem = await prisma.scrapeItem.findFirstOrThrow({
       where: { id: req.body.scrapeItemId },
+      include: {
+        knowledgeGroup: {
+          include: {
+            scrape: {
+              include: {
+                user: true,
+              },
+            },
+          },
+        },
+      },
     });
 
     authoriseScrapeUser(req.user!.scrapeUsers, scrapeItem.scrapeId, res);
 
-    itemQueue.add("item", {
-      scrapeItemId: scrapeItem.id,
-      processId: uuidv4(),
-      justThis: true,
-      knowledgeGroupId: scrapeItem.knowledgeGroupId,
+    if (!scrapeItem.url) {
+      return res.status(400).json({ message: "Item has no url" });
+    }
+
+    const processId = uuidv4();
+
+    await prisma.knowledgeGroup.update({
+      where: { id: scrapeItem.knowledgeGroupId },
+      data: { updateProcessId: processId },
     });
+
+    if (!scrapeItem.sourcePageId) {
+      return res.status(400).json({ message: "Item has no source page id" });
+    }
+
+    await scheduleUrl(
+      scrapeItem.knowledgeGroup!,
+      processId,
+      scrapeItem.url,
+      scrapeItem.sourcePageId
+    );
 
     res.json({ message: "ok" });
   }
@@ -82,6 +117,48 @@ app.post(
     });
 
     authoriseScrapeUser(req.user!.scrapeUsers, scrapeItem.scrapeId, res);
+
+    await prisma.knowledgeGroup.update({
+      where: { id: scrapeItem.knowledgeGroupId },
+      data: { updateProcessId: null },
+    });
+
+    res.json({ message: "ok" });
+  }
+);
+
+app.post(
+  "/text-page",
+  authenticate,
+  async function (req: Request, res: Response) {
+    const { title, text, knowledgeGroupId, pageId } = req.body;
+
+    const knowledgeGroup = await prisma.knowledgeGroup.findFirstOrThrow({
+      where: { id: knowledgeGroupId },
+      include: {
+        scrape: {
+          include: {
+            user: true,
+          },
+        },
+      },
+    });
+
+    authoriseScrapeUser(req.user!.scrapeUsers, knowledgeGroup.scrapeId, res);
+
+    const processId = "default";
+
+    await prisma.knowledgeGroup.update({
+      where: { id: knowledgeGroupId },
+      data: { status: "processing", updateProcessId: processId },
+    });
+
+    await scheduleUrl(knowledgeGroup, processId, pageId, pageId, {
+      textPage: {
+        title,
+        text,
+      },
+    });
 
     res.json({ message: "ok" });
   }

@@ -412,8 +412,7 @@ model ScrapeItem {
   embeddings              Embedding[]
   status                  ScrapeItemStatus?
   error                   String?
-  updatedByProcessId      String?
-  willUpdate              Boolean?
+  sourcePageId            String?
 
   createdAt               DateTime @default(now())
   updatedAt               DateTime @updatedAt
@@ -424,6 +423,7 @@ model ScrapeItem {
   correctetdMessages      Message[]
 
   @@unique([knowledgeGroupId, url])
+  @@unique([knowledgeGroupId, sourcePageId])
 }
 
 enum UserPlanProvider {
@@ -557,6 +557,7 @@ model KnowledgeGroup {
   linearApiKey                              String?
   linearSkipIssueStatuses                   String?
   linearSkipProjectStatuses                 String?
+  updateProcessId                           String?
 
   allowedGithubIssueStates                  String?
 

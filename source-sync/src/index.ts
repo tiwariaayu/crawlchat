@@ -101,7 +101,8 @@ app.post(
       scrapeItem.knowledgeGroup!,
       processId,
       scrapeItem.url,
-      scrapeItem.sourcePageId
+      scrapeItem.sourcePageId,
+      { justThis: true }
     );
 
     res.json({ message: "ok" });

@@ -3,7 +3,7 @@ import {
   getIssueMarkdown,
   getIssues,
   getIssueTimeline,
-} from "src/github-api";
+} from "../github-api";
 import { GroupForSource, UpdateItemResponse, Source } from "./interface";
 import { GroupData, ItemData } from "./queue";
 import { scheduleUrls } from "./schedule";

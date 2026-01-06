@@ -1,5 +1,5 @@
 import { Prisma } from "libs/dist/prisma";
-import { GroupData, ItemData } from "src/source/queue";
+import { GroupData, ItemData } from "./queue";
 
 export type PageContent = {
   title: string;
@@ -35,12 +35,9 @@ export type ItemForSource = Prisma.ScrapeItemGetPayload<{
 }>;
 
 export interface Source {
-  updateGroup: (
-    jobData: GroupData,
-    group: GroupForSource,
-  ) => Promise<void>;
+  updateGroup: (jobData: GroupData, group: GroupForSource) => Promise<void>;
   updateItem: (
     jobData: ItemData,
-    group: GroupForSource,
+    group: GroupForSource
   ) => Promise<UpdateItemResponse>;
 }

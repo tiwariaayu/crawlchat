@@ -1,4 +1,4 @@
-import { GroupData, ItemData } from "src/source/queue";
+import { GroupData, ItemData } from "./queue";
 import { scrapeWithLinks } from "../scrape/crawl";
 import { getMetaTitle } from "../scrape/parse";
 import { GroupForSource, Source, UpdateItemResponse } from "./interface";

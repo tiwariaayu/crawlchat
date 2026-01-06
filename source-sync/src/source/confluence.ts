@@ -2,7 +2,7 @@ import { GroupForSource, UpdateItemResponse, Source } from "./interface";
 import { GroupData, ItemData } from "./queue";
 import { ConfluenceClient } from "libs/confluence";
 import { scheduleUrls } from "./schedule";
-import { parseHtml } from "src/scrape/parse";
+import { parseHtml } from "../scrape/parse";
 
 function getCursor(next?: string | null) {
   if (!next) return undefined;

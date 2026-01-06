@@ -1,4 +1,4 @@
-import { fetchYouTubeVideoData } from "src/youtube";
+import { fetchYouTubeVideoData } from "../youtube";
 import { GroupForSource, UpdateItemResponse, Source } from "./interface";
 import { GroupData, ItemData } from "./queue";
 import { scheduleUrl, scheduleUrls } from "./schedule";

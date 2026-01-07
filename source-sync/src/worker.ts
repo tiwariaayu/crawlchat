@@ -157,7 +157,7 @@ const itemWorker = new Worker<ItemData>(
   },
   {
     connection: redis,
-    concurrency: 2,
+    concurrency: 1,
   }
 );
 

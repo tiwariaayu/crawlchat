@@ -2,7 +2,7 @@ import { TbBook2, TbCheck } from "react-icons/tb";
 import { getAuthUser } from "~/auth/middleware";
 import { Page } from "~/components/page";
 import { prisma } from "libs/prisma";
-import { authoriseScrapeUser, getSessionScrapeId } from "~/scrapes/util";
+import { authoriseScrapeUser, getSessionScrapeId } from "~/auth/scrape-session";
 import type { Route } from "./+types/make-guide";
 import { ComposerSection, useComposer } from "~/compose";
 import { getMessageContent } from "./messages";

@@ -12,7 +12,7 @@ import {
 } from "react-icons/tb";
 import { Page } from "~/components/page";
 import { getAuthUser } from "~/auth/middleware";
-import { authoriseScrapeUser, getSessionScrapeId } from "~/scrapes/util";
+import { authoriseScrapeUser, getSessionScrapeId } from "~/auth/scrape-session";
 import { prisma, type ScrapeUser } from "libs/prisma";
 import { redirect, useFetcher } from "react-router";
 import { useEffect, useState } from "react";

@@ -4,7 +4,7 @@ import { getAuthUser } from "~/auth/middleware";
 import { useEffect, useState } from "react";
 import { redirect, useFetcher } from "react-router";
 import { TbBook2, TbRefresh, TbTrash } from "react-icons/tb";
-import { authoriseScrapeUser, getSessionScrapeId } from "~/scrapes/util";
+import { authoriseScrapeUser, getSessionScrapeId } from "~/auth/scrape-session";
 import { Page } from "~/components/page";
 import { createToken } from "libs/jwt";
 import type { Prisma, ScrapeItem } from "libs/prisma";

@@ -15,7 +15,7 @@ import {
   TbWorld,
 } from "react-icons/tb";
 import { Link } from "react-router";
-import { authoriseScrapeUser, getSessionScrapeId } from "~/scrapes/util";
+import { authoriseScrapeUser, getSessionScrapeId } from "~/auth/scrape-session";
 import { Page } from "~/components/page";
 import { useMemo } from "react";
 import { GroupStatus } from "./group/status";

@@ -14,7 +14,7 @@ import { Page } from "~/components/page";
 import { makeMeta } from "~/meta";
 import type { Route } from "./+types/conversation";
 import { getAuthUser } from "~/auth/middleware";
-import { authoriseScrapeUser, getSessionScrapeId } from "~/scrapes/util";
+import { authoriseScrapeUser, getSessionScrapeId } from "~/auth/scrape-session";
 import { prisma, type Message } from "libs/prisma";
 import { Link, redirect, useFetcher } from "react-router";
 import cn from "@meltdownjs/cn";

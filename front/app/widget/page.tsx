@@ -13,7 +13,7 @@ import { commitSession, getSession } from "~/session";
 import { data, redirect, type Session } from "react-router";
 import { fetchIpDetails, getClientIp } from "~/client-ip";
 import { ChatBoxProvider } from "~/widget/use-chat-box";
-import { sanitizeScrape, sanitizeThread } from "~/scrapes/util";
+import { sanitizeScrape, sanitizeThread } from "~/sanitize";
 import { getAuthUser } from "~/auth/middleware";
 import { Toaster } from "react-hot-toast";
 import cn from "@meltdownjs/cn";

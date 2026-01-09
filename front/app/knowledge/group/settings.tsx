@@ -7,7 +7,7 @@ import type {
 import { prisma } from "libs/prisma";
 import { getNextUpdateTime } from "libs/knowledge-group";
 import { getAuthUser } from "~/auth/middleware";
-import { authoriseScrapeUser, getSessionScrapeId } from "~/scrapes/util";
+import { authoriseScrapeUser, getSessionScrapeId } from "~/auth/scrape-session";
 import {
   SettingsContainer,
   SettingsSection,

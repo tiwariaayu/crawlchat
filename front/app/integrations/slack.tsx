@@ -9,7 +9,7 @@ import {
 import { prisma } from "libs/prisma";
 import { getAuthUser } from "~/auth/middleware";
 import { TbArrowRight, TbBrandSlack } from "react-icons/tb";
-import { authoriseScrapeUser, getSessionScrapeId } from "~/scrapes/util";
+import { authoriseScrapeUser, getSessionScrapeId } from "~/auth/scrape-session";
 import { useFetcherToast } from "~/components/use-fetcher-toast";
 import { makeMeta } from "~/meta";
 

@@ -14,7 +14,7 @@ import {
   TbCrown,
   TbInfoCircle,
 } from "react-icons/tb";
-import { authoriseScrapeUser, getSessionScrapeId } from "~/scrapes/util";
+import { authoriseScrapeUser, getSessionScrapeId } from "~/auth/scrape-session";
 import { MultiSelect } from "~/components/multi-select";
 import { useState } from "react";
 import { makeMeta } from "~/meta";

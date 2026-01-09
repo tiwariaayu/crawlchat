@@ -1,7 +1,7 @@
 import { prisma } from "libs/prisma";
 import type { Route } from "./+types/email-alert";
 import { getJwtAuthUser } from "./jwt";
-import { authoriseScrapeUser } from "./scrapes/util";
+import { authoriseScrapeUser } from "./auth/scrape-session";
 import {
   sendDataGapAlertEmail,
   sendLowCreditsEmail,

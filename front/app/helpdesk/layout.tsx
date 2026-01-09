@@ -32,9 +32,9 @@ import { HelpdeskContext, HelpdeskProvider } from "./context";
 import { createToken } from "libs/jwt";
 import { Toaster } from "react-hot-toast";
 import { MCPIcon } from "~/components/mcp-icon";
-import { makeCursorMcpConfig, makeMcpName } from "~/mcp/setup";
+import { makeCursorMcpConfig, makeMcpName } from "~/mcp-command";
 import { Outlet, redirect } from "react-router";
-import { sanitizeScrape, sanitizeThread } from "~/scrapes/util";
+import { sanitizeScrape, sanitizeThread } from "~/sanitize";
 
 const DEFAULT_HELPDESK_CONFIG = {
   enabled: false,

@@ -18,7 +18,7 @@ import {
 } from "react-icons/tb";
 import { Page } from "./components/page";
 import { getAuthUser } from "./auth/middleware";
-import { authoriseScrapeUser, getSessionScrapeId } from "./scrapes/util";
+import { authoriseScrapeUser, getSessionScrapeId } from "./auth/scrape-session";
 import type { Route } from "./+types/compose";
 import { createToken } from "libs/jwt";
 import { useFetcher } from "react-router";

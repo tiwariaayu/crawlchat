@@ -31,7 +31,7 @@ import {
 } from "react-icons/tb";
 import { Page } from "~/components/page";
 import { useEffect, useRef, useState } from "react";
-import { authoriseScrapeUser, getSessionScrapeId } from "~/scrapes/util";
+import { authoriseScrapeUser, getSessionScrapeId } from "~/auth/scrape-session";
 import { createToken } from "libs/jwt";
 import { RadioCard } from "~/components/radio-card";
 import { DataList } from "~/components/data-list";

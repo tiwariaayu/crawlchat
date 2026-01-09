@@ -7,7 +7,7 @@ import {
   SettingsSectionProvider,
 } from "~/components/settings-section";
 import { useMemo } from "react";
-import { authoriseScrapeUser, getSessionScrapeId } from "~/scrapes/util";
+import { authoriseScrapeUser, getSessionScrapeId } from "~/auth/scrape-session";
 import { MarkdownProse } from "~/widget/markdown-prose";
 import { makeMeta } from "~/meta";
 

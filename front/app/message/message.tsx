@@ -18,7 +18,7 @@ import { CountryFlag } from "./country-flag";
 import { extractCitations } from "libs/citation";
 import { DataList } from "~/components/data-list";
 import { getAuthUser } from "~/auth/middleware";
-import { authoriseScrapeUser, getSessionScrapeId } from "~/scrapes/util";
+import { authoriseScrapeUser, getSessionScrapeId } from "~/auth/scrape-session";
 import { Rating } from "./rating-badge";
 import { Page } from "~/components/page";
 import { ChannelBadge } from "~/components/channel-badge";

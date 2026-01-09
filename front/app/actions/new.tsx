@@ -4,7 +4,7 @@ import { EditForm } from "./edit-form";
 import { EditActionProvider } from "./use-edit-action";
 import { getAuthUser } from "~/auth/middleware";
 import { prisma } from "libs/prisma";
-import { authoriseScrapeUser, getSessionScrapeId } from "~/scrapes/util";
+import { authoriseScrapeUser, getSessionScrapeId } from "~/auth/scrape-session";
 import { redirect, useFetcher } from "react-router";
 import { SaveForm } from "./save-form";
 import { Page } from "~/components/page";

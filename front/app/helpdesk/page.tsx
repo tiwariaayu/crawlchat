@@ -6,7 +6,7 @@ import { TbBook2 } from "react-icons/tb";
 import type { Article } from "libs/prisma";
 import { HelpdeskContext } from "./context";
 import { Container } from "./layout";
-import { sanitizeScrape } from "~/scrapes/util";
+import { sanitizeScrape } from "~/sanitize";
 
 export async function loader({ params }: Route.LoaderArgs) {
   const scrape = await prisma.scrape.findFirstOrThrow({

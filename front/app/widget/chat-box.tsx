@@ -30,7 +30,7 @@ import {
 import { MarkdownProse } from "~/widget/markdown-prose";
 import { track } from "~/components/track";
 import { extractCitations } from "libs/citation";
-import { makeCursorMcpJson, makeMcpCommand, makeMcpName } from "~/mcp/setup";
+import { makeCursorMcpJson, makeMcpCommand, makeMcpName } from "~/mcp-command";
 import { useChatBoxContext } from "./use-chat-box";
 import cn from "@meltdownjs/cn";
 import toast from "react-hot-toast";

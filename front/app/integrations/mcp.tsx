@@ -9,9 +9,9 @@ import {
 } from "~/components/settings-section";
 import { prisma } from "libs/prisma";
 import { MarkdownProse } from "~/widget/markdown-prose";
-import { authoriseScrapeUser, getSessionScrapeId } from "~/scrapes/util";
-import { makeCursorMcpJson, makeMcpName } from "~/mcp/setup";
-import { makeMcpCommand } from "~/mcp/setup";
+import { authoriseScrapeUser, getSessionScrapeId } from "~/auth/scrape-session";
+import { makeCursorMcpJson, makeMcpName } from "~/mcp-command";
+import { makeMcpCommand } from "~/mcp-command";
 import { makeMeta } from "~/meta";
 
 export async function loader({ request }: Route.LoaderArgs) {

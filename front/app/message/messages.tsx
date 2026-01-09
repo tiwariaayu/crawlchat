@@ -13,7 +13,7 @@ import { Page } from "~/components/page";
 import { getAuthUser } from "~/auth/middleware";
 import { prisma } from "libs/prisma";
 import { makeMessagePairs } from "./analyse";
-import { authoriseScrapeUser, getSessionScrapeId } from "~/scrapes/util";
+import { authoriseScrapeUser, getSessionScrapeId } from "~/auth/scrape-session";
 import {
   Outlet,
   Link as RouterLink,

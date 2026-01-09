@@ -9,7 +9,7 @@ import {
 import { Page } from "~/components/page";
 import { prisma } from "libs/prisma";
 import { getAuthUser } from "~/auth/middleware";
-import { authoriseScrapeUser, getSessionScrapeId } from "~/scrapes/util";
+import { authoriseScrapeUser, getSessionScrapeId } from "~/auth/scrape-session";
 import {
   Link,
   redirect,

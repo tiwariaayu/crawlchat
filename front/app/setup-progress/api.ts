@@ -1,7 +1,7 @@
 import { getAuthUser } from "~/auth/middleware";
 import { getSession } from "~/session";
 import { getSetupProgressInput } from "./make";
-import { authoriseScrapeUser } from "~/scrapes/util";
+import { authoriseScrapeUser } from "~/auth/scrape-session";
 import type { Route } from "./+types/api";
 
 export async function loader({ request }: Route.LoaderArgs) {

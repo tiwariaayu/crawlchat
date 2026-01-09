@@ -2,7 +2,7 @@ import type { Route } from "./+types/helpdesk";
 import { makeMeta } from "~/meta";
 import { prisma } from "libs/prisma";
 import { getAuthUser } from "~/auth/middleware";
-import { getSessionScrapeId, authoriseScrapeUser } from "~/scrapes/util";
+import { getSessionScrapeId, authoriseScrapeUser } from "~/auth/scrape-session";
 import { Page } from "~/components/page";
 import { TbSettings } from "react-icons/tb";
 import { useState, useMemo } from "react";

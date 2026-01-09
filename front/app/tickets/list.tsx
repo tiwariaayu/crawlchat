@@ -4,7 +4,7 @@ import { TbChevronLeft, TbChevronRight, TbTicket } from "react-icons/tb";
 import { Page } from "~/components/page";
 import { getAuthUser } from "~/auth/middleware";
 import { prisma } from "libs/prisma";
-import { authoriseScrapeUser, getSessionScrapeId } from "~/scrapes/util";
+import { authoriseScrapeUser, getSessionScrapeId } from "~/auth/scrape-session";
 import { redirect } from "react-router";
 import { Link as RouterLink } from "react-router";
 import { useMemo } from "react";

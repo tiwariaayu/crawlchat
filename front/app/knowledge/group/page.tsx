@@ -1,7 +1,7 @@
 import type { Route } from "./+types/page";
 import { prisma } from "libs/prisma";
 import { getAuthUser } from "~/auth/middleware";
-import { authoriseScrapeUser, getSessionScrapeId } from "~/scrapes/util";
+import { authoriseScrapeUser, getSessionScrapeId } from "~/auth/scrape-session";
 import { Page } from "~/components/page";
 import {
   TbBook2,

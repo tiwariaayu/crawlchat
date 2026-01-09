@@ -10,7 +10,7 @@ import { prisma } from "libs/prisma";
 import { getAuthUser } from "~/auth/middleware";
 import { SettingsSection } from "~/components/settings-section";
 import { useFetcher } from "react-router";
-import { authoriseScrapeUser, getSessionScrapeId } from "../scrapes/util";
+import { authoriseScrapeUser, getSessionScrapeId } from "../auth/scrape-session";
 import { useEffect, useMemo, useState } from "react";
 import { ChatBoxProvider } from "~/widget/use-chat-box";
 import ChatBox, { ChatboxContainer } from "~/widget/chat-box";

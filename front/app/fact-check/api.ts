@@ -1,6 +1,6 @@
 import { getAuthUser } from "~/auth/middleware";
 import type { Route } from "./+types/api";
-import { authoriseScrapeUser, getSessionScrapeId } from "~/scrapes/util";
+import { authoriseScrapeUser, getSessionScrapeId } from "~/auth/scrape-session";
 import { createToken } from "libs/jwt";
 
 export async function action({ request }: Route.ActionArgs) {

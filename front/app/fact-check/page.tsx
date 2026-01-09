@@ -1,6 +1,6 @@
 import type { Route } from "./+types/page";
 import { getAuthUser } from "~/auth/middleware";
-import { authoriseScrapeUser, getSessionScrapeId } from "~/scrapes/util";
+import { authoriseScrapeUser, getSessionScrapeId } from "~/auth/scrape-session";
 import { Page } from "~/components/page";
 import { createToken } from "libs/jwt";
 import { useFetcher } from "react-router";

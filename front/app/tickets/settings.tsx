@@ -11,7 +11,7 @@ import { Page } from "~/components/page";
 import { getAuthUser } from "~/auth/middleware";
 import { getSession } from "~/session";
 import { prisma } from "libs/prisma";
-import { getSessionScrapeId } from "~/scrapes/util";
+import { getSessionScrapeId } from "~/auth/scrape-session";
 
 export async function loader({ request }: Route.LoaderArgs) {
   const user = await getAuthUser(request);

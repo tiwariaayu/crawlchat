@@ -10,7 +10,7 @@ import {
   TbChevronRight,
 } from "react-icons/tb";
 import { Link, Outlet, useLoaderData } from "react-router";
-import { authoriseScrapeUser, getSessionScrapeId } from "~/scrapes/util";
+import { authoriseScrapeUser, getSessionScrapeId } from "~/auth/scrape-session";
 import { EmptyState } from "~/components/empty-state";
 import { makeMeta } from "~/meta";
 import cn from "@meltdownjs/cn";

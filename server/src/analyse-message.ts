@@ -6,11 +6,11 @@ import {
   Scrape,
   ScrapeMessageCategory,
 } from "libs/prisma";
-import { SimpleAgent } from "./agentic";
+import { SimpleAgent } from "./llm/agentic";
 import { z } from "zod";
-import { Flow } from "./flow";
-import { makeIndexer } from "../indexer/factory";
-import { getConfig } from "./config";
+import { Flow } from "./llm/flow";
+import { makeIndexer } from "./indexer/factory";
+import { getConfig } from "./llm/config";
 import { createToken } from "libs/jwt";
 import { consumeCredits } from "libs/user-plan";
 

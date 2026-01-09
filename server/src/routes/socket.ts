@@ -4,7 +4,7 @@ import { consumeCredits, hasEnoughCredits } from "libs/user-plan";
 import { wsRateLimiter } from "../rate-limiter";
 import { baseAnswerer, type AnswerListener } from "../answer";
 import { retry } from "../retry";
-import { fillMessageAnalysis } from "../llm/analyse-message";
+import { fillMessageAnalysis } from "../analyse-message";
 import expressWs from "express-ws";
 import { ScrapeItem } from "libs/prisma";
 

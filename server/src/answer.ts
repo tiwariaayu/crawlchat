@@ -11,18 +11,20 @@ import {
   ScrapeItem,
 } from "@packages/common/prisma";
 import { getConfig } from "./llm/config";
-import { makeFlow, RAGAgentCustomMessage } from "./llm/flow-jasmine";
+import { makeRagAgent, makeRagFlow } from "./llm/flow";
 import {
   getQueryString,
   MultimodalContent,
   removeImages,
 } from "@packages/common/llm-message";
-import { FlowMessage, LlmRole } from "./llm/agentic";
+import { Role } from "@packages/agentic";
+import { FlowMessage } from "./llm/flow";
+import { CustomMessage } from "./llm/custom-message";
 
 export type StreamDeltaEvent = {
   type: "stream-delta";
   delta: string;
-  role: LlmRole;
+  role: Role;
   content: string;
 };
 
@@ -33,7 +35,7 @@ export type AnswerCompleteEvent = {
   actionCalls: ApiActionCall[];
   llmCalls: number;
   creditsUsed: number;
-  messages: FlowMessage<RAGAgentCustomMessage>[];
+  messages: FlowMessage<CustomMessage>[];
   context: string[];
 };
 
@@ -62,7 +64,7 @@ export type Answerer = (
   scrape: Scrape,
   thread: Thread,
   query: string | MultimodalContent[],
-  messages: FlowMessage<RAGAgentCustomMessage>[],
+  messages: FlowMessage<CustomMessage>[],
   options?: {
     listen?: AnswerListener;
     prompt?: string;
@@ -88,7 +90,7 @@ Don't tell user to reach out to support team, instead use this block.`,
 
 export async function collectSourceLinks(
   scrapeId: string,
-  messages: FlowMessage<RAGAgentCustomMessage>[]
+  messages: FlowMessage<CustomMessage>[]
 ) {
   const matches = messages
     .map((m) => m.custom?.result)
@@ -153,7 +155,7 @@ export async function collectSourceLinks(
 
 export async function collectActionCalls(
   scrapeId: string,
-  messages: FlowMessage<RAGAgentCustomMessage>[]
+  messages: FlowMessage<CustomMessage>[]
 ) {
   return messages
     .map((m) => m.custom?.actionCall)
@@ -161,7 +163,7 @@ export async function collectActionCalls(
     .flat();
 }
 
-export function collectContext(messages: FlowMessage<RAGAgentCustomMessage>[]) {
+export function collectContext(messages: FlowMessage<CustomMessage>[]) {
   return messages
     .map((m) => m.custom?.result)
     .filter((r) => r !== undefined)
@@ -209,12 +211,10 @@ Just use this block, don't ask the user to enter the email. Use it only if the t
     }
   }
 
-  const flow = makeFlow(
+  const ragAgent = makeRagAgent(
     thread,
     scrape.id,
     options?.prompt ?? scrape.chatPrompt ?? "",
-    query,
-    messages,
     scrape.indexer,
     {
       onPreSearch: async (query) => {
@@ -229,10 +229,7 @@ Just use this block, don't ask the user to enter the email. Use it only if the t
           action: title,
         });
       },
-      model: llmConfig.model,
-      baseURL: llmConfig.baseURL,
-      apiKey: llmConfig.apiKey,
-      topN: llmConfig.ragTopN,
+      llmConfig,
       richBlocks,
       minScore: scrape.minScore ?? undefined,
       showSources: scrape.showSources ?? false,
@@ -243,18 +240,18 @@ Just use this block, don't ask the user to enter the email. Use it only if the t
     }
   );
 
+  const flow = makeRagFlow(ragAgent, messages, query);
+
   while (
-    await flow.stream({
-      onDelta: ({ delta, content, role }) => {
-        if (delta !== undefined && delta !== null) {
-          options?.listen?.({
-            type: "stream-delta",
-            delta,
-            role,
-            content,
-          });
-        }
-      },
+    await flow.stream(({ delta, content, role }) => {
+      if (delta !== undefined && delta !== null) {
+        options?.listen?.({
+          type: "stream-delta",
+          delta,
+          role,
+          content,
+        });
+      }
     })
   ) {}
 

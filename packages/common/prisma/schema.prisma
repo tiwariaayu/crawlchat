@@ -280,6 +280,7 @@ type MessageAnalysis {
   category  String?
   questionRelevanceScore Float?
   questionSentiment QuestionSentiment?
+  language String?
   
   dataGapTitle String?
   dataGapDescription String?

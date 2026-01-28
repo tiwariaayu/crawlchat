@@ -46,6 +46,7 @@ import { dodoGateway } from "~/payment/gateway-dodo";
 import { track } from "~/components/track";
 import { getMessagesSummary, type MessagesSummary } from "~/messages-summary";
 import type { Payload } from "recharts/types/component/DefaultTooltipContent";
+import LanguageDistribution from "./summary/language-distribution";
 
 function monoString(str: string) {
   return str.trim().toLowerCase().replace(/^\n+/, "").replace(/\n+$/, "");
@@ -420,7 +421,7 @@ function Tags({ tags }: { tags: Array<{ title: string; count: number }> }) {
   );
 }
 
-function Heading({
+export function Heading({
   children,
   className,
   ...props
@@ -441,7 +442,6 @@ export default function DashboardPage({ loaderData }: Route.ComponentProps) {
       return true;
     }
   }, [loaderData.user]);
-
   const [chartData, categories] = useMemo(() => {
     const data = [];
     const today = new Date();
@@ -778,6 +778,9 @@ export default function DashboardPage({ loaderData }: Route.ComponentProps) {
               <Tags tags={tags} />
             </div>
           )}
+          <LanguageDistribution
+            languages={loaderData.messagesSummary.languagesDistribution}
+          />
         </div>
       )}
 

@@ -9,6 +9,7 @@ import {
   Scrape,
   Thread,
   ScrapeItem,
+  LlmModel,
 } from "@packages/common/prisma";
 import { getConfig } from "./llm/config";
 import { makeRagAgent, makeRagFlow } from "./llm/flow";
@@ -19,7 +20,9 @@ import {
 } from "@packages/common/llm-message";
 import { Role } from "@packages/agentic";
 import { FlowMessage } from "./llm/flow";
-import { CustomMessage } from "./llm/custom-message";
+import { CustomMessage, DataGap } from "./llm/custom-message";
+import { consumeCredits } from "@packages/common/user-plan";
+import { fillMessageAnalysis } from "./analyse-message";
 
 export type StreamDeltaEvent = {
   type: "stream-delta";
@@ -30,6 +33,7 @@ export type StreamDeltaEvent = {
 
 export type AnswerCompleteEvent = {
   type: "answer-complete";
+  question: string | MultimodalContent[];
   content: string;
   sources: MessageSourceLink[];
   actionCalls: ApiActionCall[];
@@ -37,6 +41,7 @@ export type AnswerCompleteEvent = {
   creditsUsed: number;
   messages: FlowMessage<CustomMessage>[];
   context: string[];
+  dataGap?: DataGap;
 };
 
 export type ToolCallEvent = {
@@ -163,12 +168,28 @@ export async function collectActionCalls(
     .flat();
 }
 
+export function collectDataGap(
+  messages: FlowMessage<CustomMessage>[]
+): DataGap | undefined {
+  const gaps = messages
+    .map((m) => m.custom?.dataGap)
+    .filter((r) => r !== undefined);
+  return gaps.length > 0 ? gaps[gaps.length - 1] : undefined;
+}
+
 export function collectContext(messages: FlowMessage<CustomMessage>[]) {
   return messages
     .map((m) => m.custom?.result)
     .filter((r) => r !== undefined)
     .flat()
     .map((m) => m.content);
+}
+
+export function updateLastMessageAt(threadId: string) {
+  return prisma.thread.update({
+    where: { id: threadId },
+    data: { lastMessageAt: new Date() },
+  });
 }
 
 export const baseAnswerer: Answerer = async (
@@ -268,8 +289,61 @@ Just use this block, don't ask the user to enter the email. Use it only if the t
     creditsUsed: llmConfig.creditsPerMessage,
     messages: flow.flowState.state.messages,
     context: collectContext(flow.flowState.state.messages),
+    dataGap: collectDataGap(flow.flowState.state.messages),
+    question: query,
   };
   options?.listen?.(answer);
 
   return answer;
 };
+
+export async function saveAnswer(
+  answer: AnswerCompleteEvent,
+  scrape: Scrape,
+  threadId: string,
+  channel: MessageChannel,
+  questionMessageId: string,
+  llmModel?: LlmModel | null,
+  fingerprint?: string,
+  onFollowUpQuestion?: (questions: string[]) => void
+) {
+  await consumeCredits(scrape.userId, "messages", answer.creditsUsed);
+  const newAnswerMessage = await prisma.message.create({
+    data: {
+      threadId,
+      scrapeId: scrape.id,
+      llmMessage: { role: "assistant", content: answer.content },
+      links: answer!.sources,
+      ownerUserId: scrape.userId,
+      channel,
+      apiActionCalls: answer.actionCalls as any,
+      llmModel,
+      creditsUsed: answer.creditsUsed,
+      fingerprint,
+      questionId: questionMessageId,
+      dataGap: answer.dataGap,
+    },
+  });
+
+  await prisma.message.update({
+    where: { id: questionMessageId },
+    data: { answerId: newAnswerMessage.id },
+  });
+
+  await updateLastMessageAt(threadId);
+
+  if (scrape.analyseMessage) {
+    fillMessageAnalysis(
+      newAnswerMessage.id,
+      questionMessageId,
+      getQueryString(answer.question),
+      answer.content,
+      {
+        categories: scrape.messageCategories,
+        onFollowUpQuestion,
+      }
+    );
+  }
+
+  return newAnswerMessage;
+}

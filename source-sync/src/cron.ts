@@ -50,7 +50,7 @@ async function updateKnowledgeGroup(groupId: string) {
   });
 }
 
-async function updateKnowledgeBase() {
+async function updateKnowledgeBases() {
   const knowledgeGroups = await prisma.knowledgeGroup.findMany({
     where: {
       nextUpdateAt: {
@@ -93,7 +93,7 @@ async function main() {
   const jobName = getCliArg("job-name");
 
   if (jobName === "update-knowledge-base") {
-    return await updateKnowledgeBase();
+    return await updateKnowledgeBases();
   }
 
   console.error("Invalid job name", jobName);

@@ -113,6 +113,42 @@ export const getConfig = (model?: LlmModel | null): LlmConfig => {
       supportsImages: true,
     };
   }
+  if (model === LlmModel.kimi_2_5) {
+    return {
+      model: "moonshotai/kimi-k2.5",
+      apiKey: process.env.OPENROUTER_API_KEY!,
+      ragTopN: 4,
+      creditsPerMessage: 2,
+      baseURL: "https://openrouter.ai/api/v1",
+    };
+  }
+  if (model === LlmModel.minimax_m_2_1) {
+    return {
+      model: "minimax/minimax-m2.1",
+      apiKey: process.env.OPENROUTER_API_KEY!,
+      ragTopN: 4,
+      creditsPerMessage: 2,
+      baseURL: "https://openrouter.ai/api/v1",
+    };
+  }
+  if (model === LlmModel.glm_4_7) {
+    return {
+      model: "z-ai/glm-4.7",
+      apiKey: process.env.OPENROUTER_API_KEY!,
+      ragTopN: 4,
+      creditsPerMessage: 2,
+      baseURL: "https://openrouter.ai/api/v1",
+    };
+  }
+  if (model === LlmModel.gemini_3_flash) {
+    return {
+      model: "google/gemini-3-flash-preview",
+      apiKey: process.env.OPENROUTER_API_KEY!,
+      ragTopN: 4,
+      creditsPerMessage: 2,
+      baseURL: "https://openrouter.ai/api/v1",
+    };
+  }
   return {
     model: "gpt-4o-mini",
     apiKey: process.env.OPENAI_API_KEY!,

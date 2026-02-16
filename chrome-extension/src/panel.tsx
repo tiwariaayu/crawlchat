@@ -29,14 +29,7 @@ const Panel = ({
   isPrompt?: boolean;
 }) => {
   const input = useMemo(() => {
-    if (isPrompt) {
-      return {
-        content: "",
-        messages: [],
-        prompt: trimContent(currentValue),
-      };
-    }
-    if (currentValue.startsWith("@")) {
+    if (currentValue.startsWith("@") || isPrompt) {
       return {
         content: "",
         messages: [],

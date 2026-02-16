@@ -9,14 +9,14 @@ chrome.runtime.onInstalled.addListener((details) => {
 
   // Create context menus when extension is installed
   chrome.contextMenus.create({
-    id: "compose-with-crawlchat",
-    title: "Compose with CrawlChat",
+    id: "compose-context-menu",
+    title: "Compose",
     contexts: ["editable"],
   });
 
   chrome.contextMenus.create({
-    id: "fill-with-crawlchat",
-    title: "Fill with CrawlChat",
+    id: "fill-context-menu",
+    title: "Fill",
     contexts: ["editable"],
   });
 });
@@ -48,19 +48,17 @@ chrome.commands.onCommand.addListener((command) => {
 chrome.contextMenus.onClicked.addListener((info, tab) => {
   if (!tab?.id) return;
 
-  if (info.menuItemId === "compose-with-crawlchat") {
-    // Maps to Cmd+Shift+P (open-modal-auto-use)
+  if (info.menuItemId === "compose-context-menu") {
     chrome.tabs.sendMessage(tab.id, {
-      type: "OPEN_MODAL_AUTO_USE_FROM_SHORTCUT",
-      selectedText: info.selectionText,
+      type: "OPEN_MODAL_FROM_SHORTCUT",
+      isPrompt: true,
     });
   }
 
-  if (info.menuItemId === "fill-with-crawlchat") {
-    // Maps to Cmd+Shift+I (open-modal)
+  if (info.menuItemId === "fill-context-menu") {
     chrome.tabs.sendMessage(tab.id, {
-      type: "OPEN_MODAL_FROM_SHORTCUT",
-      selectedText: info.selectionText,
+      type: "OPEN_MODAL_AUTO_USE_FROM_SHORTCUT",
+      isPrompt: true,
     });
   }
 });

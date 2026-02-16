@@ -315,11 +315,11 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
   }
 
   if (message.type === "OPEN_MODAL_FROM_SHORTCUT") {
-    handleShortcutOpenPanel(message.selectedText);
+    handleShortcutOpenPanel(message.isPrompt);
   }
 
   if (message.type === "OPEN_MODAL_AUTO_USE_FROM_SHORTCUT") {
-    handleShortcutOpenPanelAutoUse(message.selectedText);
+    handleShortcutOpenPanelAutoUse(message.isPrompt);
   }
 
   if (message.type === "CONFIG_UPDATED") {
@@ -335,7 +335,7 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
   }
 });
 
-async function handleShortcutOpenPanel(selectedText?: string) {
+async function handleShortcutOpenPanel(isPrompt?: boolean) {
   const config = await getConfig();
 
   if (config && config.apiKey && config.scrapeId) {
@@ -346,29 +346,14 @@ async function handleShortcutOpenPanel(selectedText?: string) {
         | HTMLTextAreaElement
         | HTMLElement);
 
-    // If selectedText is provided from context menu, use it to pre-fill the input
-    if (selectedText && targetElement) {
-      if (
-        targetElement instanceof HTMLInputElement ||
-        targetElement instanceof HTMLTextAreaElement
-      ) {
-        targetElement.value = selectedText;
-      } else if (
-        targetElement instanceof HTMLElement &&
-        targetElement.contentEditable === "true"
-      ) {
-        targetElement.innerHTML = selectedText.replace(/\n/g, "<br>");
-      }
-    }
-
     openPanel(config, targetElement, {
       submit: true,
-      isPrompt: !!selectedText,
+      isPrompt,
     });
   }
 }
 
-async function handleShortcutOpenPanelAutoUse(selectedText?: string) {
+async function handleShortcutOpenPanelAutoUse(isPrompt?: boolean) {
   const config = await getConfig();
 
   if (config && config.apiKey && config.scrapeId) {
@@ -379,25 +364,10 @@ async function handleShortcutOpenPanelAutoUse(selectedText?: string) {
         | HTMLTextAreaElement
         | HTMLElement);
 
-    // If selectedText is provided from context menu, use it to pre-fill the input
-    if (selectedText && targetElement) {
-      if (
-        targetElement instanceof HTMLInputElement ||
-        targetElement instanceof HTMLTextAreaElement
-      ) {
-        targetElement.value = selectedText;
-      } else if (
-        targetElement instanceof HTMLElement &&
-        targetElement.contentEditable === "true"
-      ) {
-        targetElement.innerHTML = selectedText.replace(/\n/g, "<br>");
-      }
-    }
-
     openPanel(config, targetElement, {
       submit: true,
       autoUse: true,
-      isPrompt: !!selectedText,
+      isPrompt,
     });
   }
 }

@@ -437,6 +437,7 @@ model ScrapeItem {
   status                  ScrapeItemStatus?
   error                   String?
   sourcePageId            String?
+  lastProcessId           String?
 
   createdAt               DateTime @default(now())
   updatedAt               DateTime @updatedAt
@@ -548,6 +549,12 @@ type KnowledgeGroupUrlItem {
   url String
 }
 
+enum GithubIssuesType {
+  all
+  only_issues
+  only_prs
+}
+
 model KnowledgeGroup {
   id                                        String   @id @default(auto()) @map("_id") @db.ObjectId
   scrapeId                                  String   @db.ObjectId
@@ -588,9 +595,12 @@ model KnowledgeGroup {
 
   allowedGithubIssueStates                  String?
   onlyAnsweredDiscussions                   Boolean?
+  githubIssuesType                          GithubIssuesType?
 
   fetchError                                String?
   urls                                      KnowledgeGroupUrlItem[]
+  loadDynamically                           Boolean?
+  removeStalePages                          Boolean?
 
   createdAt                                 DateTime @default(now())
   updatedAt                                 DateTime @updatedAt
@@ -710,6 +720,8 @@ model ApiKey {
   userId          String  @db.ObjectId
   key             String
   title           String
+
+  createdAt       DateTime @default(now())
 
   user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }

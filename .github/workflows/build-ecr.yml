@@ -38,7 +38,7 @@ jobs:
       matrix:
         include:
           - build_app: front
-            image_name: crawlchat-front
+            image_name: front
             dockerfile: docker/Dockerfile
 
     steps:
